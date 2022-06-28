@@ -54,7 +54,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 }
 
 
-void getSurface(libMesh::Mesh& mesh, std::vector<libMesh::Elem*>& elSet, libMesh::LibMeshInit& init)
+void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit& init)
 {   
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();

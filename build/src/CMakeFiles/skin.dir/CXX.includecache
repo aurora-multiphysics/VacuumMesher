@@ -18,7 +18,17 @@ libmesh/enum_io_package.h
 libmesh/enum_elem_type.h
 ../include/libmesh/enum_elem_type.h
 
-/home/bill/projects/libmeshTest/src/surfaceMeshing.cpp
+/home/bill/projects/libmeshTest/src/main.cpp
+iostream
+-
+mesh.h
+/home/bill/projects/libmeshTest/src/mesh.h
+libmesh/libmesh.h
+/home/bill/projects/libmeshTest/src/libmesh/libmesh.h
+libmesh/enum_io_package.h
+/home/bill/projects/libmeshTest/src/libmesh/enum_io_package.h
+libmesh/enum_elem_type.h
+/home/bill/projects/libmeshTest/src/libmesh/enum_elem_type.h
 surfaceMeshing.hpp
 /home/bill/projects/libmeshTest/src/surfaceMeshing.hpp
 

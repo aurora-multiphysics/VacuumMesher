@@ -15,15 +15,19 @@ int main(int argc, char** argv)
     Mesh mesh(init.comm());
 
     mesh.read("../hypervapotron.e");
-
-    
-
-    std::vector<Elem*> elems;
+    std::set<int> elems;
     for (int i = 0; i < 75613; ++i)
     {
-        elems.push_back(mesh.elem_ptr(i));
+        elems.emplace_hint(elems.end(), i);
     }
+    
+
+    // std::vector<Elem*> elems;
+    // for (int i = 0; i < 75613; ++i)
+    // {
+    //     elems.push_back(mesh.elem_ptr(i));
+    // }
     std::cout << "Skinning Beginning" << std::endl;
-    // getSurface(mesh, elems, init);
+    getSurface(mesh, elems, init);
 }
 
