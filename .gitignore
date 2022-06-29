@@ -3,4 +3,5 @@ Makefile
 Make.common
 .vscode/
 build/
+/test/build/
 CMakeFiles/

@@ -1,3 +1,0 @@
-/home/bill/projects/libmeshTest/test/build/CMakeFiles/rebuild_cache.dir
-/home/bill/projects/libmeshTest/test/build/CMakeFiles/edit_cache.dir
-/home/bill/projects/libmeshTest/test/build/CMakeFiles/runTests.dir
