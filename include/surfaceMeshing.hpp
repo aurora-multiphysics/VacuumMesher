@@ -10,7 +10,7 @@ void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit&
 
 int getNumSurfaceElems();
 
-void isElementSurface(libMesh::Elem* element, std::set<int> elSet, std::vector<int>& surfaceFaces);
+void isElementSurface(libMesh::Elem* element, std::set<int>& elSet, std::vector<int>& surfaceFaces);
 
 // libMesh::Mesh surfaceMesh(init.comm());
 

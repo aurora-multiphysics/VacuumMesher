@@ -1,6 +1,6 @@
 #include "surfaceMeshing.hpp"
 
-void isElementSurface(libMesh::Elem* element, std::set<int> elSet, 
+void isElementSurface(libMesh::Elem* element, std::set<int>& elSet, 
                       std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
