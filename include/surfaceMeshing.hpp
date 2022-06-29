@@ -6,7 +6,7 @@
 
 // using namespace libMesh;
 
-void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit& init);
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& elSet, libMesh::LibMeshInit& init);
 
 int getNumSurfaceElems();
 

@@ -54,7 +54,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 }
 
 
-void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit& init)
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& elSet, libMesh::LibMeshInit& init)
 {   
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
@@ -66,9 +66,6 @@ void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit&
 
     // //Counter to store the number of surface elements
     int surface_elem_counter = 0;
-
-    //Create new libmesh mesh to store surface mesh
-    libMesh::Mesh surfaceMesh(init.comm());
 
     //Map from old node ids to the new ones in the surface mesh
     std::vector<int> currentNodeIds;
@@ -151,8 +148,4 @@ void getSurface(libMesh::Mesh& mesh, std::set<int>& elSet, libMesh::LibMeshInit&
     //Set mesh dimensions 
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
-    //Surface mesh is output for visualisation 
-    const std::string file = "surfaceMesh.e";
-    surfaceMesh.write(file);
-    surfaceMesh.print_info();
 }

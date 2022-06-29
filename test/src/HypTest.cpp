@@ -5,7 +5,7 @@
 class HypTest : public MeshTest 
 {
  protected:
-    HypTest() : MeshTest("../hypervapotron.e"){std::cout << "sewy" << std::endl;} 
+    HypTest() : MeshTest("../hypervapotron.e"){} 
 
     virtual void SetUp() {MeshTest::SetUp();}
 
