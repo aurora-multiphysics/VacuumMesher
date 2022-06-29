@@ -1,3 +1,5 @@
 *.e
 Makefile
 Make.common
+.vscode/
+build/
