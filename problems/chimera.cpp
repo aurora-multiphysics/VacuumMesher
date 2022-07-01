@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     
     mesh.print_info();
     std::cout << "Skinning Beginning" << std::endl;
-    getSurface(mesh, surfaceMesh, elems, init);
+    getSurface(mesh, surfaceMesh, elems);
 
     const std::string file = "csutSkinned.e";
     surfaceMesh.write(file);

@@ -54,7 +54,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 }
 
 
-void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& elSet, libMesh::LibMeshInit& init)
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& elSet)
 {   
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
@@ -80,10 +80,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
                 elem, num_elem_faces, num_face_nodes);
     
     // Loops over all the elements in the input set 
-    for(auto elemNum: elSet)
+    for(int elemNum: elSet)
     {
         //Get ptr to current element
         libMesh::Elem* element = mesh.elem_ptr(elemNum);
+
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
@@ -132,7 +133,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
     }
 
-
     //For all of the surface elements, create the representitive 2D libmesh element 
     //Connectivity is set and the element is added to the new mesh
     for(int i = 0; i < surface_elem_counter; i++)
@@ -145,6 +145,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
         elem->set_id(i);
         surfaceMesh.add_elem(elem);
     }
+
     //Set mesh dimensions 
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);

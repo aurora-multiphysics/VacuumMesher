@@ -40,12 +40,8 @@ class BasicTest : public ::testing::Test {
       argv.push_back((char*)arg.data());
     }
     argv.push_back(nullptr);
-    std::cout <<"libmesh init not working  " << argc << " " << argv[0] << std::endl;
     init = new LibMeshInit(argc, argv.data()); 
-    std::cout << "o" << std::endl;
     mesh = new Mesh(init->comm());
-    std::cout << "mesh created" << std::endl;
-
     // delete argv;
     delete cstr;
   }

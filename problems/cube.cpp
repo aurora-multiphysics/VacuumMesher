@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     mesh.print_info();
     std::cout << "Skinning Beginning" << std::endl;
     // auto start = std::chrono::high_resolution_clock::now();
-    getSurface(mesh, surfaceMesh, elems, init);
+    getSurface(mesh, surfaceMesh, elems);
     const std::string file = "cubeSkinned.e";
     surfaceMesh.write(file);
     surfaceMesh.print_info();
