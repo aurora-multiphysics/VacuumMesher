@@ -2,9 +2,19 @@ cmake_minimum_required(VERSION 3.01)
 
 project(LibMeshSkinning)
 
-# Locate GTest
+#Project Path
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+
+#libigl
+option(LIBIGL_GLFW "Build target igl::glfw" ON)
+option(LIBIGL_EMBREE "Build target igl::embree" ON)
+include(libigl)
+
+# Locate GTest and MPI
 find_package(GTest REQUIRED)
 find_package(MPI REQUIRED)
+
 include_directories(${GTEST_INCLUDE_DIRS})
 
 set(prefix /home/bill/projects/moose)

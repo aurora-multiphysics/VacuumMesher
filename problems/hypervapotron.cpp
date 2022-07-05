@@ -4,7 +4,18 @@
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
 #include "surfaceMeshing.hpp"
+#include <igl/readOFF.h>
+#include <igl/writeOBJ.h>
 #include <chrono>
+
+
+#include <igl/read_triangle_mesh.h>
+#include <igl/randperm.h>
+#include <igl/orientable_patches.h>
+#include <igl/slice.h>
+#include <igl/hsv_to_rgb.h>
+#include <igl/embree/reorient_facets_raycast.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 
 using namespace libMesh;
@@ -34,5 +45,15 @@ int main(int argc, char** argv)
     const std::string file = "hypervapotronSkinned.e";
     surfaceMesh.write(file);
     surfaceMesh.print_info();
+
+    // Eigen::MatrixXd V;
+    // Eigen::MatrixXi F;  
+    // Eigen::MatrixXi T;
+
+    // igl::readMSH("/home/bill/projects/libmesh-skinning/build/hypervapotronSkinned.msh", V, T, F);
+
+//     // Print the vertices and faces matrices
+//     std::cout << "Vertices: " << std::endl << V << std::endl;
+//     std::cout << "Faces:    " << std::endl << F << std::endl;
 }
 
