@@ -7,15 +7,7 @@
 #include <igl/readOFF.h>
 #include <igl/writeOBJ.h>
 #include <chrono>
-
-
-#include <igl/read_triangle_mesh.h>
-#include <igl/randperm.h>
-#include <igl/orientable_patches.h>
-#include <igl/slice.h>
-#include <igl/hsv_to_rgb.h>
-#include <igl/embree/reorient_facets_raycast.h>
-#include <igl/opengl/glfw/Viewer.h>
+#include "flipNormals.hpp"
 
 
 using namespace libMesh;
@@ -46,18 +38,19 @@ int main(int argc, char** argv)
     surfaceMesh.write(file);
     surfaceMesh.print_info();
 
-    Eigen::MatrixXd V;
-    Eigen::MatrixXi F;  
-    Eigen::MatrixXi T;
-    Eigen::VectorXi I;
-    std::vector<Eigen::MatrixXi> FF(2);
+    // Eigen::MatrixXd V;
+    // Eigen::MatrixXi F;  
+    // Eigen::MatrixXi T;
+    // Eigen::VectorXi I;
+    // std::vector<Eigen::MatrixXi> FF(2);
 
-    igl::readMESH("/home/bill/projects/libmesh-skinning/hypervapotronSkinned.mesh", V, T, F);
+    // igl::readMESH("/home/bill/projects/libmesh-skinning/hypSkin.mesh", V, T, F);
 
-    // Print the vertices and faces matrices
-    std::cout << "Vertices: " << std::endl << V << std::endl;
-    std::cout << "Faces:    " << std::endl << F << std::endl;
+    // // Print the vertices and faces matrices
+    // std::cout << "Vertices: " << std::endl << V << std::endl;
+    // std::cout << "Faces:    " << std::endl << F << std::endl;
 
-    igl::embree::reorient_facets_raycast(V, F, FF, I)
+    // igl::embree::reorient_facets_raycast(V, F, FF, I)
+    flipNormals("/home/bill/projects/libmesh-skinning/hypSkin.mesh");
 }
 

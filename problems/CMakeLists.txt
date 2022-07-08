@@ -5,6 +5,7 @@ target_link_libraries(chimeraSkinning ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl
 
 #Hypervapotron
 add_executable(hypervapotronSkinning hypervapotron.cpp ${projectSrc})
+message(STATUS ${projectSrc})
 target_include_directories(hypervapotronSkinning PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(hypervapotronSkinning ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree)
 
