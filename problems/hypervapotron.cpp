@@ -52,5 +52,7 @@ int main(int argc, char** argv)
 
     // igl::embree::reorient_facets_raycast(V, F, FF, I)
     flipNormals("/home/bill/projects/libmesh-skinning/hypSkin.mesh");
+
+    return 0;
 }
 

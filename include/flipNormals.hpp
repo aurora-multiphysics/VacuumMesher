@@ -1,6 +1,4 @@
 #include<iostream>
-#include <igl/readOFF.h>
-#include <igl/writeOBJ.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/randperm.h>
 #include <igl/orientable_patches.h>
