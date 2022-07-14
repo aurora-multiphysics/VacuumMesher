@@ -1,6 +1,7 @@
 *.e
 *.msh
 *.mesh
+*.off
 Makefile
 Make.common
 .vscode/

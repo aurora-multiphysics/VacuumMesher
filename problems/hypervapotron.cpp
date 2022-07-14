@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     // std::cout << "Faces:    " << std::endl << F << std::endl;
 
     // igl::embree::reorient_facets_raycast(V, F, FF, I)
-    flipNormals("/home/bill/projects/libmesh-skinning/csutSkinned.mesh");
+    flipNormals("/home/bill/projects/libmesh-skinning/hypSkin.mesh");
 
     return 0;
 }
