@@ -16,13 +16,18 @@ int main()
     Eigen::MatrixXi F;  
     Eigen::MatrixXi T;
     // igl::readMESH("../Meshes/surfaceCube.mesh", V, T, F);
-    igl::readOFF("../Meshes/CubeinACube.off", V, F);
-    std::cout << F << std::endl;
+    igl::readOFF("../Meshes/chimWithBoundRefined.off", V, F);
+    // std::cout << F << std::endl;
 
     // Eigen::MatrixXd H;
+    // Eigen::MatrixXd H(1, 3);
+    // H << 
+    // 0.0 ,0.0, 0.0;
+
     Eigen::MatrixXd H(1, 3);
     H << 
-    0.0 ,0.0, 0.0;
+    0, 0, 0;
+    // -0.035 ,0.004, 0.25;
 
 
     Eigen::MatrixXd R;
@@ -38,6 +43,6 @@ int main()
     Eigen::MatrixXi FT;
     size_t numRegions;
 
-    igl::copyleft::tetgen::tetrahedralize(V, F, H, R, "pqa0.01", TV, TT, TF, TR, TN, PT, FT, numRegions);
-    igl::writeMESH("../Meshes/Outputs/internalCubeOfftest.mesh", TV, TT, TF);
+    igl::copyleft::tetgen::tetrahedralize(V, F, H, R, "pqdCV", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::writeMESH("../Meshes/Outputs/chimTestWithBound.mesh", TV, TT, TF);
 }

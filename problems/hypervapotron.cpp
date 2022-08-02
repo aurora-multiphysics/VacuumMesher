@@ -38,20 +38,8 @@ int main(int argc, char** argv)
     surfaceMesh.write(file);
     surfaceMesh.print_info();
 
-    // Eigen::MatrixXd V;
-    // Eigen::MatrixXi F;  
-    // Eigen::MatrixXi T;
-    // Eigen::VectorXi I;
-    // std::vector<Eigen::MatrixXi> FF(2);
 
-    // igl::readMESH("/home/bill/projects/libmesh-skinning/hypSkin.mesh", V, T, F);
-
-    // // Print the vertices and faces matrices
-    // std::cout << "Vertices: " << std::endl << V << std::endl;
-    // std::cout << "Faces:    " << std::endl << F << std::endl;
-
-    // igl::embree::reorient_facets_raycast(V, F, FF, I)
-    flipNormals("/home/bill/projects/libmesh-skinning/hypSkin.mesh");
+    flipNormals("/home/bill/projects/libmesh-skinning/Meshes/CubeinACube.off");
 
     return 0;
 }

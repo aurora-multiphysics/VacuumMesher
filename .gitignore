@@ -8,3 +8,4 @@ Make.common
 build/
 /test/build/
 CMakeFiles/
+Meshes/

@@ -7,7 +7,6 @@ bool is_showing_reoriented = false;
 bool facetwise = false;
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;  
-Eigen::MatrixXi T;
 Eigen::VectorXi I;
 std::vector<Eigen::MatrixXi> FF(2);
 
@@ -16,7 +15,7 @@ void flipNormals(std::string filename)
     using namespace std;
 
 
-    igl::readMESH(filename, V, T, F);
+    igl::readOFF(filename, V, F);
 
     // Print the vertices and faces matrices
     // std::cout << "Vertices: " << std::endl << V << std::endl;
