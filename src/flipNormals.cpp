@@ -73,12 +73,14 @@ void flipNormals(std::string filename)
     for(int pass = 0;pass<2;pass++)
     {
         Eigen::VectorXi I;
+        std::cout << pass<< std::endl;
         igl::embree::reorient_facets_raycast(
         V,F,F.rows()*100,10,pass==1,false,false,I,C[pass]);
         // apply reorientation
         FF[pass].conservativeResize(F.rows(),F.cols());
         for(int i = 0;i<I.rows();i++)
         {
+            
             if(I(i))
             {
                 FF[pass].row(i) = (F.row(i).reverse()).eval();
@@ -88,8 +90,14 @@ void flipNormals(std::string filename)
             }
         }
     }
+    Eigen::MatrixXd H(1, 3);
+    H << 
+    4.2, 9.0, 0.0;
+
+    std::cout << I.size() << std::endl;
     viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
     viewer.data().set_face_based(true);
     scramble_colors();
+    viewer.data().add_points(H, Eigen::RowVector3d(1,0,0));
     viewer.launch();
 }

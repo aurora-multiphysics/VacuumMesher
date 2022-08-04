@@ -11,7 +11,23 @@ using namespace libMesh;
 
 int main(int argc, char** argv)
 {
-    std::string filename = "chimWithBoundRefined.off";
+    try
+    {   
+        if(argc == 1)
+        {
+            std::cout << "lmao" << std::endl;
+            throw 0;
+        }
+    } catch(...)
+    {
+        std::cout << "Error, mesh file argument is required." << std::endl;
+        return -1;
+    }
+
+    
+    std::string filename = argv[1];
+    std::cout << filename << std::endl;
+    
     // //Initialise libmesh functions and mpi
     // LibMeshInit init(argc, argv);
 

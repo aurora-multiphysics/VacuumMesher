@@ -14,32 +14,32 @@ using namespace libMesh;
 
 int main(int argc, char** argv)
 {
-    LibMeshInit init(argc, argv);
+    // LibMeshInit init(argc, argv);
 
-    Mesh mesh(init.comm());
+    // Mesh mesh(init.comm());
 
-    Mesh surfaceMesh(init.comm());
+    // Mesh surfaceMesh(init.comm());
 
-    mesh.read("../hypervapotron.e");
+    // mesh.read("../hypervapotron.e");
 
-    std::set<int> elems;
-    for (int i = 0; i < 75613; ++i)
-    {
-        elems.emplace_hint(elems.end(), i);
-    }
+    // std::set<int> elems;
+    // for (int i = 0; i < 75613; ++i)
+    // {
+    //     elems.emplace_hint(elems.end(), i);
+    // }
     
-    mesh.print_info();
-    std::cout << "Skinning Beginning" << std::endl;
+    // mesh.print_info();
+    // std::cout << "Skinning Beginning" << std::endl;
 
-    getSurface(mesh, surfaceMesh, elems);
+    // getSurface(mesh, surfaceMesh, elems);
 
-    //Surface mesh is output for visualisation 
-    const std::string file = "hypervapotronSkinned.e";
-    surfaceMesh.write(file);
-    surfaceMesh.print_info();
+    // //Surface mesh is output for visualisation 
+    // const std::string file = "hypervapotronSkinned.e";
+    // surfaceMesh.write(file);
+    // surfaceMesh.print_info();
 
 
-    flipNormals("/home/bill/projects/libmesh-skinning/Meshes/CubeinACube.off");
+    flipNormals("/home/bill/projects/libmesh-skinning/Meshes/chimSkinCub.off");
 
     return 0;
 }

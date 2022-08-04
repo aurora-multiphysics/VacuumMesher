@@ -29,8 +29,10 @@ set(libmesh_INCLUDE ${prefix}/libmesh/installed/include
     ${prefix}/petsc/include 
     /usr/include/tirpc)
 
-FILE(GLOB projectSrc ./src/*)
-FILE(GLOB testSrc ./test/src/*)
+FILE(GLOB projectSrc ./src/*.cpp)
+FILE(GLOB testSrc ./test/src/*.cpp)
+
+link_libraries(MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
 
 add_subdirectory(./problems)
 add_subdirectory(./test)
