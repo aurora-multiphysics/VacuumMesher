@@ -19,6 +19,11 @@ add_executable(argumentIn main.cpp ${projectSrc})
 target_include_directories(argumentIn PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(argumentIn PUBLIC ${libmesh_LIBS})
 
+#Skinning
+add_executable(skinner skinner.cpp ${projectSrc})
+target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(skinner PUBLIC ${libmesh_LIBS})
+
 
 #Tetrahedralize
 # add_executable(tetMaker tetrahedra.cpp ${projectSrc})

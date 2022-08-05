@@ -1,12 +1,12 @@
 #include "surfaceMeshing.hpp"
 
-void isElementSurface(libMesh::Elem* element, std::set<int>& elSet, 
+void isElementSurface(libMesh::Elem& element, std::set<int>& elSet, 
                       std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
-    for(int side = 0; side < element->n_sides(); side++)
+    for(int side = 0; side < element.n_sides(); side++)
     {   
-        auto neighbor = element->neighbor_ptr(side);
+        auto neighbor = element.neighbor_ptr(side);
         if(neighbor == nullptr)
         {
             surfaceFaces[neighbor_counter++] = side;
@@ -83,7 +83,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
     for(int elemNum: elSet)
     {
         //Get ptr to current element
-        libMesh::Elem* element = mesh.elem_ptr(elemNum);
+        libMesh::Elem& element = mesh.elem_ref(elemNum);
 
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
@@ -94,13 +94,13 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
         //Stores these faces (if they exist) in surfaceFaces vector
         isElementSurface(element, elSet, surfaceFaces);
         
-        for(int i = 0; surfaceFaces[i] != -1 && i<element->n_sides(); i++)
+        for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
         {
-            std::vector<unsigned int> nodes_on_side = element->nodes_on_side(surfaceFaces[i]);
+            std::vector<unsigned int> nodes_on_side = element.nodes_on_side(surfaceFaces[i]);
 
             for(auto localNodeId: nodes_on_side)
             {
-                int globalNodeId = element->node_id(localNodeId);
+                int globalNodeId = element.node_id(localNodeId);
                 connectivity.push_back(globalNodeId);
                 currentNodeIds.push_back(globalNodeId);
             }

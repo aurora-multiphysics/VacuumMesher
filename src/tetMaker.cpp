@@ -41,6 +41,6 @@ void tetrahedraliseVacuumRegion(std::string filename, Eigen::MatrixXd seedPoints
     Eigen::MatrixXi PT;  
     Eigen::MatrixXi FT;
     size_t numRegions;
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pq2.0CV", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pq2.0CVa0.01", TV, TT, TF, TR, TN, PT, FT, numRegions);
     igl::writeMESH(outputFile, TV, TT, TF);
 }

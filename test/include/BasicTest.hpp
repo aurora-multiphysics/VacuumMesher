@@ -4,56 +4,48 @@
 #include "gtest/gtest.h"
 #include "libmesh/mesh.h"
 #include "libmesh/libmesh.h"
+#include "argsHelper.h"
 
-using namespace libMesh;
 
 class BasicTest : public ::testing::Test {
  protected:
     BasicTest()
-        : args(""){};
-
-  void createLibmeshEnv()
-  {
-    //Turn string arguments into c-style string
-    char* cstr = new char[args.length() + 1];
-    std::strcpy(cstr, args.c_str());
-
-    // Split string by whitespace delimiter
-    std::vector<char*> arg_list;
-    char* next;
-    next = strtok(cstr, " ");
-    while (next != NULL) {
-      arg_list.push_back(next);
-      next = strtok(NULL, " ");
-    }
-    
-    // Create array of char*
-    int argc = (int)(arg_list.size());
-    // char** argv = new char*[argc];
-    // for (size_t i = 0; i < argc; i++) {
-    //   argv[i] = arg_list.at(i);
-    // }
-    std::vector<std::string> arguments = {""};
-    std::vector<char*> argv;
-    for (const auto& arg : arguments)
+        : initnull(true)
     {
-      argv.push_back((char*)arg.data());
+
     }
-    argv.push_back(nullptr);
-    init = new LibMeshInit(argc, argv.data()); 
-    mesh = new Mesh(init->comm());
-    // delete argv;
-    delete cstr;
-  }
 
-  virtual void SetUp() override{};
+    void createLibmeshEnv()
+    {
+      int argc = 1;
+      char ** argv = new char*[argc];
+      argv[0] = my_argv[0];
+      
+      
+      try
+      {
+        init = std::make_shared<libMesh::LibMeshInit>(argc, argv);
+        initnull = (init == nullptr);
+        if(!initnull){
+          std::cout << "LibMesh init performed successfully" << std::endl;
+        }
+      }
+      catch(const std::exception& e)
+      {
+        std::cout << "LibMesh init not performed successfuly\n"; 
+        std::cerr << e.what() << '\n';
+      }
+      
+      mesh = std::make_shared<libMesh::Mesh>(init->comm());
+    }
 
-  // Arguments for our app
-  std::string args;
+    virtual void SetUp() override{};
 
-  //Libmesh Initialisation Object  
-  LibMeshInit* init;
-  
-  //Libmesh Mesh object
-  Mesh* mesh;
+    //Libmesh Initialisation Object  
+    std::shared_ptr<libMesh::LibMeshInit> init = nullptr;
+    
+    //Libmesh Mesh object
+    std::shared_ptr<libMesh::Mesh> mesh = nullptr;
+
+    bool initnull;
 };

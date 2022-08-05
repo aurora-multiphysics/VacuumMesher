@@ -11,7 +11,7 @@ using namespace libMesh;
 
 int main(int argc, char** argv)
 {
-    std::string filename = "chimWithBoundRefined.off";
+    std::string filename = "hollowSphere_wBound.off";
     // //Initialise libmesh functions and mpi
     // LibMeshInit init(argc, argv);
 
@@ -37,10 +37,9 @@ int main(int argc, char** argv)
     // surfaceMesh.write(file);
 
 
-    Eigen::MatrixXd seedPoints(2, 3);
+    Eigen::MatrixXd seedPoints(1, 3);
     seedPoints << 
-     -0.687560, -0.395, 1.192500,
-     0.124686, 0.0, -0.212734;
+     9.5, 0.033055, -0.954985,
 
     tetrahedraliseVacuumRegion(filename, seedPoints);
 }

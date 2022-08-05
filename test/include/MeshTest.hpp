@@ -1,18 +1,25 @@
-#include"BasicTest.hpp"
-#include"surfaceMeshing.hpp"
+#include "BasicTest.hpp"
+#include "surfaceMeshing.hpp"
 
-class MeshTest : public BasicTest {
-    
- protected:
-    MeshTest(std::string meshFile) : meshFileName(meshFile), BasicTest()
+class MeshTest : public BasicTest
+{
+
+protected:
+    MeshTest(std::string meshFile) : BasicTest(), meshFileName(meshFile)
     {
-
     }
 
     void setMesh()
-    {
+    {   
+        surfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
+        std::set<int> elems;
+        for(int i = 0; i < 75613; ++i)
+        {
+            elems.emplace_hint(elems.end(), i);
+        }
+        
         mesh->read(meshFileName);
-        // getSurface(mesh, surfaceMesh, elements);
+        getSurface(*mesh, *surfaceMesh, elems);
     }
 
     virtual void SetUp() override
@@ -23,6 +30,6 @@ class MeshTest : public BasicTest {
 
     std::string meshFileName;
 
-    //Libmesh Mesh skin object
-    libMesh::Mesh* surfaceMesh;
+    // Libmesh Mesh skin object
+    std::shared_ptr<libMesh::Mesh> surfaceMesh = nullptr;
 };
