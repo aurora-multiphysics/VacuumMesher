@@ -40,6 +40,11 @@ class BasicTest : public ::testing::Test {
 
     virtual void SetUp() override{};
 
+    virtual void TearDown() override
+    {
+      init = nullptr;  
+    } 
+
     //Libmesh Initialisation Object  
     std::shared_ptr<libMesh::LibMeshInit> init = nullptr;
   
