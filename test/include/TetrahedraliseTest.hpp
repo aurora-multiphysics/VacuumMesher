@@ -18,7 +18,7 @@ protected:
     }
 
 
-    void getFilePaths()
+    virtual void getFilePaths()
     {
         cubitSkinFilename = "../Meshes/cubitSkins/" + meshFilename.substr(0, meshFilename.find(".")) + "_cub_skinned.e"; 
         meshFilename = meshFilename.substr(0, meshFilename.find("."));

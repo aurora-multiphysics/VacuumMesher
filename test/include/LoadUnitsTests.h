@@ -1,3 +1,3 @@
-#include "MeshTest.hpp"
+#include "SkinningTest.hpp"
 
 bool SkinningUnitTestsLoaded();

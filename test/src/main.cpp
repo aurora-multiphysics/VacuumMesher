@@ -1,6 +1,6 @@
 #include <fstream>
 #include <string>
-#include "LoadUnitsTests.h"
+// #include "LoadUnitsTests.h"
 #include "argsHelper.h"
 #include "gtest/gtest.h"
 
@@ -13,11 +13,11 @@ GTEST_API_ int main(int argc, char** argv) {
   my_argc = argc;
   my_argv = argv;
 
-  if(!SkinningUnitTestsLoaded())
-  {
-    std::cout << "Unit tests not loaded" << std::endl;
-    return -1;
-  }
+  // if(!SkinningUnitTestsLoaded())
+  // {
+  //   std::cout << "Unit tests not loaded" << std::endl;
+  //   return -1;
+  // }
 
   testing::InitGoogleTest(&argc, argv);
 

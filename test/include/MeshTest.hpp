@@ -35,15 +35,17 @@ protected:
         libmeshMesh->read(filename);
     }
 
-    virtual void getNodeCoords(std::shared_ptr<libMesh::Mesh> libmeshMesh, std::vector<std::vector<double>& nodes)
-    {
-        for(int node_num = 0; node_num < libmeshMesh->n_node(); node_num++)
-        {
-            libMesh::Node* node = libmeshMesh->node_ptr(node_num);
-            std::vector<double> coords = {*node[0], *node[1], *node[2]};
-            nodes.push_back(coords);
-        }
-    }
+    // virtual void getNodeCoords(std::shared_ptr<libMesh::Mesh> libmeshMesh, std::vector<std::vector<double>& nodes)
+    // {
+    //     for(int node_num = 0; node_num < libmeshMesh->n_node(); node_num++)
+    //     {
+    //         libMesh::Node* node = libmeshMesh->node_ptr(node_num);
+    //         std::vector<double> coords = {*node[0], *node[1], *node[2]};
+    //         nodes.push_back(coords);
+    //     }
+    // }
+
+    void
 
     //Libmesh Mesh object
     std::shared_ptr<libMesh::Mesh> mesh = nullptr;
