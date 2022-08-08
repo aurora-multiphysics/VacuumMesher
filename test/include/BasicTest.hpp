@@ -35,17 +35,13 @@ class BasicTest : public ::testing::Test {
         std::cout << "LibMesh init not performed successfuly\n"; 
         std::cerr << e.what() << '\n';
       }
-      
-      mesh = std::make_shared<libMesh::Mesh>(init->comm());
+   
     }
 
     virtual void SetUp() override{};
 
     //Libmesh Initialisation Object  
     std::shared_ptr<libMesh::LibMeshInit> init = nullptr;
-    
-    //Libmesh Mesh object
-    std::shared_ptr<libMesh::Mesh> mesh = nullptr;
-
+  
     bool initnull;
 };
