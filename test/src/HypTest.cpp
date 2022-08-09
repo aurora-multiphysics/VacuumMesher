@@ -1,6 +1,7 @@
-#pragma once
-#include "gtest/gtest.h"
+
 #include"SkinningTest.hpp"
+
+
 
 class HypTest : public SkinningTest 
 {

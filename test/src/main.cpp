@@ -1,23 +1,18 @@
 #include <fstream>
 #include <string>
-#include "LoadUnitsTests.h"
 #include "argsHelper.h"
+#include "initer.h"
 #include "gtest/gtest.h"
 
 
 int my_argc;
 char** my_argv;
-
+libMesh::LibMeshInit* initLibMsh;
 
 GTEST_API_ int main(int argc, char** argv) {
   my_argc = argc;
   my_argv = argv;
-
-  if(!SkinningUnitTestsLoaded())
-  {
-    std::cout << "Unit tests not loaded" << std::endl;
-    return -1;
-  }
+  initLibMsh = new libMesh::LibMeshInit(argc, argv);
 
   testing::InitGoogleTest(&argc, argv);
 

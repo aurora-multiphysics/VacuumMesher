@@ -1,3 +1,4 @@
+#pragma once
 #include "MeshTest.hpp"
 #include "surfaceMeshing.hpp"
 
@@ -12,7 +13,6 @@ protected:
 
     virtual void SetUp() override
     {
-        createLibmeshEnv();
         setMesh();
         getNodeList();
     }
@@ -31,8 +31,8 @@ protected:
         MeshTest::setMesh();
 
 
-        surfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
-        cubitSurfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
+        surfaceMesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
+        cubitSurfaceMesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
         cubitSurfaceMesh->read(cubitSkinFilename);
 
 

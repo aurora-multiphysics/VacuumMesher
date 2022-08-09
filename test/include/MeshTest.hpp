@@ -1,5 +1,7 @@
+#pragma once
 #include "BasicTest.hpp"
 #include "surfaceMeshing.hpp"
+
 
 class MeshTest : public BasicTest
 {
@@ -26,7 +28,7 @@ protected:
     virtual void setMesh()
     {   
         std::cout << meshFilename << std::endl;
-        mesh = std::make_shared<libMesh::Mesh>(init->comm());
+        mesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
         readMesh(mesh, meshFilename);
     }
 
