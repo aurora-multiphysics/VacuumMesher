@@ -1,5 +1,6 @@
 #include "MeshTest.hpp"
 #include "surfaceMeshing.hpp"
+#include "tetMaker.hpp"
 
 class SkinningTest : public MeshTest
 {
@@ -12,36 +13,31 @@ protected:
 
     virtual void SetUp() override
     {
-        createLibmeshEnv();
         setMesh();
-        getNodeList();
     }
 
 
-    virtual void getFilePaths()
+    virtual void getFilePaths() override
     {
-        cubitSkinFilename = "../Meshes/cubitSkins/" + meshFilename.substr(0, meshFilename.find(".")) + "_cub_skinned.e"; 
-        meshFilename = meshFilename.substr(0, meshFilename.find("."));
-        meshFilename = "../Meshes/" + meshFilename + ".e"; 
+        std::string token = meshFilename.substr(0, meshFilename.find("."));
+        tetrahedraliseFilename = meshFilename;
+        meshFilename = "../Meshes/Surfaces/" + meshFilename; 
     }
     
     virtual void setMesh() override
     {   
         getFilePaths();
-        MeshTest::setMesh();
-
-
+        // MeshTest::setMesh();
         surfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
-        cubitSurfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
-        cubitSurfaceMesh->read(cubitSkinFilename);
+        newSurfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
+        surfaceMesh->read(meshFilename);
 
+        //Set up seeding points for tetrahedralisation
+        Eigen::
+        tetrahedraliseVacuumRegion(tetrahedraliseFilename, )
 
-        std::set<int> elems;
-        for(int i = 0; i < mesh->n_elem(); ++i)
-        {
-            elems.emplace_hint(elems.end(), i);
-        }
-        getSurface(*mesh, *surfaceMesh, elems);
+        //Set up container for elems you want surfaced 
+        getSurface(volumeMesh, *newSurfaceMesh, elems);
 
         std::cout << cubitSkinFilename << std::endl;
     }
@@ -67,13 +63,16 @@ protected:
 
 
     //File name of the corresponding cubit skinned mesh
-    std::string cubitSkinFilename;
+    std::string tetrahedraliseFilename;
+
+    //
+    // std:
 
     // Libmesh Mesh object to store the skinned mesh
     std::shared_ptr<libMesh::Mesh> surfaceMesh = nullptr;
 
     // Pointer to libMesh mesh object that contains the cubit skinned mesh 
-    std::shared_ptr<libMesh::Mesh> cubitSurfaceMesh = nullptr;
+    std::shared_ptr<libMesh::Mesh> newSurfaceMesh = nullptr;
 
     //Vector to store coordinates of all the nodes on the surface mesh
     std::vector<std::tuple<double, double, double>> surfaceNodes;

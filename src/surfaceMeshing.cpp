@@ -1,4 +1,5 @@
 #include "surfaceMeshing.hpp"
+#include <algorithm>
 
 void isElementSurface(libMesh::Elem& element, std::set<int>& elSet, 
                       std::vector<int>& surfaceFaces)
@@ -13,7 +14,7 @@ void isElementSurface(libMesh::Elem& element, std::set<int>& elSet,
         }
         else
         {
-            if(elSet.find(neighbor->id()) == elSet.end())
+            if(!std::binary_search(elSet.begin(), elSet.end(), neighbor->id()))
             {
                 surfaceFaces[neighbor_counter++] = side;
             }
@@ -79,7 +80,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& 
     getElemInfo(elem_type, face_type, 
                 elem, num_elem_faces, num_face_nodes);
     
-    // Loops over all the elements in the input set 
+    // Loops over all the elements in the input vector 
     for(int elemNum: elSet)
     {
         //Get ptr to current element
