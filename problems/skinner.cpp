@@ -26,26 +26,21 @@ int main(int argc, char** argv)
         return -1;
     }
 
-
-    std::vector<std::string> arguments = {"skinner"};
-
-    int argcLibmesh = 1;
-    char *argsLibmesh[] = {    
-        (char*)"skinner",
-        NULL
-    };
-
     std::string filename = argv[1];
     std::string path = "../Meshes/";
     std::string outputExtension = ".e";
     // std::string token = filename.substr(0, filename.find("."));
     const std::string outputFile = path + "Outputs/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
     filename = path + filename;
-    std::cout << "Libmesh?\n";
     //Initialise libmesh functions and mpi
-    LibMeshInit init(argcLibmesh, argsLibmesh);
-    std::cout << "Libmesh!\n";
-
+    for(int i = 1; i<argc; i++)
+    {   
+        argv[i][0] = 0;
+    }
+    
+    std::cout << argv[0] << std::endl;
+    argc = 1;
+    LibMeshInit init(argc, argv);
     //Create mesh object to store volume mesh
     Mesh mesh(init.comm());
 
