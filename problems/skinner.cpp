@@ -12,10 +12,7 @@ using namespace libMesh;
 
 int main(int argc, char** argv)
 {
-
-    
     auto start = std::chrono::steady_clock::now();
-
     try
     {   
         if(argc == 1)
@@ -66,11 +63,9 @@ int main(int argc, char** argv)
     }
     std::sort(elems.begin(), elems.end());
     
-
-
     std::cout << "Skinning Beginning" << std::endl;
 
-    
+
     getSurface(mesh, surfaceMesh, elems);
 
     auto end = std::chrono::steady_clock::now();

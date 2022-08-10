@@ -10,13 +10,13 @@ void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet,
         auto neighbor = element.neighbor_ptr(side);
         if(neighbor == nullptr)
         {
-            surfaceFaces[neighbor_counter++] = side;
+            surfaceFaces.emplace_back(side);
         }
         else
         {
             if(!std::binary_search(elSet.begin(), elSet.end(), neighbor->id()))
             {
-                surfaceFaces[neighbor_counter++] = side;
+                surfaceFaces.emplace_back(side);
             }
         }
     }
