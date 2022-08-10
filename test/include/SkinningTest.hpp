@@ -31,8 +31,8 @@ protected:
         MeshTest::setMesh();
 
 
-        surfaceMesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
-        cubitSurfaceMesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
+        surfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
+        cubitSurfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
         cubitSurfaceMesh->read(cubitSkinFilename);
 
 

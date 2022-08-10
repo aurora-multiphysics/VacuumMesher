@@ -28,7 +28,7 @@ protected:
     virtual void setMesh()
     {   
         std::cout << meshFilename << std::endl;
-        mesh = std::make_shared<libMesh::Mesh>(initLibMsh->comm());
+        mesh = std::make_shared<libMesh::Mesh>(init->comm());
         readMesh(mesh, meshFilename);
     }
 

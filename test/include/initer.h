@@ -1,4 +1,4 @@
 #pragma once
 #include "libmesh/libmesh.h"
 
-extern libMesh::LibMeshInit* initLibMsh;
+extern libMesh::LibMeshInit* init;
