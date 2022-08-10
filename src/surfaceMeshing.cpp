@@ -10,14 +10,15 @@ void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet,
         auto neighbor = element.neighbor_ptr(side);
         if(neighbor == nullptr)
         {
-            surfaceFaces.emplace_back(side);
+            surfaceFaces[neighbor_counter++] = side;
         }
-        else
+        else 
         {
             if(!std::binary_search(elSet.begin(), elSet.end(), neighbor->id()))
             {
-                surfaceFaces.emplace_back(side);
+                surfaceFaces[neighbor_counter++] = side;
             }
+            
         }
     }
 }
@@ -90,6 +91,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
         std::vector<int> surfaceFaces(num_elem_faces, -1);
+        // surfaceFaces.reserve(num_elem_faces);
 
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
