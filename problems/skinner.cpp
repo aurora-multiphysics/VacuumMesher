@@ -13,6 +13,8 @@ using namespace libMesh;
 int main(int argc, char** argv)
 {
 
+    
+
     try
     {   
         if(argc == 1)
@@ -55,14 +57,16 @@ int main(int argc, char** argv)
     //Read volume mesh
     mesh.read(filename);
 
-    std::set<int> elems;
-    // elems.reserve(mesh.n_elem());
+    std::vector<int> elems;
+    elems.reserve(mesh.n_elem());
     for (int i = 0; i < mesh.n_elem(); ++i)
     {
-        elems.emplace_hint(elems.end(), i);
+        elems.emplace_back(i);
     }
-    // std::sort(elems.begin(), elems.end());
+    std::sort(elems.begin(), elems.end());
     
+
+
     std::cout << "Skinning Beginning" << std::endl;
 
     auto start = std::chrono::steady_clock::now();

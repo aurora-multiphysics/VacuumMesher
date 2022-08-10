@@ -1,7 +1,7 @@
 #include "surfaceMeshing.hpp"
 #include <algorithm>
 
-void isElementSurface(libMesh::Elem& element, std::set<int>& elSet, 
+void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet, 
                       std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
@@ -55,7 +55,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 }
 
 
-void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::set<int>& elSet)
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet)
 {   
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
