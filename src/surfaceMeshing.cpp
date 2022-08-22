@@ -153,3 +153,59 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
 }
+
+
+void groupElems(libMesh::Mesh mesh)
+{
+    std::set<int> elems;
+    for(auto elem : mesh.element_ptr_range())
+    {
+        elems.insert(elem->id());
+    }
+
+    auto it = elems.begin();
+    libMesh::dof_id_type next = *(it);
+    std::cout << next << std::endl;
+    elems.erase(it);
+
+    std::set<libMesh::dof_id_type> neighbors;
+    neighbors.insert(next);
+
+
+    while(!neighbors.empty()){
+
+      std::set<libMesh::dof_id_type> new_neighbors;
+
+      // Loop over all the new neighbors
+      for(auto& next : neighbors){
+
+        // Get the libMesh element
+        libMesh::Elem& elem = mesh.elem_ref(next);
+
+        // How many nearest neighbors (general element)?
+        unsigned int NN = elem.n_neighbors();
+
+        // Loop over neighbors
+        for(unsigned int i=0; i<NN; i++){
+
+          const libMesh::Elem * nnptr = elem.neighbor_ptr(i);
+          // If on boundary, some may be null ptrs
+          if(nnptr == nullptr) continue;
+
+          libMesh::dof_id_type idnn = nnptr->id();
+
+          // Select only those that are in the current bin
+          if(elems.find(idnn)!= elems.end()){
+            new_neighbors.insert(idnn);
+            // Remove from those still available
+            elems.erase(idnn);
+          }
+
+        }// End loop over new neighbors
+
+      }// End loop over previous neighbors
+
+      // Found all the new neighbors, done with current set.
+      neighbors = new_neighbors;
+    }
+}

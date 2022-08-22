@@ -69,7 +69,8 @@ int main(int argc, char** argv)
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
     << " ms" << std::endl;
 
-    surfaceMesh.write(outputFile);
+    groupElems(surfaceMesh);
+    // surfaceMesh.write(outputFile);
 
     return 0;
 }
