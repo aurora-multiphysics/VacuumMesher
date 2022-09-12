@@ -74,7 +74,9 @@ int main(int argc, char** argv)
     << " ms" << std::endl;
 
     std::vector<std::vector<libMesh::dof_id_type>> groups;
+
     groupElems(surfaceMesh, groups);
+    saveGroupedElems(init, surfaceMesh, groups);
     surfaceMesh.write(outputFile);
 
     return 0;

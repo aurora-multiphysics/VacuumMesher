@@ -156,7 +156,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
 }
 
 
-void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>groups)
+void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>& groups)
 {
     std::set<int> elems;
     for(auto elem : mesh.element_ptr_range())
@@ -228,12 +228,68 @@ void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type
     {
         for(auto& elems: vector)
         {
-            std::cout << elems << " ";
+            // std::cout << elems << " ";
         }
         std::cout << "\n";
     }
 }
 
-void saveGroupedElems(){
+void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, std::vector<std::vector<libMesh::dof_id_type>>& groups){
+
+    for(auto& vector : groups){
+        //Mesh of subdomain we are going to save
+        libMesh::Mesh newMesh(init.comm());
+
+        unsigned int num_elems, num_face_nodes;
+        num_elems = vector.size();
+        std::vector<unsigned int> current_nodes_ids;
+        std::vector<unsigned int> connectivity;
+        num_face_nodes = (surfaceMesh.elem_ref(0)).n_nodes();
+        current_nodes_ids.reserve(num_elems*num_face_nodes);
+        connectivity.reserve(num_elems*num_face_nodes);
+
+        for(auto& elementID : vector){
+            libMesh::Elem& elem = surfaceMesh.elem_ref(elementID);
+            for(auto& node: elem.node_ref_range()){
+                current_nodes_ids.emplace_back(node.id());
+                connectivity.emplace_back(node.id());
+            }
+        }
+
+        std::sort(current_nodes_ids.begin(), current_nodes_ids.end());
+        std::vector<unsigned int>::iterator newEnd;
+        newEnd = std::unique(current_nodes_ids.begin(), current_nodes_ids.end());
+        current_nodes_ids.resize(std::distance(current_nodes_ids.begin(), newEnd));
+        std::map<unsigned int, unsigned int> nodeMap;
+
+        for(int i = 0; i < current_nodes_ids.size(); i++){
+            nodeMap[current_nodes_ids[i]] = i;
+        }
+
+        for(auto& nodeID: current_nodes_ids)
+        {   
+            libMesh::Node* node = surfaceMesh.node_ptr(nodeID);
+            double pnt[3];
+            pnt[0] = (*node)(0);
+            pnt[1] = (*node)(1);
+            pnt[2] = (*node)(2);
+            libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
+            newMesh.add_point(xyz, nodeMap[nodeID]);
+        }
+
+        //For all of the surface elements, create the representitive 2D libmesh element 
+        //Connectivity is set and the element is added to the new mesh
+        // for(int i = 0; i < surface_elem_counter; i++)
+        // {
+        //     libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
+        //     for(int j = 0; j < num_face_nodes; j++)
+        //     {
+        //         elem->set_node(j) = newMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
+        //     }
+        //     elem->set_id(i);
+        //     surfaceMesh.add_elem(elem);
+        // }
+
+    }
     
 }
