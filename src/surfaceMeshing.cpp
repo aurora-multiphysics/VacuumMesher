@@ -152,10 +152,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
     //Set mesh dimensions 
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
+    surfaceMesh.prepare_for_use();
 }
 
 
-void groupElems(libMesh::Mesh mesh)
+void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>groups)
 {
     std::set<int> elems;
     for(auto elem : mesh.element_ptr_range())
@@ -163,49 +164,76 @@ void groupElems(libMesh::Mesh mesh)
         elems.insert(elem->id());
     }
 
-    auto it = elems.begin();
-    libMesh::dof_id_type next = *(it);
-    std::cout << next << std::endl;
-    elems.erase(it);
+    while(!elems.empty())
+    {
+        auto it = elems.begin();
+        libMesh::dof_id_type next = *(it);
+        elems.erase(it);
+        std::set<libMesh::dof_id_type> neighbors;
+        //Adding first element to nesighbors
+        neighbors.insert(next);
+        std::vector<libMesh::dof_id_type> groupElems(0);
 
-    std::set<libMesh::dof_id_type> neighbors;
-    neighbors.insert(next);
+        // for(auto neighb: neighbors)
+        // {
+        //     std::cout << neighb << std::endl;
+        // }
 
+        //While elements exist in neighbors
+        while(!neighbors.empty()){
 
-    while(!neighbors.empty()){
+            std::set<libMesh::dof_id_type> new_neighbors;
 
-      std::set<libMesh::dof_id_type> new_neighbors;
+            for(auto& next : neighbors){
+                //Add current elems to groupElems vector
+                groupElems.push_back(next);
+                
+                // Get the libMesh element
+                libMesh::Elem& elem = mesh.elem_ref(next);
 
-      // Loop over all the new neighbors
-      for(auto& next : neighbors){
+                // How many nearest neighbors (general element)?
+                unsigned int NN = elem.n_neighbors();
 
-        // Get the libMesh element
-        libMesh::Elem& elem = mesh.elem_ref(next);
+                // Loop over neighbors
+                for(unsigned int i=0; i<NN; i++){
 
-        // How many nearest neighbors (general element)?
-        unsigned int NN = elem.n_neighbors();
+                    const libMesh::Elem * nnptr = elem.neighbor_ptr(i);
+                    // If on boundary, some may be null ptrs
+                    if(nnptr == nullptr){
+                        std::cout << "null\n";
+                        continue;
+                    }
+                    libMesh::dof_id_type idnn = nnptr->id();
 
-        // Loop over neighbors
-        for(unsigned int i=0; i<NN; i++){
+                    // Select only those that exist within elems set
+                    if(elems.find(idnn)!= elems.end()){
+                        //Add these neighbor ids to new_neighbors
+                        new_neighbors.insert(idnn);
+                        // Remove these neighbor ids from elems
+                        elems.erase(idnn);
+                    }
+                }
 
-          const libMesh::Elem * nnptr = elem.neighbor_ptr(i);
-          // If on boundary, some may be null ptrs
-          if(nnptr == nullptr) continue;
+            }
+            // End loop over previous neighbors
+            // Found all the new neighbors, done with current set.
+            neighbors = new_neighbors;
+        }
+        
+        groups.push_back(groupElems);
 
-          libMesh::dof_id_type idnn = nnptr->id();
-
-          // Select only those that are in the current bin
-          if(elems.find(idnn)!= elems.end()){
-            new_neighbors.insert(idnn);
-            // Remove from those still available
-            elems.erase(idnn);
-          }
-
-        }// End loop over new neighbors
-
-      }// End loop over previous neighbors
-
-      // Found all the new neighbors, done with current set.
-      neighbors = new_neighbors;
     }
+
+    for(auto& vector: groups)
+    {
+        for(auto& elems: vector)
+        {
+            std::cout << elems << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void saveGroupedElems(){
+    
 }

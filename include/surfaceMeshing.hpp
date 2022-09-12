@@ -18,4 +18,4 @@ void isElementSurface(libMesh::Elem* element, std::vector<int>& elSet, std::vect
 void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type, 
                  libMesh::Elem* element, int& num_elem_faces, int& num_face_nodes);
 
-void groupElems(libMesh::Mesh mesh);
+void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>groups);

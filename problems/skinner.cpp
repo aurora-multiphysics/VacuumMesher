@@ -51,11 +51,15 @@ int main(int argc, char** argv)
     mesh.read(filename);
 
     std::vector<int> elems;
-    elems.reserve(mesh.n_elem());
-    for (int i = 0; i < mesh.n_elem(); ++i)
-    {
-        elems.emplace_back(i);
-    }
+    // elems.reserve(mesh.n_elem());
+    // for (int i = 0; i < mesh.n_elem(); ++i)
+    // {
+    //     elems.emplace_back(i);
+    // }
+    elems.reserve(2);
+    elems.emplace_back(0);
+    elems.emplace_back(7);
+    
     std::sort(elems.begin(), elems.end());
     
     std::cout << "Skinning Beginning" << std::endl;
@@ -69,8 +73,9 @@ int main(int argc, char** argv)
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
     << " ms" << std::endl;
 
-    groupElems(surfaceMesh);
-    // surfaceMesh.write(outputFile);
+    std::vector<std::vector<libMesh::dof_id_type>> groups;
+    groupElems(surfaceMesh, groups);
+    surfaceMesh.write(outputFile);
 
     return 0;
 }

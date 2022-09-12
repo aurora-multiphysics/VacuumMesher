@@ -26,6 +26,6 @@ target_link_libraries(skinner PUBLIC ${libmesh_LIBS})
 
 
 #Tetrahedralize
-# add_executable(tetMaker tetrahedra.cpp ${projectSrc})
-# target_include_directories(tetMaker PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-# target_link_libraries(tetMaker ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+add_executable(tetMaker tetrahedra.cpp ${projectSrc})
+target_include_directories(tetMaker PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(tetMaker ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
