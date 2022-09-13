@@ -51,32 +51,38 @@ int main(int argc, char** argv)
     mesh.read(filename);
 
     std::vector<int> elems;
-    // elems.reserve(mesh.n_elem());
-    // for (int i = 0; i < mesh.n_elem(); ++i)
-    // {
-    //     elems.emplace_back(i);
-    // }
-    elems.reserve(2);
-    elems.emplace_back(0);
-    elems.emplace_back(7);
+    elems.reserve(mesh.n_elem());
+    for (int i = 0; i < mesh.n_elem(); ++i)
+    {
+        elems.emplace_back(i);
+    }
+    // elems.reserve(2);
+    // elems.emplace_back(0);
+    // elems.emplace_back(7);
     
     std::sort(elems.begin(), elems.end());
     
     std::cout << "Skinning Beginning" << std::endl;
 
-    auto start = std::chrono::steady_clock::now();
+    auto start1 = std::chrono::steady_clock::now();
     getSurface(mesh, surfaceMesh, elems);
-
-    auto end = std::chrono::steady_clock::now();
-
+    auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
+    
+
+
 
     std::vector<std::vector<libMesh::dof_id_type>> groups;
 
+    auto start = std::chrono::steady_clock::now();
     groupElems(surfaceMesh, groups);
     saveGroupedElems(init, surfaceMesh, groups);
+    auto end = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time in milliseconds: "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+    << " ms" << std::endl;
     surfaceMesh.write(outputFile);
 
     return 0;

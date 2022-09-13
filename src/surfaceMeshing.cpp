@@ -223,24 +223,23 @@ void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type
         groups.push_back(groupElems);
 
     }
-
-    for(auto& vector: groups)
-    {
-        for(auto& elems: vector)
-        {
-            // std::cout << elems << " ";
-        }
-        std::cout << "\n";
-    }
 }
 
 void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, std::vector<std::vector<libMesh::dof_id_type>>& groups){
+    unsigned int count = 0;
+
+    if(groups.size() == 1){
+        std::cout << "All elements belong to one entity already, no grouping necessary" << std::endl;
+        return;
+    }
 
     for(auto& vector : groups){
         //Mesh of subdomain we are going to save
         libMesh::Mesh newMesh(init.comm());
-
+        libMesh::ElemType face_type;
         unsigned int num_elems, num_face_nodes;
+        newMesh.clear();
+        face_type = (surfaceMesh.elem_ref(0)).type();
         num_elems = vector.size();
         std::vector<unsigned int> current_nodes_ids;
         std::vector<unsigned int> connectivity;
@@ -279,17 +278,24 @@ void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, st
 
         //For all of the surface elements, create the representitive 2D libmesh element 
         //Connectivity is set and the element is added to the new mesh
-        // for(int i = 0; i < surface_elem_counter; i++)
-        // {
-        //     libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
-        //     for(int j = 0; j < num_face_nodes; j++)
-        //     {
-        //         elem->set_node(j) = newMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
-        //     }
-        //     elem->set_id(i);
-        //     surfaceMesh.add_elem(elem);
-        // }
+        for(int i = 0; i < num_elems; i++)
+        {
+            // Create elem to add
+            libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
 
+            for(int j = 0; j < num_face_nodes; j++)
+            {
+                elem->set_node(j) = newMesh.node_ptr(nodeMap[connectivity[(i*num_face_nodes)+j]]);
+            }
+            elem->set_id(i);
+            newMesh.add_elem(elem);
+        }
+        newMesh.set_mesh_dimension(2); //Should this be 2 or 3???
+        newMesh.set_spatial_dimension(3);
+        newMesh.prepare_for_use();
+        std::string newMeshName = "component_" + std::to_string(count) + ".e";
+        newMesh.write(newMeshName);
+        // std::cout << newMeshName << std::endl;
+        count++;
     }
-    
 }
