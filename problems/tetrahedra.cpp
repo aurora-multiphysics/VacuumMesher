@@ -16,7 +16,7 @@
 int main()
 {   
     std::string path = "../Meshes/";
-    std::string filename = "chimWithBoundRefined.off";
+    std::string filename = "csutComponentWBound.off";
     std::string outputExtension = ".mesh";
     std::string token = filename.substr(0, filename.find("."));
     std::string outputFile = path + "Outputs/" + token + "_out" + outputExtension;
@@ -34,11 +34,10 @@ int main()
     // H << 
     // 0.0 ,0.0, 0.0;
 
-    Eigen::MatrixXd H(2, 3);
+    Eigen::MatrixXd H(1, 3);
     H << 
-     -0.687560, -0.395, 1.192500,
+    //  -0.687560, -0.395, 1.192500;
      0.418,0.05,0.1;
-     
     //  0.124686, 0.0, -0.212734;
      
 
@@ -51,17 +50,6 @@ int main()
 
 
     Eigen::MatrixXd R;
-
-    // Eigen::MatrixXd U;
-    // Eigen::MatrixXi G;  
-    // Eigen::VectorXi J;
-    // Eigen::VectorXi I;
-    // igl::decimate(V,F,1000000,U,G,J,I);
-    // // igl::writeOFF("../Meshes/Outputs/coarse.off", U, G);
-
-
-    // std::cout << G.size() << std::endl;
-
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;  
     Eigen::MatrixXi TF;
@@ -70,6 +58,6 @@ int main()
     Eigen::MatrixXi PT;  
     Eigen::MatrixXi FT;
     size_t numRegions;
-    igl::copyleft::tetgen::tetrahedralize(V, F, H, R, "pq2.0CV", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, H, R, "pqMCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     igl::writeMESH(outputFile, TV, TT, TF);
 }

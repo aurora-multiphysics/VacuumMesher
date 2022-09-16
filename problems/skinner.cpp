@@ -17,7 +17,6 @@ int main(int argc, char** argv)
     {   
         if(argc == 1)
         {
-            std::cout << "lmao" << std::endl;
             throw 0;
         }
     } catch(...)
@@ -27,10 +26,10 @@ int main(int argc, char** argv)
     }
 
     std::string filename = argv[1];
-    std::string path = "../Meshes/";
+    std::string path = "./Meshes/chimBlocks/";
     std::string outputExtension = ".e";
     // std::string token = filename.substr(0, filename.find("."));
-    const std::string outputFile = path + "Outputs/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
+    const std::string outputFile = path + "skinnedBlocks/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
     filename = path + filename;
     //Initialise libmesh functions and mpi
     for(int i = 1; i<argc; i++)
@@ -77,8 +76,8 @@ int main(int argc, char** argv)
     std::vector<std::vector<libMesh::dof_id_type>> groups;
 
     auto start = std::chrono::steady_clock::now();
-    groupElems(surfaceMesh, groups);
-    saveGroupedElems(init, surfaceMesh, groups);
+    // groupElems(surfaceMesh, groups);
+    // saveGroupedElems(init, surfaceMesh, groups);
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
