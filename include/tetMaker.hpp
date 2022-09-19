@@ -14,4 +14,4 @@
 #include <chrono>
 
 
-void tetrahedraliseVacuumRegion(std::string filename, Eigen::MatrixXd seedPoints);
+void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);

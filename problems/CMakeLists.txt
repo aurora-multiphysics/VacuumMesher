@@ -25,7 +25,33 @@ target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}
 target_link_libraries(skinner PUBLIC ${libmesh_LIBS})
 
 
-#Tetrahedralize
-add_executable(tetMaker tetrahedra.cpp ${projectSrc})
-target_include_directories(tetMaker PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(tetMaker ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+#reskin
+add_executable(reskinner reskinner.cpp ${projectSrc})
+target_include_directories(reskinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(reskinner PUBLIC ${libmesh_LIBS})
+
+
+#block1
+add_executable(block1_test block1_tetra.cpp ${projectSrc})
+target_include_directories(block1_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block1_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#block2
+add_executable(block2_test block2_tetra.cpp ${projectSrc})
+target_include_directories(block2_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block2_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#block3
+add_executable(block3_test block3_tetra.cpp ${projectSrc})
+target_include_directories(block3_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block3_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#block5
+add_executable(block5_test block5_tetra.cpp ${projectSrc})
+target_include_directories(block5_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block5_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+# theCube
+add_executable(cube_test cubeTet.cpp ${projectSrc})
+target_include_directories(cube_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(cube_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)

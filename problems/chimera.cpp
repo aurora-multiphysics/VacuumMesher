@@ -39,8 +39,8 @@ int main(int argc, char** argv)
 
     Eigen::MatrixXd seedPoints(1, 3);
     seedPoints << 
-     9.5, 0.033055, -0.954985,
+     9.5, 0.033055, -0.954985;
 
-    tetrahedraliseVacuumRegion(filename, seedPoints);
+    // tetrahedraliseVacuumRegion(filename, seedPoints);
 }
 

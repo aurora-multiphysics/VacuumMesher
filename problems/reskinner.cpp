@@ -25,10 +25,10 @@ int main(int argc, char** argv)
     }
 
     std::string filename = argv[1];
-    std::string path = "./Meshes/";
+    std::string path = "./Meshes/chimBlocks/skinnedBlocks/withBound/tetrahedralised/";
     std::string outputExtension = ".e";
     // std::string token = filename.substr(0, filename.find("."));
-    const std::string outputFile = path + "Outputs/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
+    const std::string outputFile = path + "reskinned/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
     filename = path + filename;
     //Initialise libmesh functions and mpi
     for(int i = 1; i<argc; i++)
@@ -37,7 +37,8 @@ int main(int argc, char** argv)
     }
     
     std::cout << argv[0] << std::endl;
-    argc = 1;
+    std::cout << argc << std::endl;
+    argc -= 1;
     LibMeshInit init(argc, argv);
     //Create mesh object to store volume mesh
     Mesh mesh(init.comm());
@@ -48,17 +49,15 @@ int main(int argc, char** argv)
     std::cout << "Reading Mesh" << std::endl;
     //Read volume mesh
     mesh.read(filename);
-    std::cout << "Mesh read successfully" << std::endl;
+    std::cout << "Done Reading Mesh" << std::endl;
 
     std::vector<int> elems;
+    std::cout << "Num Elems: " << mesh.n_elem() << std::endl; 
     elems.reserve(mesh.n_elem());
     for (int i = 0; i < mesh.n_elem(); ++i)
     {
         elems.emplace_back(i);
     }
-    // elems.reserve(2);
-    // elems.emplace_back(0);
-    // elems.emplace_back(7);
     
     std::sort(elems.begin(), elems.end());
     
@@ -74,7 +73,7 @@ int main(int argc, char** argv)
 
 
 
-    std::vector<std::vector<libMesh::dof_id_type>> groups;
+    // std::vector<std::vector<libMesh::dof_id_type>> groups;
 
     auto start = std::chrono::steady_clock::now();
     // groupElems(surfaceMesh, groups);

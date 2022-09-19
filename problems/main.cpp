@@ -58,6 +58,6 @@ int main(int argc, char** argv)
      -0.687560, -0.395, 1.192500,
      0.124686, 0.0, -0.212734;
 
-    tetrahedraliseVacuumRegion(filename, seedPoints);
+    // tetrahedraliseVacuumRegion(filename, seedPoints);
 }
 
