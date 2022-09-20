@@ -77,8 +77,8 @@ int main(int argc, char** argv)
     std::vector<std::vector<libMesh::dof_id_type>> groups;
 
     auto start = std::chrono::steady_clock::now();
-    // groupElems(surfaceMesh, groups);
-    // saveGroupedElems(init, surfaceMesh, groups);
+    groupElems(surfaceMesh, groups);
+    saveGroupedElems(init, surfaceMesh, groups);
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()

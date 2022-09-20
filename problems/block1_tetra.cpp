@@ -1,5 +1,6 @@
 #include<iostream>
 #include"tetMaker.hpp"
+#include"visualiseSeedPoints.hpp"
 
 int main(int argc, char** argv)
 {   
@@ -13,9 +14,10 @@ int main(int argc, char** argv)
 
     Eigen::MatrixXd H(3, 3);
     H << 
-     -0.471954,-0.001158,0.81,
+     -0.53193,0.0,-0.46,
      -0.286693, 0.005973, 0.816620,
      -0.176693, 0.00, 0.789049;
      
+    // visualiseSeedPoints(filename, H);
     tetrahedraliseVacuumRegion(filename, outputFile, H);
 }

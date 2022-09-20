@@ -20,6 +20,12 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     Eigen::MatrixXi PT;  
     Eigen::MatrixXi FT;
     size_t numRegions;
+    
     igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
-    igl::writeMESH(outname, TV, TT, TF);
+    
+    //Empty matrix. If we put TF as an argument instead, writeMESH will also output the original skinned
+    // mesh as a block. This results in hissy fits if you try and skin the mesh again, as the tri facets
+    // from the extra block overlap with the faces of the tets and everything goes haywire
+    Eigen::MatrixXi emptyFaces;
+    igl::writeMESH(outname, TV, TT, emptyFaces);
 }
