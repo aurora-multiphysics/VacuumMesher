@@ -225,7 +225,9 @@ void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type
     }
 }
 
-void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, std::vector<std::vector<libMesh::dof_id_type>>& groups){
+void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, 
+                      std::vector<std::vector<libMesh::dof_id_type>>& groups,
+                      std::string componentFilename){
     unsigned int count = 0;
 
     if(groups.size() == 1){
@@ -293,9 +295,10 @@ void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, st
         newMesh.set_mesh_dimension(2); //Should this be 2 or 3???
         newMesh.set_spatial_dimension(3);
         newMesh.prepare_for_use();
-        std::string newMeshName = "component_" + std::to_string(count) + ".e";
-        newMesh.write(newMeshName);
-        // std::cout << newMeshName << std::endl;
+        std::string newMeshName = componentFilename + std::to_string(count) + ".e";
+        std::cout << newMeshName << std::endl;
+        // newMesh.write(newMeshName);
+        
         count++;
     }
 }

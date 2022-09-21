@@ -51,6 +51,12 @@ add_executable(block5_test block5_tetra.cpp ${projectSrc})
 target_include_directories(block5_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(block5_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
 
+#block6
+add_executable(block6_test block6_tetra.cpp ${projectSrc})
+target_include_directories(block6_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block6_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+
 # theCube
 add_executable(cube_test cubeTet.cpp ${projectSrc})
 target_include_directories(cube_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)

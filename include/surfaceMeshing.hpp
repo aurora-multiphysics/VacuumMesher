@@ -20,4 +20,6 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 
 void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>& groups);
 
-void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, std::vector<std::vector<libMesh::dof_id_type>>& groups);
+void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh, 
+                      std::vector<std::vector<libMesh::dof_id_type>>& groups,
+                      std::string componentFilename);

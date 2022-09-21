@@ -27,8 +27,9 @@ int main(int argc, char** argv)
     std::string filename = argv[1];
     std::string path = "./Meshes/";
     std::string outputExtension = ".e";
-    // std::string token = filename.substr(0, filename.find("."));
-    const std::string outputFile = path + "Outputs/" + filename.substr(0, filename.find(".")) + "_surface" + outputExtension;
+    std::string token = filename.substr(0, filename.find("."));
+    const std::string outputFile = path + "Outputs/" + token + "_surface" + outputExtension;
+    std::string componentFilename = path + "Outputs/" + token + "_component_";
     filename = path + filename;
     //Initialise libmesh functions and mpi
     for(int i = 1; i<argc; i++)
@@ -78,7 +79,7 @@ int main(int argc, char** argv)
 
     auto start = std::chrono::steady_clock::now();
     groupElems(surfaceMesh, groups);
-    saveGroupedElems(init, surfaceMesh, groups);
+    saveGroupedElems(init, surfaceMesh, groups, componentFilename);
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
