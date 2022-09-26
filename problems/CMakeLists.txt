@@ -56,6 +56,21 @@ add_executable(block6_test block6_tetra.cpp ${projectSrc})
 target_include_directories(block6_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(block6_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
 
+#block6_0_subblock
+add_executable(block6_0_test block6_0_tetra.cpp ${projectSrc})
+target_include_directories(block6_0_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block6_0_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#block6_1_subblock
+add_executable(block6_1_test block6_1_tetra.cpp ${projectSrc})
+target_include_directories(block6_1_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(block6_1_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+
+#ChimeraNoLegs
+add_executable(chimera_noleg_test chimera_tetra.cpp ${projectSrc})
+target_include_directories(chimera_noleg_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(chimera_noleg_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
 
 # theCube
 add_executable(cube_test cubeTet.cpp ${projectSrc})

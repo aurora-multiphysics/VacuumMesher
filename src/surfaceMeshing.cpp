@@ -297,7 +297,7 @@ void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh,
         newMesh.prepare_for_use();
         std::string newMeshName = componentFilename + std::to_string(count) + ".e";
         std::cout << newMeshName << std::endl;
-        // newMesh.write(newMeshName);
+        newMesh.write(newMeshName);
         
         count++;
     }

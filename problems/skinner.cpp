@@ -78,13 +78,13 @@ int main(int argc, char** argv)
     std::vector<std::vector<libMesh::dof_id_type>> groups;
 
     auto start = std::chrono::steady_clock::now();
-    groupElems(surfaceMesh, groups);
-    saveGroupedElems(init, surfaceMesh, groups, componentFilename);
+    // groupElems(surfaceMesh, groups);
+    // saveGroupedElems(init, surfaceMesh, groups, "block6_");
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
     << " ms" << std::endl;
-    surfaceMesh.write(outputFile);
+    surfaceMesh.write("surgery.e");
 
     return 0;
 }

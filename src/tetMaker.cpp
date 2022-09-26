@@ -27,5 +27,5 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     // mesh as a block. This results in hissy fits if you try and skin the mesh again, as the tri facets
     // from the extra block overlap with the faces of the tets and everything goes haywire
     Eigen::MatrixXi emptyFaces;
-    igl::writeMESH(outname, TV, TT, emptyFaces);
+    igl::writeMESH(outname, TV, TT, TF);
 }
