@@ -15,3 +15,5 @@
 
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);
+
+Eigen::MatrixXd getSeeds(std::string filename);

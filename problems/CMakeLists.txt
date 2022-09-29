@@ -76,3 +76,13 @@ target_link_libraries(chimera_noleg_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw 
 add_executable(cube_test cubeTet.cpp ${projectSrc})
 target_include_directories(cube_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(cube_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+# theSphere
+add_executable(sphere_test sphere.cpp ${projectSrc})
+target_include_directories(sphere_test PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(sphere_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#ligIGL normals
+add_executable(get_normals getNormal.cpp ${projectSrc})
+target_include_directories(get_normals PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(get_normals ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
