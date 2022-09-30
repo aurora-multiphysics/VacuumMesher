@@ -1,5 +1,7 @@
 #include<tetMaker.hpp>
 
+namespace fs = std::filesystem;
+
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints)
 {   
     Eigen::MatrixXd V;
@@ -33,8 +35,8 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
 
 Eigen::MatrixXd getSeeds(std::string filename)
 {
-    std::string path = "./Meshes/";
-    std::string offFilename = filename.substr(0, filename.find(".")) + ".off";
+    fs::path fullpath = std::filesystem::path(filename);
+    std::string offFilename = fullpath.stem().string() + ".off";
     std::string pyCommStr = "python3 ./pythonScripts/convertMesh.py " + filename;
     const char* pyComm = pyCommStr.c_str();
     system(pyComm);
@@ -68,5 +70,6 @@ Eigen::MatrixXd getSeeds(std::string filename)
     std::cout << time << std::endl;
     std::cout << seed_points.rows() << " seed points." << std::endl;
     // std::cout << seed_points << std::endl;
+    unlink("")
     return seed_points;
 }

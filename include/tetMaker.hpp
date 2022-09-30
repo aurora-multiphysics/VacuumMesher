@@ -12,6 +12,8 @@
 #include <igl/decimate.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <chrono>
+#include <unistd.h>
+#include <filesystem>
 
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);

@@ -5,10 +5,7 @@ sys.path.append("/opt/Coreform-Cubit-2022.4/bin")
 
 import cubit
 
-# file_path = input("Please enter file path:")
-# file_name = input("Enter filename:")
-file_path = "/home/bill/projects/libmesh-skinning/Meshes/chimBlocks/skinnedBlocks/"
-file_name = "chimNoLegsSkin.e"
+file_path = sys.argv[1]
 # output_file_name = input("Please enter an output filename:")
 # output_file_path = input("Please enter the output filepath")
 output_file_name = "block6_surgery_test_bound.e"

@@ -86,3 +86,9 @@ target_link_libraries(sphere_test ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::em
 add_executable(get_normals getNormal.cpp ${projectSrc})
 target_include_directories(get_normals PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(get_normals ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+
+#The whole shabang
+add_executable(makeVac makeVacuumMesh.cpp ${projectSrc})
+target_include_directories(makeVac PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
