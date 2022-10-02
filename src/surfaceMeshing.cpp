@@ -1,12 +1,12 @@
 #include "surfaceMeshing.hpp"
 #include <algorithm>
 // isElementSurface for if user wants the whole mesh skinned
-void isElementSurface(libMesh::Elem& element, 
-                      std::vector<int>& surfaceFaces)
+void isElementSurface(libMesh::Elem& element, std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
     for(int side = 0; side < element.n_sides(); side++)
     {   
+        // std::cout << side << std::endl;
         auto neighbor = element.neighbor_ptr(side);
         if(neighbor == nullptr)
         {
@@ -14,6 +14,7 @@ void isElementSurface(libMesh::Elem& element,
         }
     }
 }
+
 
 // isElementSurface for if user specifies an elSet in getSurface
 void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet, 
@@ -42,7 +43,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
                  libMesh::Elem* element, int& num_elem_faces, int& num_face_nodes)
 {
     elem_type = element->type();
-    
+    std::cout << "getting element type: " << elem_type << std::endl;
     switch (elem_type)
     {
         case (libMesh::HEX8):
@@ -67,12 +68,14 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
             num_face_nodes = 6;
             break;
     }
+    std::cout << "I THINK THIS MANY: "<< num_elem_faces << std::endl;
 }
 
 // Get surface for when the user just wants the whole mesh skinned, and not a subsection of it
 //  i.e. they haven't specified an elSet
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
 {   
+    std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
 
@@ -93,14 +96,16 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
 
     //Use getElemInfo method to retrieve Element Info 
     libMesh::Elem* elem = mesh.elem_ptr(0);
+
     getElemInfo(elem_type, face_type, 
                 elem, num_elem_faces, num_face_nodes);
-    
+    std::cout << "Num elem faces :" << num_elem_faces << std::endl;
     // Loops over all the elements in the input vector 
-    for(int elemNum = 0; elemNum < mesh.n_elem(); elemNum++)
+    for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
         //Get ptr to current element
-        libMesh::Elem& element = mesh.elem_ref(elemNum);
+        libMesh::Elem& element = mesh.elem_ref(elem);
+        // std::cout << "Elem Num: " << elemNum << std::endl;
 
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
@@ -111,7 +116,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
         isElementSurface(element, surfaceFaces);
-        
+        // std::cout << "Completed is el surface" << std::endl;
         for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
         {
             std::vector<unsigned int> nodes_on_side = element.nodes_on_side(surfaceFaces[i]);
@@ -168,12 +173,15 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
+
+    std::cout << "Created skinned mesh" << std::endl;
 }
 
 
 // Get surface for when the user DOES want only a subset of the mesh skinned
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet)
 {   
+    std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
 
@@ -269,6 +277,8 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
+
+    std::cout << "Created skinned mesh" << std::endl;
 }
 
 

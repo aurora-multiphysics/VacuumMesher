@@ -35,18 +35,16 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
 
 Eigen::MatrixXd getSeeds(std::string filename)
 {
-    fs::path fullpath = std::filesystem::path(filename);
-    std::string offFilename = fullpath.stem().string() + ".off";
-    std::string pyCommStr = "python3 ./pythonScripts/convertMesh.py " + filename;
-    const char* pyComm = pyCommStr.c_str();
-    system(pyComm);
+    
 
-    std::cout << offFilename << std::endl;
+    std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
+    std::string stem = std::filesystem::path(filename).stem().string();
+    std::string offFilepath = dir + stem + ".off";
+    convertMesh(filename, "off");
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;  
     Eigen::MatrixXd N_faces;
-
-    igl::readOFF(path+offFilename, V, F);
+    igl::readOFF(offFilepath, V, F);
     Eigen::MatrixXd seed_points(F.rows(), 3);
     igl::per_face_normals(V,F,N_faces);
 
@@ -62,14 +60,10 @@ Eigen::MatrixXd getSeeds(std::string filename)
             seed[2]+= (V.row(vert)[2]- 1e-10*normal[2])/3; // z component of seed
         }
         seed_points.row(i) << seed[0], seed[1], seed[2];
-        // seed_points.row(i) << 1,3,2;
     }
 
-    auto end = std::chrono::high_resolution_clock::now(); 
-    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-    std::cout << time << std::endl;
+    //Delete .off file, no longer needed
+    unlink(offFilepath.c_str());
     std::cout << seed_points.rows() << " seed points." << std::endl;
-    // std::cout << seed_points << std::endl;
-    unlink("")
     return seed_points;
 }

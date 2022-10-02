@@ -1,11 +1,13 @@
 import meshio
 import sys
+import os
 
 def convertMesh():
-    file = sys.argv[1]
+    filepath = sys.argv[1]
     extension = sys.argv[2]
-    fileNoExt = file.split(sep='.')[0]
-    mesh = meshio.read("/home/bill/projects/libmesh-skinning/Meshes/" + file)
-    mesh.write("/home/bill/projects/libmesh-skinning/Meshes/" + fileNoExt + "." + extension)
+    dir = os.path.dirname(filepath) + "/"
+    output_filepath = dir + ((os.path.basename(filepath)).split(sep='.'))[0] + "." + extension
+    mesh = meshio.read(filepath)
+    mesh.write(output_filepath)
 
 convertMesh()

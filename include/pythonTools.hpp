@@ -3,6 +3,6 @@
 #include <unistd.h>
 #include <filesystem>
 
-void createBound();
+void createBound(std::string filepath);
 
-void convertMesh(std::string filepath, char extension);
+void convertMesh(std::string filepath, std::string extension);

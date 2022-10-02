@@ -14,6 +14,7 @@
 #include <chrono>
 #include <unistd.h>
 #include <filesystem>
+#include "pythonTools.hpp"
 
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);

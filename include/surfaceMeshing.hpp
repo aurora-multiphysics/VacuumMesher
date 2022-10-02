@@ -9,11 +9,13 @@
 
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet);
 
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh);
+
 int getNumSurfaceElems();
 
 void isElementSurface(libMesh::Elem* element, std::vector<int>& elSet, std::vector<int>& surfaceFaces);
 
-// libMesh::Mesh surfaceMesh(init.comm());
+void isElementSurface(libMesh::Elem* element, std::vector<int>& surfaceFaces);
 
 void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type, 
                  libMesh::Elem* element, int& num_elem_faces, int& num_face_nodes);
