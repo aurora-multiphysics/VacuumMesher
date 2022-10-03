@@ -7,6 +7,7 @@ def convertMesh():
     extension = sys.argv[2]
     dir = os.path.dirname(filepath) + "/"
     output_filepath = dir + ((os.path.basename(filepath)).split(sep='.'))[0] + "." + extension
+    print("Python file path =" , output_filepath)
     mesh = meshio.read(filepath)
     mesh.write(output_filepath)
 

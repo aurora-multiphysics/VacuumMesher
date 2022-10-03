@@ -7,9 +7,9 @@ import cubit
 
 file_path = sys.argv[1]
 dir = os.path.dirname(file_path) + "/"
-output_file_name = ((os.path.basename(file_path)).split(sep='.'))[0] + "_bound.e"
+output_file_name = ((os.path.basename(file_path)).split(sep='surf'))[0] + "bound.e"
 
-# # export_name 
+# export_name 
 cubit.init(['cubit','-nojournal'])
 cubit.cmd('set echo on')
 cubit.cmd('brick x 3 y 3 z 3')

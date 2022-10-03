@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <filesystem>
 #include "pythonTools.hpp"
+#include "visualiseSeedPoints.hpp"
 
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);

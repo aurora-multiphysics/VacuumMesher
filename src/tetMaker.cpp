@@ -4,14 +4,20 @@ namespace fs = std::filesystem;
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints)
 {   
+    std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
+    std::string stem = std::filesystem::path(filename).stem().string();
+    std::string tetStem = std::filesystem::path(outname).stem().string();
+    std::string offFilepath = dir + stem + ".off";
+    std::string tetFilepath = dir + tetStem + ".mesh";
+
+    convertMesh(filename, "off");
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;  
     Eigen::MatrixXi T;
-    igl::readOFF(filename, V, F);
-    // igl::opengl::glfw::Viewer viewer;
-    // viewer.data().set_mesh(V, F);
-    // viewer.data().add_points(H, Eigen::RowVector3d(1,0,0));
-    // viewer.launch();
+    igl::readOFF(offFilepath, V, F);
+
+    // visualiseSeedPoints(offFilepath, seedPoints);
+
 
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;
@@ -29,17 +35,26 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     // mesh as a block. This results in hissy fits if you try and skin the mesh again, as the tri facets
     // from the extra block overlap with the faces of the tets and everything goes haywire
     Eigen::MatrixXi emptyFaces;
-    igl::writeMESH(outname, TV, TT, TF);
+
+
+    std::cout << "Stem is: " << stem << ", dir is: " << dir << "\n TetFilepath: " << tetFilepath << std::endl;
+    igl::writeMESH(tetFilepath, TV, TT, emptyFaces);
+
+    
+    convertMesh(tetFilepath, "e");
+
+    //Deleting unnecessary filetypes
+    unlink(tetFilepath.c_str());
+    unlink(offFilepath.c_str());
 }
 
 
 Eigen::MatrixXd getSeeds(std::string filename)
 {
-    
-
     std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
     std::string stem = std::filesystem::path(filename).stem().string();
     std::string offFilepath = dir + stem + ".off";
+
     convertMesh(filename, "off");
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;  

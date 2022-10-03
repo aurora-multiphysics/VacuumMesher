@@ -43,7 +43,6 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
                  libMesh::Elem* element, int& num_elem_faces, int& num_face_nodes)
 {
     elem_type = element->type();
-    std::cout << "getting element type: " << elem_type << std::endl;
     switch (elem_type)
     {
         case (libMesh::HEX8):
@@ -68,7 +67,6 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
             num_face_nodes = 6;
             break;
     }
-    std::cout << "I THINK THIS MANY: "<< num_elem_faces << std::endl;
 }
 
 // Get surface for when the user just wants the whole mesh skinned, and not a subsection of it
@@ -99,13 +97,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
 
     getElemInfo(elem_type, face_type, 
                 elem, num_elem_faces, num_face_nodes);
-    std::cout << "Num elem faces :" << num_elem_faces << std::endl;
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
         //Get ptr to current element
         libMesh::Elem& element = mesh.elem_ref(elem);
-        // std::cout << "Elem Num: " << elemNum << std::endl;
 
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
@@ -116,7 +112,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
         isElementSurface(element, surfaceFaces);
-        // std::cout << "Completed is el surface" << std::endl;
         for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
         {
             std::vector<unsigned int> nodes_on_side = element.nodes_on_side(surfaceFaces[i]);
@@ -300,11 +295,6 @@ void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type
         neighbors.insert(next);
         std::vector<libMesh::dof_id_type> groupElems(0);
 
-        // for(auto neighb: neighbors)
-        // {
-        //     std::cout << neighb << std::endl;
-        // }
-
         //While elements exist in neighbors
         while(!neighbors.empty()){
 
@@ -422,7 +412,6 @@ void saveGroupedElems(libMesh::LibMeshInit& init, libMesh::Mesh& surfaceMesh,
         newMesh.set_spatial_dimension(3);
         newMesh.prepare_for_use();
         std::string newMeshName = componentFilename + std::to_string(count) + ".e";
-        std::cout << newMeshName << std::endl;
         newMesh.write(newMeshName);
         
         count++;
