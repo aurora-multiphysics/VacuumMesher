@@ -6,6 +6,7 @@
 *.face
 *.node
 *.step
+*.cub5
 Makefile
 Make.common
 .vscode/
