@@ -2,6 +2,10 @@
 *.msh
 *.mesh
 *.off
+*.csv
+*.face
+*.node
+*.step
 Makefile
 Make.common
 .vscode/
@@ -9,3 +13,4 @@ build/
 /test/build/
 CMakeFiles/
 Meshes/
+test/testingMeshes/
