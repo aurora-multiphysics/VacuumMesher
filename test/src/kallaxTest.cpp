@@ -8,6 +8,7 @@ class KallaxTest : public VacuumTest
 
     virtual void SetUp() 
     {
+        std::cout << "kallax" << std::endl;
         VacuumTest::SetUp();
         // Group elements 
         groupElems(*vacMesh, groups);
