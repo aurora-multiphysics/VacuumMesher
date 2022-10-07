@@ -6,6 +6,12 @@
 #include "libmesh/libmesh.h"
 #include "argsHelper.h"
 #include "initer.h"
+#include "tetMaker.hpp"
+#include "surfaceMeshing.hpp"
+#include "algorithm"
+#include "pythonTools.hpp"
+#include <filesystem>
+
 
 class BasicTest : public ::testing::Test {
  protected:

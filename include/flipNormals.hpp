@@ -1,3 +1,4 @@
+#pragma once
 #include<iostream>
 #include <igl/read_triangle_mesh.h>
 #include <igl/randperm.h>

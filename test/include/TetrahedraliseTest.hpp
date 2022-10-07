@@ -1,3 +1,4 @@
+#pragma once
 #include "MeshTest.hpp"
 #include "surfaceMeshing.hpp"
 #include "tetMaker.hpp"

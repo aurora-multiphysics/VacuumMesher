@@ -92,3 +92,8 @@ target_link_libraries(get_normals ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::em
 add_executable(makeVac makeVacuumMesh.cpp ${projectSrc})
 target_include_directories(makeVac PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#The whole shabang
+add_executable(libmeshData cubetest.cpp ${projectSrc})
+target_include_directories(libmeshData PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(libmeshData ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)

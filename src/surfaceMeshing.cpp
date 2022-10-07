@@ -272,8 +272,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
-
-    std::cout << "Created skinned mesh" << std::endl;
 }
 
 
@@ -316,7 +314,7 @@ void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type
                     const libMesh::Elem * nnptr = elem.neighbor_ptr(i);
                     // If on boundary, some may be null ptrs
                     if(nnptr == nullptr){
-                        std::cout << "null\n";
+                        // std::cout << "null\n";
                         continue;
                     }
                     libMesh::dof_id_type idnn = nnptr->id();

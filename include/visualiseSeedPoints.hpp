@@ -1,3 +1,5 @@
+#pragma once
+
 #include<iostream>
 #include <igl/embree/reorient_facets_raycast.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
