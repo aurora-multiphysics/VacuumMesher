@@ -1,6 +1,7 @@
 #pragma once
 
 #include<iostream>
+#include "libmesh/mesh.h"
 #include <igl/embree/reorient_facets_raycast.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/read_triangle_mesh.h>
@@ -20,6 +21,6 @@
 #include "visualiseSeedPoints.hpp"
 
 
-void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints);
+void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh);
 
 Eigen::MatrixXd getSeeds(std::string filename);

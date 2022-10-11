@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 
     std::vector<char*> libmeshArgv = {(char*)appName.data()};
     std::string path, filepath, filenameNoExt, surfFilename, boundFilename, tetFilename; 
+    std::string surfFilepath, boundFilepath, tetFilepath; 
     std::string filename(argv[1]);
 
     path = "./Meshes/";
@@ -37,12 +38,18 @@ int main(int argc, char** argv)
     surfFilename = filenameNoExt + "_surf.e";
     boundFilename = filenameNoExt + "_bound.e";
     tetFilename = filenameNoExt + "_tet.mesh";
+
+    surfFilepath = path + surfFilename; 
+    boundFilepath = path + boundFilename;
+    tetFilepath = path + tetFilename; 
       
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
     libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
     libMesh::Mesh surfaceMesh(init.comm());
+    //Create mesh object to store vacuum mesh
+    libMesh::Mesh vacuumMesh(init.comm());
     
     //Read volume mesh
     mesh.read(filepath);
@@ -53,9 +60,9 @@ int main(int argc, char** argv)
         // BEFORE this point
 
     // Get the surface mesh
-    getSurface(mesh, surfaceMesh);
+    getSurface(mesh, surfaceMesh, true, surfFilepath);
     // Write out the surface mesh
-    surfaceMesh.write(path+surfFilename);
+    // surfaceMesh.write(path+surfFilename);
 
 
     // 1.5. Enforce consistent normal orientation??
@@ -64,21 +71,20 @@ int main(int argc, char** argv)
         // Convert exodus mesh to .off for libIGL
         // Use get seed points 
         // Delete off mesh that was created 
-    Eigen::MatrixXd seed_points = getSeeds(path+surfFilename);
+    Eigen::MatrixXd seed_points = getSeeds(surfFilepath);
     
     // 3. Add bounding volume to skinned mesh
         // Should be able to choose shape type and size 
         // Should check that the bounding area is larger than the bounding box of the shape 
-    createBound(path+surfFilename);
+    createBound(surfFilepath);
     
     // 4. Tetrahedralise
 
-    tetrahedraliseVacuumRegion(path+boundFilename, tetFilename, seed_points);
+    tetrahedraliseVacuumRegion(boundFilepath, tetFilename, seed_points, vacuumMesh);
 
     // 5. Output
         // Should the output be one big exodus mesh or just the vacuum
 
     // visualiseSeedPoints(filename, H);
-    // tetrahedraliseVacuumRegion(filename, outputFile, seed_points);
     return 0;
 }

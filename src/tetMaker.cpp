@@ -2,7 +2,7 @@
 
 namespace fs = std::filesystem;
 
-void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd seedPoints)
+void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh)
 {   
     std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
     std::string stem = std::filesystem::path(filename).stem().string();
@@ -37,7 +37,6 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     Eigen::MatrixXi emptyFaces;
 
 
-    std::cout << "Stem is: " << stem << ", dir is: " << dir << "\n TetFilepath: " << tetFilepath << std::endl;
     igl::writeMESH(tetFilepath, TV, TT, emptyFaces);
 
     
@@ -46,6 +45,7 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     //Deleting unnecessary filetypes
     unlink(tetFilepath.c_str());
     unlink(offFilepath.c_str());
+    vacuumMesh.read(dir+tetStem+".e");
 }
 
 

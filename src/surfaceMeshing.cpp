@@ -71,7 +71,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
 
 // Get surface for when the user just wants the whole mesh skinned, and not a subsection of it
 //  i.e. they haven't specified an elSet
-void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh, std::string outputFilename)
 {   
     std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
@@ -169,12 +169,16 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh)
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
 
+    if(writeMesh)
+    {
+        surfaceMesh.write(outputFilename);
+    }
     std::cout << "Created skinned mesh" << std::endl;
 }
 
 
 // Get surface for when the user DOES want only a subset of the mesh skinned
-void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet)
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet, bool writeMesh, std::string outputFilename)
 {   
     std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
@@ -272,6 +276,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
+
+    if(writeMesh)
+    {
+        surfaceMesh.write(outputFilename);
+    }
 }
 
 

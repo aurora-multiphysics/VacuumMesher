@@ -1,8 +1,6 @@
 
 // #include"SkinningTest.hpp"
 
-
-
 // class HypTest : public SkinningTest 
 // {
 //  protected:
