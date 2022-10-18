@@ -97,3 +97,8 @@ target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree
 # add_executable(libmeshData cubetest.cpp ${projectSrc})
 # target_include_directories(libmeshData PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 # target_link_libraries(libmeshData ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#Remove duplicate verts
+add_executable(removeDupe removeDuplicates.cpp ${projectSrc})
+target_include_directories(removeDupe PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(removeDupe ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
