@@ -13,12 +13,14 @@
 void 
 removeDuplicateVerts(libMesh::Mesh& vacuumMesh, 
                      libMesh::Mesh& geometryMesh, 
-                     std::map<int, int>& geomToVacNodes);
+                     std::map<int, int>& geomToVacNodes,
+                     std::vector<unsigned int>& duplicateNodeIds);
 
 void 
 addGeomVerts(libMesh::Mesh& geometryMesh, 
              libMesh::Mesh& vacuumMesh, 
-             std::map<int, int>& vacToGeomNodes);
+             std::map<int, int>& geomToVacNodes,
+             std::vector<unsigned int>& duplicateNodeIds);
 
 void 
 getGeometryBoundaries(libMesh::Mesh& geometryMesh, 
@@ -28,4 +30,8 @@ getGeometryBoundaries(libMesh::Mesh& geometryMesh,
 
 void 
 getGeometryConnectivity(libMesh::Mesh& geometryMesh, 
-                        libMesh::Mesh& geometryMesh, std::vector<std::vector<unsigned int>> connectivity;);
+                        std::vector<std::vector<unsigned int>> &connectivity);
+
+void 
+createFullGeometry(libMesh::Mesh& geometryMesh,
+                   libMesh::Mesh& vacuumMesh);

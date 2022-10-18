@@ -32,15 +32,9 @@ int main(int argc, char** argv)
 
     surfaceMesh.read(surfFilepath);
 
-    vacuumMesh.read(boundFilepath);
+    vacuumMesh.read(tetFilepath);
 
-    std::map<int, int> vacToGeomNodes;
+    createFullGeometry(mesh, vacuumMesh);
 
-    std::vector<libMesh::dof_id_type> node_list;
-    std::vector<libMesh::boundary_id_type> boundary_list;
-
-    removeDuplicateVerts(vacuumMesh, mesh, vacToGeomNodes);
-    addGeomVerts(mesh, vacuumMesh, vacToGeomNodes);
-    // getGeometryBoundaries(mesh, node_list, boundary_list);
     return 0;
 }

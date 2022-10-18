@@ -8,22 +8,24 @@ getGeometryBoundaries(libMesh::Mesh& geometryMesh, std::vector<libMesh::dof_id_t
 }
 
 void 
-getGeometryConnectivity(libMesh::Mesh& geometryMesh, std::vector<std::vector<unsigned int>> connectivity)
+getGeometryConnectivity(libMesh::Mesh& geometryMesh, std::vector<std::vector<unsigned int>>& connectivity)
 {
     unsigned int elem_counter = 0;
-    for(auto& elem: as_range(geometryMesh.local_elements_begin(), geometryMesh.local_elements_end())
+    for(auto& elem: as_range(geometryMesh.local_elements_begin(), geometryMesh.local_elements_end()))
     {
+        
         unsigned int node_counter = 0;
         for(auto& node: elem->node_ref_range())
         {
-            connectivity[elem_counter][node_counter] = node->id();
+            connectivity[elem_counter][node_counter] = node.id();
             node_counter++;
         }
+        elem_counter++;
     }
 }
 
 void 
-removeDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, std::map<int, int>& vacToGeomNodes)
+removeDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, std::map<int, int>& geomToVacNodes, std::vector<unsigned int>& duplicateNodeIds)
 {
     int matches = 0;
     for(auto& geomNode: geometryMesh.local_node_ptr_range())
@@ -33,20 +35,31 @@ removeDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, std
             if((*node) == (*geomNode))
             {
                 matches ++;
-                vacToGeomNodes[geomNode->id()] = node->id();
-                geometryMesh.delete_node(node);
-            }geomTo
+                geomToVacNodes[geomNode->id()] = node->id();
+                duplicateNodeIds.push_back(geomNode->id());
+            }
         }
     }
 }
 
 void 
-addGeomVerts(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh, std::map<int, int>& vacToGeomNodes)
+addGeomVerts(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh, std::map<int, int>& geomToVacNodes, std::vector<unsigned int>& duplicateNodeIds)
 {
+    int counter = 0;
     for(auto& node: geometryMesh.local_node_ptr_range())
     {
-        vacuumMesh.add_point(*node);
-        vacToGeomNodes[vacuumMesh.max_node_id()] = node->id();
+        
+        if(!std::binary_search(duplicateNodeIds.begin(), duplicateNodeIds.end(), node->id()))
+        {
+            int id = vacuumMesh.max_node_id();
+            vacuumMesh.add_point(*node, id);
+            geomToVacNodes[node->id()] = id;
+        }
+        else
+        {
+            
+        }
+
     }
 }
 
@@ -56,28 +69,42 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
 {
     libMesh::ElemType elem_type, face_type; 
     int num_elem_faces, num_face_nodes;
+    int num_nodes_per_el = 4;
+    std::map<int, int> geomToVacNodes;
+    std::vector<libMesh::dof_id_type> bdr_node_id_list;
+    std::vector<libMesh::boundary_id_type> bc_id_list;
+    std::vector<unsigned int> duplicateNodeIds;
 
-    std::map<int, int> vacToGeomNodes;
-    std::vector<std::vector<unsigned int>> connectivity;
-    std::vector<libMesh::dof_id_type> bdr_node_id_list
-    std::vector<libMesh::boundary_id_type> bc_id_list
+    std::vector<std::vector<unsigned int>>connectivity(geometryMesh.n_local_elem(), std::vector<unsigned int>(num_nodes_per_el, 1));
 
     getElemInfo(elem_type, face_type, 
-                elem, num_elem_faces, num_face_nodes);
-                
+                geometryMesh.elem_ptr(0), num_elem_faces, num_face_nodes);
+
     getGeometryConnectivity(geometryMesh, connectivity);
     getGeometryBoundaries(geometryMesh, bdr_node_id_list, bc_id_list);
-    removeDuplicateVerts(vacuumMesh, geometryMesh, vacToGeomNodes);
-    addGeomVerts(geometryMesh, vacuumMesh, vacToGeomNodes);
+    removeDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
+    addGeomVerts(geometryMesh, vacuumMesh, geomToVacNodes, duplicateNodeIds);
+    
+   
+    // for(auto& entry: geomToVacNodes)
+    // {
+    //     std::cout << entry.first << " " << entry.second << std::endl;
+    // }
 
+    int elem_count = 0;
     for(auto& elem_conn: connectivity)
     {
-        libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
-        for(int j = 0; j < num_face_nodes; j++)
+        libMesh::Elem* elem = libMesh::Elem::build(elem_type).release();
+        for(int j = 0; j < vacuumMesh.elem_ref(0).n_nodes(); j++)
         {
-            elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
+            // std::cout << connectivity[elem_count][j] << " " << geomToVacNodes[connectivity[elem_count][j]] << std::endl;
+            elem->set_node(j) = vacuumMesh.node_ptr(geomToVacNodes[connectivity[elem_count][j]]);
         }
-        elem->set_id(i);
+        elem->set_id(1+vacuumMesh.max_elem_id());
         vacuumMesh.add_elem(elem);
+        elem_count++;
     }
+    std::cout << "here " << std::endl;
+    vacuumMesh.prepare_for_use();
+    vacuumMesh.write("maybeWorkNOw.e");
 }
