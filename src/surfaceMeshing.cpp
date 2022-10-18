@@ -65,6 +65,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
         case (libMesh::TET10):
             num_elem_faces = 4;
             num_face_nodes = 6;
+            face_type = libMesh::TRI6;
             break;
     }
 }
@@ -95,8 +96,12 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     //Use getElemInfo method to retrieve Element Info 
     libMesh::Elem* elem = mesh.elem_ptr(0);
 
+    
+
     getElemInfo(elem_type, face_type, 
                 elem, num_elem_faces, num_face_nodes);
+
+    
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
@@ -127,6 +132,8 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         
     }
 
+
+    std::cout << "Elem type " << elem_type << std::endl;
     //Sorts the node ids in the currentNodeIds in numerical order and removes duplicates
     std::sort(currentNodeIds.begin(), currentNodeIds.end());
     std::vector<int>::iterator newEnd;

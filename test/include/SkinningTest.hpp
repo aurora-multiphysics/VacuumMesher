@@ -1,7 +1,8 @@
 #pragma once
 #include "MeshTest.hpp"
 #include "surfaceMeshing.hpp"
-#include "algorithm"
+#include "libmesh/enum_io_package.h"
+#include "libmesh/enum_elem_type.h"
 
 class SkinningTest : public MeshTest
 {
@@ -28,9 +29,16 @@ protected:
         getSurface(*mesh, *surfaceMesh);
     }
 
-    virtual bool checkAllSurface()
+    virtual bool checkAll2DElem()
     {
-    
+        for(auto& elem: surfaceMesh->element_ptr_range())
+        {
+            if(elem->type() > 7)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Libmesh Mesh object to store the skinned mesh
