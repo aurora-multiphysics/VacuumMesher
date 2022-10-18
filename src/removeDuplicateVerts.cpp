@@ -85,11 +85,6 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
     removeDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
     addGeomVerts(geometryMesh, vacuumMesh, geomToVacNodes, duplicateNodeIds);
     
-   
-    // for(auto& entry: geomToVacNodes)
-    // {
-    //     std::cout << entry.first << " " << entry.second << std::endl;
-    // }
 
     int elem_count = 0;
     for(auto& elem_conn: connectivity)
