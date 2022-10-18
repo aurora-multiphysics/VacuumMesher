@@ -35,3 +35,10 @@ getGeometryConnectivity(libMesh::Mesh& geometryMesh,
 void 
 createFullGeometry(libMesh::Mesh& geometryMesh,
                    libMesh::Mesh& vacuumMesh);
+
+void
+remakeBoundaries(libMesh::Mesh& geometryMesh,
+                 libMesh::Mesh& vacuumMesh,
+                 std::vector<libMesh::dof_id_type> bdr_node_id_list,
+                 std::vector<libMesh::boundary_id_type> bc_id_list,
+                 std::map<int, int>& geomToVacNodes);

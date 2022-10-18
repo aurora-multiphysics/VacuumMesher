@@ -43,7 +43,10 @@ removeDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, std
 }
 
 void 
-addGeomVerts(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh, std::map<int, int>& geomToVacNodes, std::vector<unsigned int>& duplicateNodeIds)
+addGeomVerts(libMesh::Mesh& geometryMesh, 
+            libMesh::Mesh& vacuumMesh, 
+            std::map<int, int>& geomToVacNodes, 
+            std::vector<unsigned int>& duplicateNodeIds)
 {
     int counter = 0;
     for(auto& node: geometryMesh.local_node_ptr_range())
@@ -62,6 +65,7 @@ addGeomVerts(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh, std::map<in
 
     }
 }
+
 
 void 
 createFullGeometry(libMesh::Mesh& geometryMesh,
@@ -99,7 +103,13 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
         vacuumMesh.add_elem(elem);
         elem_count++;
     }
-    std::cout << "here " << std::endl;
+
+    for(int node_num = 0; node_num < bdr_node_id_list.size(); node_num++)
+    {
+        vacuumMesh.boundary_info->add_node(geomToVacNodes[bdr_node_id_list[node_num]], bc_id_list[node_num]);
+    }
+    // boundInf.regenerate_id_sets();
+    vacuumMesh.get_boundary_info().print_info(std::cout);
     vacuumMesh.prepare_for_use();
     vacuumMesh.write("maybeWorkNOw.e");
 }
