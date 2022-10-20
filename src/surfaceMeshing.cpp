@@ -86,6 +86,13 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     // //Counter to store the number of surface elements
     int surface_elem_counter = 0;
 
+    // Sideset info
+    // std::vector<unsigned int> boundary_nodes;
+    // std::vector<libMesh::boundary_id_type> boundary_id;
+    std::map<int, std::vector<libMesh::boundary_id_type>> boundary_data;
+
+
+
     //Map from old node ids to the new ones in the surface mesh
     std::vector<int> currentNodeIds;
     std::map<int, int> newNodeIds;
@@ -93,13 +100,12 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     //Connectivity of all the elements in the surface mesh
     std::vector<int> connectivity;
 
-    //Use getElemInfo method to retrieve Element Info 
-    libMesh::Elem* elem = mesh.elem_ptr(0);
 
-    
+    //Use getElemInfo method to retrieve Element Info 
+    // libMesh::Elem* elem = ;
 
     getElemInfo(elem_type, face_type, 
-                elem, num_elem_faces, num_face_nodes);
+                mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
 
     
     // Loops over all the elements in the input vector 
@@ -119,13 +125,20 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         isElementSurface(element, surfaceFaces);
         for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
         {
-            std::vector<unsigned int> nodes_on_side = element.nodes_on_side(surfaceFaces[i]);
+            // Check whether this side is a member of a sideset. If so, get the id of said sideset. Illiteration is fun. 
+            std::vector<libMesh::boundary_id_type> boundary_ids;
+            surfaceMesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
 
-            for(auto localNodeId: nodes_on_side)
+            // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
+            for(auto localNodeId: element.nodes_on_side(surfaceFaces[i]))
             {
                 int globalNodeId = element.node_id(localNodeId);
                 connectivity.push_back(globalNodeId);
                 currentNodeIds.push_back(globalNodeId);
+                if(boundary_ids.size() > 0)
+                {
+                    boundary_data[globalNodeId] = boundary_ids;
+                }
             }
             surface_elem_counter++;
         }
@@ -151,11 +164,16 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     {   
         libMesh::Node* node = mesh.node_ptr(nodeId);
         double pnt[3];
-        pnt[0] = (*node)(0);
-        pnt[1] = (*node)(1);
-        pnt[2] = (*node)(2);
-        libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
-        surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
+        // pnt[0] = (*node)(0);
+        // pnt[1] = (*node)(1);
+        // pnt[2] = (*node)(2);
+        // libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+        // surfaceMesh.add_point(xyz, nodeId);
+        surfaceMesh.add_node(node);
+        for(auto& id: boundary_data[nodeId])
+        {
+            surfaceMesh.get_boundary_info().add_node(nodeId, id);
+        }
     }
 
     //For all of the surface elements, create the representitive 2D libmesh element 
