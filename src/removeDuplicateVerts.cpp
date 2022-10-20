@@ -96,7 +96,6 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
         libMesh::Elem* elem = libMesh::Elem::build(elem_type).release();
         for(int j = 0; j < vacuumMesh.elem_ref(0).n_nodes(); j++)
         {
-            // std::cout << connectivity[elem_count][j] << " " << geomToVacNodes[connectivity[elem_count][j]] << std::endl;
             elem->set_node(j) = vacuumMesh.node_ptr(geomToVacNodes[connectivity[elem_count][j]]);
         }
         elem->set_id(1+vacuumMesh.max_elem_id());
@@ -108,8 +107,12 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
     {
         vacuumMesh.boundary_info->add_node(geomToVacNodes[bdr_node_id_list[node_num]], bc_id_list[node_num]);
     }
-    // boundInf.regenerate_id_sets();
-    vacuumMesh.get_boundary_info().print_info(std::cout);
+    vacuumMesh.boundary_info->build_side_list_from_node_list();
+    // vacuumMesh.get_boundary_info().print_info(std::cout);
+    for(auto& entry: geometryMesh.get_boundary_info().get_sideset_name_map())
+    {
+        vacuumMesh.get_boundary_info().set_sideset_name_map()[entry.first] = entry.second;
+    }
     vacuumMesh.prepare_for_use();
-    vacuumMesh.write("maybeWorkNOw.e");
+    vacuumMesh.write("fullGeom.e");
 }

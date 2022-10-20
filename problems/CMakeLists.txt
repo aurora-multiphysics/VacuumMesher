@@ -102,3 +102,10 @@ target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree
 add_executable(removeDupe removeDuplicates.cpp ${projectSrc})
 target_include_directories(removeDupe PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(removeDupe ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
+#Generate 2D boundary
+add_executable(generateBound 2dBound.cpp ${projectSrc})
+target_include_directories(generateBound PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(generateBound ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen igl_restricted::triangle)
+
+

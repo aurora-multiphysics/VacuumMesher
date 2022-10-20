@@ -1,6 +1,6 @@
 #include "flipNormals.hpp"
 
-igl::opengl::glfw::Viewer viewer;
+// igl::opengl::glfw::Viewer viewer;
 std::vector<Eigen::VectorXi> C(2);
 std::vector<Eigen::MatrixXd> RGBcolors(2);
 bool is_showing_reoriented = false;
@@ -35,40 +35,40 @@ void flipNormals(std::string filename)
             HSV.rightCols(2).setConstant(1.0);
             igl::hsv_to_rgb(HSV,RGBcolors[pass]);
         }
-        viewer.data().set_colors(RGBcolors[facetwise]);
+        // viewer.data().set_colors(RGBcolors[facetwise]);
     };
 
-    viewer.callback_key_pressed = 
-    [&scramble_colors]
-    (igl::opengl::glfw::Viewer& /*viewer*/, unsigned int key, int mod)->bool
-    {
-        switch(key)
-        {
-        default:
-        return false;
-        case 'F':
-        case 'f':
-        {
-        facetwise = !facetwise;
-        break;
-        }
-        case 'S':
-        case 's':
-        {
-        scramble_colors();
-        return true;
-        }
-        case ' ':
-        {
-        is_showing_reoriented = !is_showing_reoriented;
-        break;
-        }
-        }
-        viewer.data().clear();
-        viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-        viewer.data().set_colors(RGBcolors[facetwise]);
-        return true;
-    };
+    // viewer.callback_key_pressed = 
+    // [&scramble_colors]
+    // (igl::opengl::glfw::Viewer& /*viewer*/, unsigned int key, int mod)->bool
+    // {
+    //     switch(key)
+    //     {
+    //     default:
+    //     return false;
+    //     case 'F':
+    //     case 'f':
+    //     {
+    //     facetwise = !facetwise;
+    //     break;
+    //     }
+    //     case 'S':
+    //     case 's':
+    //     {
+    //     scramble_colors();
+    //     return true;
+    //     }
+    //     case ' ':
+    //     {
+    //     is_showing_reoriented = !is_showing_reoriented;
+    //     break;
+    //     }
+    //     }
+    //     viewer.data().clear();
+    //     viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+    //     viewer.data().set_colors(RGBcolors[facetwise]);
+    //     return true;
+    // };
 
     for(int pass = 0;pass<2;pass++)
     {
@@ -95,9 +95,9 @@ void flipNormals(std::string filename)
     4.2, 9.0, 0.0;
 
     std::cout << I.size() << std::endl;
-    viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-    viewer.data().set_face_based(true);
-    scramble_colors();
-    viewer.data().add_points(H, Eigen::RowVector3d(1,0,0));
-    viewer.launch();
+    // viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+    // viewer.data().set_face_based(true);
+    // scramble_colors();
+    // viewer.data().add_points(H, Eigen::RowVector3d(1,0,0));
+    // viewer.launch();
 }

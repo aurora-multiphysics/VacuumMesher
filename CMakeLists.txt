@@ -12,10 +12,12 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 #libigl
 option(LIBIGL_GLFW "Build target igl::glfw" ON)
 option(LIBIGL_EMBREE "Build target igl::embree" ON)
+option(LIBIGL_RESTRICTED_TRIANGLE   "Build target igl_restricted::triangle"   ON)
 option(LIBIGL_COPYLEFT_CORE    "Build target igl_copyleft::core"    ON)
 option(LIBIGL_COPYLEFT_CGAL    "Build target igl_copyleft::cgal"    ON)
 option(LIBIGL_COPYLEFT_COMISO  "Build target igl_copyleft::comiso"  ON)
 option(LIBIGL_COPYLEFT_TETGEN  "Build target igl_copyleft::tetgen"  ON)
+
 include(libigl)
 
 # Locate GTest and MPI

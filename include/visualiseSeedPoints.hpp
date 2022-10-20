@@ -8,7 +8,6 @@
 #include <igl/orientable_patches.h>
 #include <igl/slice.h>
 #include <igl/hsv_to_rgb.h>
-#include <igl/opengl/glfw/Viewer.h>
 #include <igl/writeMESH.h>
 #include <igl/writeOFF.h>
 #include <igl/decimate.h>
