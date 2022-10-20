@@ -54,6 +54,7 @@ void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type,
         case (libMesh::HEX27):
             num_elem_faces = 6;
             num_face_nodes = 9;
+            face_type = libMesh::QUAD9;
             break;
         
         case (libMesh::TET4):
@@ -77,7 +78,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
-
+    
     //Variables to store element information so it is easily accessible later
     //This implementation does assume only one element type is used
     libMesh::ElemType elem_type, face_type; 
@@ -107,7 +108,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     getElemInfo(elem_type, face_type, 
                 mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
 
-    
+    std::cout << num_face_nodes << std::endl;
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
@@ -127,8 +128,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         {
             // Check whether this side is a member of a sideset. If so, get the id of said sideset. Illiteration is fun. 
             std::vector<libMesh::boundary_id_type> boundary_ids;
-            surfaceMesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
-
+            mesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
             for(auto localNodeId: element.nodes_on_side(surfaceFaces[i]))
             {
@@ -146,7 +146,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     }
 
 
-    std::cout << "Elem type " << elem_type << std::endl;
     //Sorts the node ids in the currentNodeIds in numerical order and removes duplicates
     std::sort(currentNodeIds.begin(), currentNodeIds.end());
     std::vector<int>::iterator newEnd;
@@ -164,15 +163,14 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     {   
         libMesh::Node* node = mesh.node_ptr(nodeId);
         double pnt[3];
-        // pnt[0] = (*node)(0);
-        // pnt[1] = (*node)(1);
-        // pnt[2] = (*node)(2);
-        // libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
-        // surfaceMesh.add_point(xyz, nodeId);
-        surfaceMesh.add_node(node);
+        pnt[0] = (*node)(0);
+        pnt[1] = (*node)(1);
+        pnt[2] = (*node)(2);
+        libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+        surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
         for(auto& id: boundary_data[nodeId])
         {
-            surfaceMesh.get_boundary_info().add_node(nodeId, id);
+            surfaceMesh.boundary_info->add_node(newNodeIds[nodeId], id);
         }
     }
 
@@ -188,7 +186,8 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         elem->set_id(i);
         surfaceMesh.add_elem(elem);
     }
-
+    // 
+    surfaceMesh.boundary_info->build_side_list_from_node_list();
     //Set mesh dimensions 
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
