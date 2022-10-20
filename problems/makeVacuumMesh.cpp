@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     //Read volume mesh
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
-
+    mesh.all_first_order();
     // 1. Produce Skinned Mesh 
         // Perhaps I need to make sure that the centroid of the shape is set to 0,0,0 at or 
         // BEFORE this point
