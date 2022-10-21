@@ -37,7 +37,7 @@ set(libmesh_INCLUDE ${prefix}/libmesh/installed/include
 FILE(GLOB projectSrc ./src/*.cpp)
 FILE(GLOB testSrc ./test/src/*.cpp)
 
-link_libraries(MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+link_libraries(MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen igl_restricted::triangle)
 
 add_subdirectory(./problems)
 add_subdirectory(./test)

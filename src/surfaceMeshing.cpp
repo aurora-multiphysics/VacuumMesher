@@ -108,7 +108,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     getElemInfo(elem_type, face_type, 
                 mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
 
-    std::cout << num_face_nodes << std::endl;
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
@@ -168,10 +167,10 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         pnt[2] = (*node)(2);
         libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
-        for(auto& id: boundary_data[nodeId])
-        {
-            surfaceMesh.boundary_info->add_node(newNodeIds[nodeId], id);
-        }
+        // for(auto& id: boundary_data[nodeId])
+        // {
+        //     surfaceMesh.boundary_info->add_node(newNodeIds[nodeId], id);
+        // }
     }
 
     //For all of the surface elements, create the representitive 2D libmesh element 
@@ -187,12 +186,13 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         surfaceMesh.add_elem(elem);
     }
     // 
-    surfaceMesh.boundary_info->build_side_list_from_node_list();
+    // surfaceMesh.boundary_info->build_side_list_from_node_list();
     //Set mesh dimensions 
     surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
     surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
 
+    libMesh::BoundingBox box = libMesh::MeshTools::create_bounding_box(surfaceMesh);
     if(writeMesh)
     {
         surfaceMesh.write(outputFilename);

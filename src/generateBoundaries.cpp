@@ -31,7 +31,15 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
     std::vector<std::vector<int>> conn;
 
     std::map<int, int> newNodeIds;
+
+    // Input data to triangulate our boundary region
+    Eigen::MatrixXd V;
+    Eigen::MatrixXd H(2,2);
+    Eigen::MatrixXi E;
     
+    // Matrices to store our boundary
+    Eigen::MatrixXd V2;
+    Eigen::MatrixXi F2;
 
     surfaceMesh.get_boundary_info().build_active_side_list(element_id_list, side_list, bc_id_list);
     //Get list of boundary elements
@@ -70,33 +78,70 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
         newNodeIds[current_node_ids[i]] = i;
     }
 
-    for(auto node: current_node_ids)
+    V.resize(4+current_node_ids.size(), 2);
+    for(auto& node : current_node_ids)
     {   
         libMesh::Node* node_ptr = surfaceMesh.node_ptr(node);
-        double pnt[3];
-        pnt[0] = (*node_ptr)(0);
-        pnt[1] = (*node_ptr)(1);
-        pnt[2] = (*node_ptr)(2);
-        libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
-        boundaryMesh.add_point(xyz, newNodeIds[node]);
-        std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
+        V(newNodeIds[node], 0) = (*node_ptr)(0);
+        V(newNodeIds[node], 1) = (*node_ptr)(1);
     }
 
+    E.resize(4 + boundaryElemCount, 2);
     for(int elem_num = 0; elem_num < boundaryElemCount; elem_num++)
     {
-        libMesh::Elem* new_edge = libMesh::Elem::build((libMesh::ElemType)0).release();
         for(int node_num = 0; node_num < 2; node_num++)
         {
-            new_edge->set_node(node_num) = surfaceMesh.node_ptr(newNodeIds[conn[elem_num][node_num]]);
+            E(elem_num, node_num) = newNodeIds[conn[elem_num][node_num]];
         }
-        new_edge->set_id(elem_num);
-        boundaryMesh.add_elem(new_edge);
     }
-    std::cout << "Number of boundary edges = " << boundaryElemCount << std::endl;
+    
+    libMesh::BoundingBox box = libMesh::MeshTools::create_bounding_box(surfaceMesh);
+    std::vector<std::vector<double>> boundingSquare;
+    box.max().print();
+    boundingSquare.push_back({2*box.max()(0), 2*box.max()(1)});
+    boundingSquare.push_back({2*box.max()(0), 2*box.min()(1)});
+    boundingSquare.push_back({2*box.min()(0), 2*box.min()(1)});
+    boundingSquare.push_back({2*box.min()(0), 2*box.max()(1)});
+    
+
+
+    for(int i = 0; i < 4; i++)
+    {
+        V(current_node_ids.size() + i, 0) = boundingSquare[i][0];
+        V(current_node_ids.size() + i, 1) = boundingSquare[i][1];
+    }
+
+    E(boundaryElemCount, 0) = current_node_ids.size();
+    E(boundaryElemCount, 1) = current_node_ids.size() + 1;
+
+    E(boundaryElemCount + 1, 0) = current_node_ids.size() + 1;
+    E(boundaryElemCount + 1, 1) = current_node_ids.size() + 2;
+
+    E(boundaryElemCount + 2, 0) = current_node_ids.size() + 2;
+    E(boundaryElemCount + 2, 1) = current_node_ids.size() + 3;
+
+    E(boundaryElemCount + 3, 0) = current_node_ids.size() + 3;
+    E(boundaryElemCount + 3, 1) = current_node_ids.size();
+
+
+    H <<
+    0.035873, 0.017588,
+    -16.682617, 14.362826;
+
+    igl::triangle::triangulate(V,E,H,"cdCqa10",V2,F2);
+
+    igl::opengl::glfw::Viewer viewer;
+    // viewer.data().set_mesh(V2, F2);
+    // viewer.data().add_points(V, Eigen::RowVector3d(1,0,0));
+    // viewer.data().add_points(H, Eigen::RowVector3d(200,200,0));
+    // viewer.launch();
+    Eigen::MatrixXi emptyFaces;
+    igl::writeMESH("lol.mesh", V2, emptyFaces,  F2);
+
     // boundaryMesh.renumber_nodes_and_elements();
-    boundaryMesh.set_mesh_dimension(2); //Should this be 2 or 3???
-    boundaryMesh.set_spatial_dimension(3);
-    boundaryMesh.write("boundaryMeshTester.e");
+    // boundaryMesh.set_mesh_dimension(2); //Should this be 2 or 3???
+    // boundaryMesh.set_spatial_dimension(3);
+    // boundaryMesh.write("boundaryMeshTester.e");
 
     // Need H, set of 2D node positions
     // E, E * 2 array of edges 
