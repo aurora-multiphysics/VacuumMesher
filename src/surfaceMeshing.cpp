@@ -107,6 +107,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
 
     getElemInfo(elem_type, face_type, 
                 mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
+    // int to check if we are getting the correct number of sideset facets
 
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
@@ -128,6 +129,12 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
             // Check whether this side is a member of a sideset. If so, get the id of said sideset. Illiteration is fun. 
             std::vector<libMesh::boundary_id_type> boundary_ids;
             mesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
+
+            if(boundary_ids.size() > 0)
+            {
+                boundary_data[surface_elem_counter] = boundary_ids;
+            }
+
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
             for(auto localNodeId: element.nodes_on_side(surfaceFaces[i]))
             {
@@ -136,9 +143,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
                 currentNodeIds.push_back(globalNodeId);
                 if(boundary_ids.size() > 0)
                 {
-                    boundary_data[globalNodeId] = boundary_ids;
+                    
                 }
             }
+            // 
+            // Counter 
             surface_elem_counter++;
         }
         
@@ -167,10 +176,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         pnt[2] = (*node)(2);
         libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
-        // for(auto& id: boundary_data[nodeId])
-        // {
-        //     surfaceMesh.boundary_info->add_node(newNodeIds[nodeId], id);
-        // }
     }
 
     //For all of the surface elements, create the representitive 2D libmesh element 
@@ -184,6 +189,10 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         }
         elem->set_id(i);
         surfaceMesh.add_elem(elem);
+        for(auto& id: boundary_data[i])
+        {
+            surfaceMesh.boundary_info->add_side(i, 0, id);
+        }
     }
     // 
     // surfaceMesh.boundary_info->build_side_list_from_node_list();

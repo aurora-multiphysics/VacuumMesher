@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     surfFilepath = path + surfFilename; 
     boundFilepath = path + boundFilename;
     tetFilepath = path + tetFilename; 
-    
+
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
     // libMesh::Mesh mesh(init.comm());
@@ -33,7 +33,6 @@ int main(int argc, char** argv)
     // mesh.read(filepath);
 
     surfaceMesh.read(surfFilepath);
-
 
     createEdgeMesh(surfaceMesh, boundaryMesh);
 
