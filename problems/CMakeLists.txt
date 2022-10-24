@@ -93,6 +93,11 @@ add_executable(makeVac makeVacuumMesh.cpp ${projectSrc})
 target_include_directories(makeVac PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
 
+#Just generate tets
+add_executable(genTets generateVacuumTet.cpp ${projectSrc})
+target_include_directories(genTets PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(genTets ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+
 #The whole shabang
 # add_executable(libmeshData cubetest.cpp ${projectSrc})
 # target_include_directories(libmeshData PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)

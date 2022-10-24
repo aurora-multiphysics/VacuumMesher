@@ -101,15 +101,14 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     //Connectivity of all the elements in the surface mesh
     std::vector<int> connectivity;
 
-
     //Use getElemInfo method to retrieve Element Info 
-    // libMesh::Elem* elem = ;
-
+    libMesh::Elem* elem = mesh.elem_ptr(0);
+    
     getElemInfo(elem_type, face_type, 
-                mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
+                elem, num_elem_faces, num_face_nodes);
     // int to check if we are getting the correct number of sideset facets
-
-    // Loops over all the elements in the input vector 
+    std::cout << "got elem info" << std::endl;
+     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
         //Get ptr to current element
@@ -177,7 +176,7 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
         libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
     }
-
+    
     //For all of the surface elements, create the representitive 2D libmesh element 
     //Connectivity is set and the element is added to the new mesh
     for(int i = 0; i < surface_elem_counter; i++)

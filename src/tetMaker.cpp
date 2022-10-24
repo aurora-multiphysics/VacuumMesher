@@ -4,6 +4,7 @@ namespace fs = std::filesystem;
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh)
 {   
+    std::cout << filename << std::endl;
     std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
     std::string stem = std::filesystem::path(filename).stem().string();
     std::string tetStem = std::filesystem::path(outname).stem().string();
@@ -29,7 +30,7 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     Eigen::MatrixXi FT;
     size_t numRegions;
     
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCQY", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
     //Empty matrix. If we put TF as an argument instead, writeMESH will also output the original skinned
     // mesh as a block. This results in hissy fits if you try and skin the mesh again, as the tri facets

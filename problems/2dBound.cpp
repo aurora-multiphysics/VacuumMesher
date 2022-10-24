@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
-    // libMesh::Mesh mesh(init.comm());
+    libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
     libMesh::Mesh surfaceMesh(init.comm());
     //Create mesh object to store vacuum mesh
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 
     surfaceMesh.read(surfFilepath);
 
-    createEdgeMesh(surfaceMesh, boundaryMesh);
+    // createEdgeMesh(surfaceMesh, boundaryMesh);
 
     // vacuumMesh.read(tetFilepath);
 
