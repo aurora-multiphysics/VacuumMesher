@@ -8,7 +8,8 @@ getGeometryBoundaries(libMesh::Mesh& geometryMesh, std::vector<libMesh::dof_id_t
 }
 
 void 
-getGeometryConnectivity(libMesh::Mesh& geometryMesh, std::vector<std::vector<unsigned int>>& connectivity)
+getGeometryConnectivity(libMesh::Mesh& geometryMesh,
+                        std::vector<std::vector<unsigned int>>& connectivity)
 {
     unsigned int elem_counter = 0;
     for(auto& elem: as_range(geometryMesh.local_elements_begin(), geometryMesh.local_elements_end()))
@@ -25,7 +26,8 @@ getGeometryConnectivity(libMesh::Mesh& geometryMesh, std::vector<std::vector<uns
 }
 
 void 
-removeDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, std::map<int, int>& geomToVacNodes, std::vector<unsigned int>& duplicateNodeIds)
+findDuplicateVerts(libMesh::Mesh& vacuumMesh, libMesh::Mesh& geometryMesh, 
+                     std::map<int, int>& geomToVacNodes, std::vector<unsigned int>& duplicateNodeIds)
 {
     int matches = 0;
     for(auto& geomNode: geometryMesh.local_node_ptr_range())
@@ -51,18 +53,12 @@ addGeomVerts(libMesh::Mesh& geometryMesh,
     int counter = 0;
     for(auto& node: geometryMesh.local_node_ptr_range())
     {
-        
         if(!std::binary_search(duplicateNodeIds.begin(), duplicateNodeIds.end(), node->id()))
         {
             int id = vacuumMesh.max_node_id();
             vacuumMesh.add_point(*node, id);
             geomToVacNodes[node->id()] = id;
         }
-        else
-        {
-            
-        }
-
     }
 }
 
@@ -86,7 +82,7 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
 
     getGeometryConnectivity(geometryMesh, connectivity);
     getGeometryBoundaries(geometryMesh, bdr_node_id_list, bc_id_list);
-    removeDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
+    findDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
     addGeomVerts(geometryMesh, vacuumMesh, geomToVacNodes, duplicateNodeIds);
     
 

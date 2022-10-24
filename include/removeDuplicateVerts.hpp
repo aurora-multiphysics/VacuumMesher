@@ -9,9 +9,14 @@
 #include "surfaceMeshing.hpp"
 #include "utility"
 
-
+/**
+* findDuplicateVerts() searches the mesh of the original geometry and the vacuum mesh
+* for identical nodes. If an identical node is found, then its corresponding ID in the geometry
+* mesh is stored in the duplicateNodeIds vector. This vector is then used in a binary search at a 
+* later point to avoid adding these points to the vacuum mesh.
+*/
 void 
-removeDuplicateVerts(libMesh::Mesh& vacuumMesh, 
+findDuplicateVerts(libMesh::Mesh& vacuumMesh, 
                      libMesh::Mesh& geometryMesh, 
                      std::map<int, int>& geomToVacNodes,
                      std::vector<unsigned int>& duplicateNodeIds);
