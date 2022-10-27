@@ -52,12 +52,12 @@ int main(int argc, char** argv)
     libMesh::Mesh vacuumMesh(init.comm());
     
     //Read volume mesh
+    std::cout << "Reading mesh...\n" << std::endl;
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
     // 1. Produce Skinned Mesh 
-        // Perhaps I need to make sure that the centroid of the shape is set to 0,0,0 at or 
-        // BEFORE this point
-
+    // Perhaps I need to make sure that the centroid of the shape is set to 0,0,0 at or 
+    // BEFORE this point
     // Get the surface mesh
     getSurface(mesh, surfaceMesh, true, surfFilepath);
     std::cout << surfFilepath << std::endl;
@@ -66,19 +66,19 @@ int main(int argc, char** argv)
     // 1.5. Enforce consistent normal orientation??
 
     // 2. Get seed points from skinned Mesh
-        // Convert exodus mesh to .off for libIGL
-        // Use get seed points 
-        // Delete off mesh that was created 
-    // Eigen::MatrixXd seed_points = getSeeds(surfFilepath);
+    // Convert exodus mesh to .off for libIGL
+    // Use get seed points 
+    // Delete off mesh that was created 
+    Eigen::MatrixXd seed_points = getSeeds(surfFilepath);
     
     // 3. Add bounding volume to skinned mesh
-        // Should be able to choose shape type and size 
-        // Should check that the bounding area is larger than the bounding box of the shape 
-    // createBound(surfFilepath);
+    // Should be able to choose shape type and size 
+    // Should check that the bounding area is larger than the bounding box of the shape 
+    createBound(surfFilepath);
     
     // 4. Tetrahedralise
 
-    // tetrahedraliseVacuumRegion(boundFilepath, tetFilename, seed_points, vacuumMesh);
+    tetrahedraliseVacuumRegion(boundFilepath, tetFilepath, seed_points, vacuumMesh);
 
     // 5. Output
         // Should the output be one big exodus mesh or just the vacuum

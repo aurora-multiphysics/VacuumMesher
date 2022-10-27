@@ -38,39 +38,6 @@ void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet,
     }
 }
 
-
-void getElemInfo(libMesh::ElemType& elem_type, libMesh::ElemType& face_type, 
-                 libMesh::Elem* element, int& num_elem_faces, int& num_face_nodes)
-{
-    elem_type = element->type();
-    switch (elem_type)
-    {
-        case (libMesh::HEX8):
-            num_elem_faces = 6;
-            num_face_nodes = 4;
-            face_type = libMesh::QUAD4;
-            break;
-            
-        case (libMesh::HEX27):
-            num_elem_faces = 6;
-            num_face_nodes = 9;
-            face_type = libMesh::QUAD9;
-            break;
-        
-        case (libMesh::TET4):
-            num_elem_faces = 4;
-            num_face_nodes = 3;
-            face_type = libMesh::TRI3;
-            break;
-
-        case (libMesh::TET10):
-            num_elem_faces = 4;
-            num_face_nodes = 6;
-            face_type = libMesh::TRI6;
-            break;
-    }
-}
-
 // Get surface for when the user just wants the whole mesh skinned, and not a subsection of it
 //  i.e. they haven't specified an elSet
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh, std::string outputFilename)

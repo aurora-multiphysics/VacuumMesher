@@ -12,7 +12,7 @@ output_file_name = ((os.path.basename(file_path)).split(sep='surf'))[0] + "bound
 # export_name 
 cubit.init(['cubit','-nojournal'])
 cubit.cmd('set echo on')
-cubit.cmd('brick x 3 y 3 z 3')
+cubit.cmd('brick x 300 y 300 z 300')
 cubit.cmd('surface all copy')
 cubit.cmd('del vol 1')
 cubit.cmd('surface all scheme trimesh')

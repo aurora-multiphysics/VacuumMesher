@@ -41,8 +41,10 @@ removeDupeNodes(libMesh::Mesh& mesh)
                     libMesh::Elem* elem_ptr = mesh.elem_ptr(elem);
                     elem_ptr->set_node(elem_ptr->local_node(old_id)) = mesh.node_ptr(new_id);
                 } 
+                mesh.delete_node(mesh.node_ptr(old_id));
             }
         }
     }
+    mesh.prepare_for_use();
     std::cout << "Dupes removed" << std::endl;
 }

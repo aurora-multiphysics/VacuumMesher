@@ -1,0 +1,5 @@
+brick x 300 y 300 z 300
+block 2 add surf all
+surf all scheme trimesh
+mesh surf all
+move Surface 1  z +150 include_merged

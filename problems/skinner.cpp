@@ -23,23 +23,26 @@ int main(int argc, char** argv)
         std::cout << "Error, mesh file argument is required." << std::endl;
         return -1;
     }
-
-    std::string filename = argv[1];
-    std::string path = "./Meshes/";
-    std::string outputExtension = ".e";
-    std::string token = filename.substr(0, filename.find("."));
-    const std::string outputFile = path + "Outputs/" + token + "_surface" + outputExtension;
-    std::string componentFilename = path + "Outputs/" + token + "_component_";
-    filename = path + filename;
-    //Initialise libmesh functions and mpi
-    for(int i = 1; i<argc; i++)
-    {   
-        argv[i][0] = 0;
-    }
+    std::string appName(argv[0]);
+    std::vector<char*> libmeshArgv = {(char*)appName.data()};
+    std::string path, filepath, filenameNoExt, surfFilename, boundFilename, tetFilename; 
+    std::string surfFilepath, boundFilepath, tetFilepath; 
+    std::string filename(argv[1]);
     
-    std::cout << argv[0] << std::endl;
-    argc = 1;
-    LibMeshInit init(argc, argv);
+    path = "./Meshes/";
+    filepath = path + filename;
+    filenameNoExt = filename.substr(0, filename.find("."));
+
+    surfFilename = filenameNoExt + "_surf.e";
+    boundFilename = filenameNoExt + "_bound.e";
+    tetFilename = filenameNoExt + "_tet.mesh";
+
+    surfFilepath = path + surfFilename; 
+    boundFilepath = path + boundFilename;
+    tetFilepath = path + tetFilename; 
+
+    //Initialise libmesh functions and mpi    
+    LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store volume mesh
     Mesh mesh(init.comm());
 
@@ -48,25 +51,15 @@ int main(int argc, char** argv)
 
     std::cout << "Reading Mesh" << std::endl;
     //Read volume mesh
-    mesh.read(filename);
+    mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
 
     std::vector<int> elems;
-    elems.reserve(mesh.n_elem());
-    for (int i = 0; i < mesh.n_elem(); ++i)
-    {
-        elems.emplace_back(i);
-    }
-    // elems.reserve(2);
-    // elems.emplace_back(0);
-    // elems.emplace_back(7);
-    
-    std::sort(elems.begin(), elems.end());
-    
+
     std::cout << "Skinning Beginning" << std::endl;
 
     auto start1 = std::chrono::steady_clock::now();
-    getSurface(mesh, surfaceMesh, elems);
+    getSurface(mesh, surfaceMesh, true, surfFilepath);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

@@ -20,9 +20,9 @@
 # target_link_libraries(argumentIn PUBLIC ${libmesh_LIBS})
 
 # #Skinning
-# add_executable(skinner skinner.cpp ${projectSrc})
-# target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-# target_link_libraries(skinner PUBLIC ${libmesh_LIBS})
+add_executable(skinner skinner.cpp ${projectSrc})
+target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(skinner PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 
 # #reskin
@@ -91,12 +91,12 @@
 #The whole shabang
 add_executable(makeVac makeVacuumMesh.cpp ${projectSrc})
 target_include_directories(makeVac PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(makeVac ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+target_link_libraries(makeVac PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 #Just generate tets
 add_executable(genTets generateVacuumTet.cpp ${projectSrc})
 target_include_directories(genTets PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(genTets ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+target_link_libraries(genTets PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 #The whole shabang
 # add_executable(libmeshData cubetest.cpp ${projectSrc})
@@ -106,11 +106,20 @@ target_link_libraries(genTets ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree
 #Remove duplicate verts
 add_executable(removeDupe removeDuplicates.cpp ${projectSrc})
 target_include_directories(removeDupe PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(removeDupe ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen)
+target_link_libraries(removeDupe PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 #Generate 2D boundary
 add_executable(generateBound 2dBound.cpp ${projectSrc})
 target_include_directories(generateBound PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(generateBound ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::tetgen igl_restricted::triangle)
+target_link_libraries(generateBound PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 
+# Mesh boolean
+add_executable(meshBool 2dBound.cpp ${projectSrc})
+target_include_directories(meshBool PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(meshBool PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+
+# transfer
+add_executable(transfer libiglTransfer.cpp ${projectSrc})
+target_include_directories(transfer PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(transfer PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)

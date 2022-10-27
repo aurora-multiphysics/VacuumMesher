@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "genFullMesh.hpp"
 #include "libmesh/elem.h"
 #include "libmesh/mesh.h"
 #include "libmesh/libmesh.h"
@@ -16,14 +17,15 @@
 #include <igl/writeMESH.h>
 #include <igl/writeOFF.h>
 #include <igl/decimate.h>
-#include "surfaceMeshing.hpp"
 #include "utility"
-#include <igl/triangle/triangulate.h>
-
+#include "getElemInfo.hpp"
 void 
-getBoundingEdges(libMesh::Elem* elem, 
+isBoundingEdge(libMesh::Elem* elem, 
                  std::vector<libMesh::dof_id_type>& element_id_list,
                  std::vector<int>& boundarySides);
 
 void
+createTriangulation(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh);
+
+void 
 createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh);

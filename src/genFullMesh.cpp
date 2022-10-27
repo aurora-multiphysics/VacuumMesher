@@ -1,4 +1,5 @@
-#include "removeDuplicateVerts.hpp"
+#include "genFullMesh.hpp"
+
 
 void 
 getGeometryBoundaries(libMesh::Mesh& geometryMesh, std::vector<libMesh::dof_id_type>& node_id_list, std::vector<libMesh::boundary_id_type>& bc_id_list)
@@ -64,9 +65,9 @@ addGeomVerts(libMesh::Mesh& geometryMesh,
 
 
 void 
-createFullGeometry(libMesh::Mesh& geometryMesh,
-                   libMesh::Mesh& vacuumMesh)
+createFullGeometry(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh)
 {
+    std::cout << "Getting full geom" << std::endl;
     libMesh::ElemType elem_type, face_type; 
     int num_elem_faces, num_face_nodes;
     int num_nodes_per_el = 4;
@@ -76,16 +77,21 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
     std::vector<unsigned int> duplicateNodeIds;
 
     std::vector<std::vector<unsigned int>>connectivity(geometryMesh.n_local_elem(), std::vector<unsigned int>(num_nodes_per_el, 1));
-
-    getElemInfo(elem_type, face_type, 
-                geometryMesh.elem_ptr(0), num_elem_faces, num_face_nodes);
-
+    
+    std::cout << "Getting elem ptr" << std::endl;
+    libMesh::Elem* geom_elemPtr = geometryMesh.elem_ptr(1);
+    // std::cout << geom_elemPtr->type() << std::endl;
+    getElemInfo(elem_type, face_type, geom_elemPtr, num_elem_faces, num_face_nodes);
+    std::cout << "Getting connectivity" << std::endl;
     getGeometryConnectivity(geometryMesh, connectivity);
+    std::cout << "Getting boundaries" << std::endl;
     getGeometryBoundaries(geometryMesh, bdr_node_id_list, bc_id_list);
+    std::cout << "Finding duplicate vertices" << std::endl;
     findDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
+    std::cout << "Adding new vertices" << std::endl;
     addGeomVerts(geometryMesh, vacuumMesh, geomToVacNodes, duplicateNodeIds);
     
-
+    std::cout << "Building final mesh" << std::endl;
     int elem_count = 0;
     for(auto& elem_conn: connectivity)
     {
@@ -98,7 +104,7 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
         vacuumMesh.add_elem(elem);
         elem_count++;
     }
-
+    std::cout << "Building sidesets" << std::endl;
     for(int node_num = 0; node_num < bdr_node_id_list.size(); node_num++)
     {
         vacuumMesh.boundary_info->add_node(geomToVacNodes[bdr_node_id_list[node_num]], bc_id_list[node_num]);
@@ -112,3 +118,5 @@ createFullGeometry(libMesh::Mesh& geometryMesh,
     vacuumMesh.prepare_for_use();
     vacuumMesh.write("fullGeom.e");
 }
+
+
