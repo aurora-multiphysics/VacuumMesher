@@ -2,24 +2,13 @@
 
 namespace fs = std::filesystem;
 
-void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh)
+void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints)
 {   
-    std::cout << filename << std::endl;
-    std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
-    std::string stem = std::filesystem::path(filename).stem().string();
-    std::string tetStem = std::filesystem::path(outname).stem().string();
-    std::string offFilepath = dir + stem + ".off";
-    std::string tetFilepath = dir + tetStem + ".mesh";
-
-    convertMesh(filename, "off");
     Eigen::MatrixXd V;
-    Eigen::MatrixXi F;  
-    Eigen::MatrixXi T;
-    igl::readOFF(offFilepath, V, F);
+    Eigen::MatrixXi F;
+    libMeshToIGL(boundaryMesh, V, F);
 
     // visualiseSeedPoints(offFilepath, seedPoints);
-
-
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;  
@@ -32,21 +21,7 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
     
     igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
-    //Empty matrix. If we put TF as an argument instead, writeMESH will also output the original skinned
-    // mesh as a block. This results in hissy fits if you try and skin the mesh again, as the tri facets
-    // from the extra block overlap with the faces of the tets and everything goes haywire
-    Eigen::MatrixXi emptyFaces;
-
-
-    igl::writeMESH(tetFilepath, TV, TT, emptyFaces);
-
-    
-    convertMesh(tetFilepath, "e");
-
-    //Deleting unnecessary filetypes
-    unlink(tetFilepath.c_str());
-    unlink(offFilepath.c_str());
-    vacuumMesh.read(dir+tetStem+".e");
+    IGLToLibMesh(vacuumMesh, TV, TT);
 }
 
 

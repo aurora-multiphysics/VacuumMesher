@@ -82,12 +82,16 @@ createFullGeometry(libMesh::Mesh& geometryMesh, libMesh::Mesh& vacuumMesh)
     libMesh::Elem* geom_elemPtr = geometryMesh.elem_ptr(1);
     // std::cout << geom_elemPtr->type() << std::endl;
     getElemInfo(elem_type, face_type, geom_elemPtr, num_elem_faces, num_face_nodes);
+
     std::cout << "Getting connectivity" << std::endl;
     getGeometryConnectivity(geometryMesh, connectivity);
+
     std::cout << "Getting boundaries" << std::endl;
     getGeometryBoundaries(geometryMesh, bdr_node_id_list, bc_id_list);
+
     std::cout << "Finding duplicate vertices" << std::endl;
     findDuplicateVerts(vacuumMesh, geometryMesh, geomToVacNodes, duplicateNodeIds);
+    
     std::cout << "Adding new vertices" << std::endl;
     addGeomVerts(geometryMesh, vacuumMesh, geomToVacNodes, duplicateNodeIds);
     

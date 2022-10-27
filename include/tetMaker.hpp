@@ -21,6 +21,8 @@
 #include "libmeshToIgl.hpp"
 
 
-void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh);
+void 
+tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints);
 
-Eigen::MatrixXd getSeeds(libMesh::Mesh mesh);
+Eigen::MatrixXd 
+getSeeds(libMesh::Mesh mesh);
