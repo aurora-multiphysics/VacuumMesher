@@ -24,7 +24,7 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
     int num_elem_faces, num_face_nodes;
 
     unsigned int boundaryElemCount = 0;
-    // std::vector<int> boundEdgeList;
+
     std::vector<libMesh::dof_id_type> element_id_list;
     std::vector<libMesh::dof_id_type> current_node_ids;
     std::vector<libMesh::boundary_id_type> bc_id_list;
@@ -34,23 +34,11 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
     // Map from current node ids to the node ids that will be used in the boundary mesh
     std::map<int, int> newNodeIds;
 
-    // Input data to triangulate our boundary region
-    Eigen::MatrixXd V;
-    Eigen::MatrixXd H(2,2);
-    Eigen::MatrixXi E;
-    
-    // Matrices to store our boundary
-    Eigen::MatrixXd V2;
-    Eigen::MatrixXi F2;
-    
     libMesh::Elem* elem_ptr = surfaceMesh.elem_ptr(0);
     //Return via arg element properties
     getElemInfo(elem_type, face_type, 
             elem_ptr, num_elem_faces, num_face_nodes);
 
-    std::cout << elem_type << std::endl;
-    std::cout << face_type << std::endl;
- 
     // Get sidesets of mesh
     surfaceMesh.get_boundary_info().build_active_side_list(element_id_list, side_list, bc_id_list);
 
@@ -122,9 +110,64 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
     boundaryMesh.set_mesh_dimension(1);
     boundaryMesh.set_spatial_dimension(2);
     boundaryMesh.prepare_for_use();
+
+    createBoundingPlane(surfaceMesh, boundaryMesh, 300);
     boundaryMesh.write("boundaryOut.e");
 }
 
+void
+createBoundingPlane(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh, double boxSize)
+{
+    libMesh::BoundingBox box = libMesh::MeshTools::create_bounding_box(surfaceMesh);
+    double pnt[3];
+    pnt[0] = boxSize/2;
+    pnt[1] = boxSize/2;
+    std::cout << boundaryMesh.max_node_id() << std::endl;
+    libMesh::Point xy(pnt[0], pnt[1]);
+    boundaryMesh.add_point(xy, boundaryMesh.max_node_id());
+
+    pnt[0] = -boxSize/2;
+    pnt[1] = boxSize/2;
+    libMesh::Point xy1(pnt[0], pnt[1]);
+    boundaryMesh.add_point(xy1, boundaryMesh.max_node_id());
+
+    pnt[0] = boxSize/2;
+    pnt[1] = -boxSize/2;
+    libMesh::Point xy2(pnt[0], pnt[1]);
+    boundaryMesh.add_point(xy2, boundaryMesh.max_node_id());
+
+    pnt[0] = -boxSize/2;
+    pnt[1] = -boxSize/2;
+    libMesh::Point xy3(pnt[0], pnt[1]);
+    boundaryMesh.add_point(xy3, boundaryMesh.max_node_id());
+
+    std::cout << boundaryMesh.max_node_id() << std::endl;
+
+
+    for(int i = 3; i > 0; i--)
+    {
+        libMesh::Elem* elem = libMesh::Elem::build(libMesh::EDGE2).release();
+        
+        for(int j = 0; j < 2; j++)
+        {
+            elem->set_node(j) = boundaryMesh.node_ptr(boundaryMesh.max_node_id() - i + j);
+        }
+
+        boundaryMesh.add_elem(elem);
+    }
+    std::cout << "Check" << std::endl;
+
+
+    libMesh::Elem* elem = libMesh::Elem::build(libMesh::EDGE2).release();
+    elem->set_node(0) = boundaryMesh.node_ptr(boundaryMesh.max_node_id());
+    elem->set_node(1) = boundaryMesh.node_ptr(boundaryMesh.max_node_id()-3);
+    boundaryMesh.add_elem(elem);
+    std::cout << "Check" << std::endl;
+
+    boundaryMesh.set_mesh_dimension(1);
+    boundaryMesh.set_spatial_dimension(2);
+    boundaryMesh.prepare_for_use();
+}
 
 // void
 // createTriangulation(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
@@ -178,34 +221,6 @@ createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh)
 //     boundingSquare.push_back({2*box.min()(0), 2*box.min()(1)});
 //     boundingSquare.push_back({2*box.min()(0), 2*box.max()(1)});
     
-
-
-
-//     V(current_node_ids.size(), 0) = 150;
-//     V(current_node_ids.size(), 1) = 150;
-
-//     V(current_node_ids.size() + 1, 0) = 150;
-//     V(current_node_ids.size() + 1, 1) = -150;
-
-//     V(current_node_ids.size() + 2, 0) = -150;
-//     V(current_node_ids.size() + 2, 1) = -150;
-
-//     V(current_node_ids.size() + 3, 0) = -150;
-//     V(current_node_ids.size() + 3, 1) = 150;
-
-//     E(boundaryElemCount, 0) = current_node_ids.size();
-//     E(boundaryElemCount, 1) = current_node_ids.size() + 1;
-
-//     E(boundaryElemCount + 1, 0) = current_node_ids.size() + 1;
-//     E(boundaryElemCount + 1, 1) = current_node_ids.size() + 2;
-
-//     E(boundaryElemCount + 2, 0) = current_node_ids.size() + 2;
-//     E(boundaryElemCount + 2, 1) = current_node_ids.size() + 3;
-
-//     E(boundaryElemCount + 3, 0) = current_node_ids.size() + 3;
-//     E(boundaryElemCount + 3, 1) = current_node_ids.size();
-
-
 //     H <<
 //     0.035873, 0.017588,
 //     -16.982617, 14.362826;

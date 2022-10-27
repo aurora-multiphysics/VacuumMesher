@@ -1,16 +1,16 @@
 #include "libmeshToIgl.hpp"
 
 void 
-libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
 {
-    V = Eigen::MatrixXd(libmeshMesh.n_nodes(), libmeshMesh.spatial_dimension());
+    V = Eigen::MatrixXd(libmeshMesh.n_nodes(), dim);
     F = Eigen::MatrixXi(libmeshMesh.n_elem(), libmeshMesh.elem_ptr(0)->n_nodes());
     for(auto& node: libmeshMesh.local_node_ptr_range())
     {
         V(node->id(), 0) = (*node)(0);
         V(node->id(), 1) = (*node)(1);
         
-        if(libmeshMesh.spatial_dimension() == 3)
+        if(dim == 3)
         {
             V(node->id(), 2) = (*node)(2);
         }

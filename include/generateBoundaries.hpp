@@ -29,3 +29,6 @@ createTriangulation(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh);
 
 void 
 createEdgeMesh(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh);
+
+void
+createBoundingPlane(libMesh::Mesh& surfaceMesh, libMesh::Mesh& boundaryMesh, double boxSize);
