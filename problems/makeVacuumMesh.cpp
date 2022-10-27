@@ -9,6 +9,7 @@
 #include "algorithm"
 #include"visualiseSeedPoints.hpp"
 #include "pythonTools.hpp"
+#include "libmeshToIgl.hpp"
 
 int main(int argc, char** argv)
 {   
@@ -69,16 +70,16 @@ int main(int argc, char** argv)
     // Convert exodus mesh to .off for libIGL
     // Use get seed points 
     // Delete off mesh that was created 
-    Eigen::MatrixXd seed_points = getSeeds(surfFilepath);
+    Eigen::MatrixXd seed_points = getSeeds(surfaceMesh);
     
     // 3. Add bounding volume to skinned mesh
     // Should be able to choose shape type and size 
     // Should check that the bounding area is larger than the bounding box of the shape 
-    createBound(surfFilepath);
+    // createBound(surfFilepath);
     
     // 4. Tetrahedralise
 
-    tetrahedraliseVacuumRegion(boundFilepath, tetFilepath, seed_points, vacuumMesh);
+    // tetrahedraliseVacuumRegion(boundFilepath, tetFilepath, seed_points, vacuumMesh);
 
     // 5. Output
         // Should the output be one big exodus mesh or just the vacuum

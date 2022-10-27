@@ -50,21 +50,19 @@ void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen
 }
 
 
-Eigen::MatrixXd getSeeds(std::string filename)
+Eigen::MatrixXd getSeeds(libMesh::Mesh mesh)
 {
-    std::string dir = std::filesystem::path(filename).parent_path().string() + "/";
-    std::string stem = std::filesystem::path(filename).stem().string();
-    std::string offFilepath = dir + stem + ".off";
-
-    convertMesh(filename, "off");
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;  
+
+    libMeshToIGL(mesh, V, F);
+
     Eigen::MatrixXd N_faces;
-    igl::readOFF(offFilepath, V, F);
+
     Eigen::MatrixXd seed_points(F.rows(), 3);
+
     igl::per_face_normals(V,F,N_faces);
 
-    auto start = std::chrono::high_resolution_clock::now(); 
     for(int i; i < N_faces.rows(); i++)
     {
         std::vector<double> seed(3, 0);
@@ -78,8 +76,5 @@ Eigen::MatrixXd getSeeds(std::string filename)
         seed_points.row(i) << seed[0], seed[1], seed[2];
     }
 
-    //Delete .off file, no longer needed
-    unlink(offFilepath.c_str());
-    std::cout << seed_points.rows() << " seed points." << std::endl;
     return seed_points;
 }

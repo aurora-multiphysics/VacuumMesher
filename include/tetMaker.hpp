@@ -18,8 +18,9 @@
 #include <filesystem>
 #include "pythonTools.hpp"
 #include "visualiseSeedPoints.hpp"
+#include "libmeshToIgl.hpp"
 
 
 void tetrahedraliseVacuumRegion(std::string filename, std::string outname, Eigen::MatrixXd& seedPoints, libMesh::Mesh& vacuumMesh);
 
-Eigen::MatrixXd getSeeds(std::string filename);
+Eigen::MatrixXd getSeeds(libMesh::Mesh mesh);
