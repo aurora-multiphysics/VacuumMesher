@@ -1,3 +1,5 @@
+#pragma once
+
 #include "getElemInfo.hpp"
 #include "libmesh/elem.h"
 #include "libmesh/mesh.h"
@@ -12,7 +14,7 @@
 #include "utility"
 
 void 
-libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim = 3);
+libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim=3);
 
 void
 IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F);

@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     
     // 4. Tetrahedralise
 
-    tetrahedraliseVacuumRegion(boundFilepath, tetFilename, seed_points, vacuumMesh);
+    tetrahedraliseVacuumRegion(boundaryMesh, vacuumMesh, seed_points);
 
     // 5. Output
         // Should the output be one big exodus mesh or just the vacuum

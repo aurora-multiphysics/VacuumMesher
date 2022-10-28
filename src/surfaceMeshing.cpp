@@ -15,7 +15,6 @@ void isElementSurface(libMesh::Elem& element, std::vector<int>& surfaceFaces)
     }
 }
 
-
 // isElementSurface for if user specifies an elSet in getSurface
 void isElementSurface(libMesh::Elem& element, std::vector<int>& elSet, 
                       std::vector<int>& surfaceFaces)

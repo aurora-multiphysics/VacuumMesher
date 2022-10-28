@@ -25,22 +25,15 @@ protected:
         // Initialise object to hold surface mesh
         surfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
 
+        // Initialise the reference surfaceMesh we will compare to 
+        refSurfaceMesh = std::make_shared<libMesh::Mesh>(init->comm());
+
         // Generate the surface mesh 
         getSurface(*mesh, *surfaceMesh);
     }
 
-    virtual bool checkAll2DElem()
-    {
-        for(auto& elem: surfaceMesh->element_ptr_range())
-        {
-            if(elem->type() > 7)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     // Libmesh Mesh object to store the skinned mesh
     std::shared_ptr<libMesh::Mesh> surfaceMesh = nullptr;
+
+    std::shared_ptr<libMesh::Mesh> refSurfaceMesh = nullptr;
 };

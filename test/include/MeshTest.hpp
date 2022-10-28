@@ -20,7 +20,8 @@ protected:
     virtual void getFilePaths() 
     {
         filenameNoExt = std::filesystem::path(filename).stem().string();
-        filepath = "./test/testingMeshes/gold/" + filenameNoExt + ".e"; 
+        filepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + ".e"; 
+        refSurfaceFilepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + "_surf.e";
     }
 
     virtual void setMesh() 
@@ -39,5 +40,5 @@ protected:
     std::shared_ptr<libMesh::Mesh> mesh = nullptr;
     
     //File name of the mesh to be skinned
-    std::string filename, filenameNoExt, filepath;
+    std::string filename, filenameNoExt, filepath, refSurfaceFilepath, refBoundaryFilepath, vacuumFilepath;
 };
