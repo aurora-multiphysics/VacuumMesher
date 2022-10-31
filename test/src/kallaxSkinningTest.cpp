@@ -35,10 +35,7 @@ TEST_F(kallaxSkinningTest, check2DElems)
     }
 }
 
-TEST_F(kallaxSkinningTest, check2DElems)
+TEST_F(kallaxSkinningTest, checkNumParts)
 {
-    for(auto& elem: surfaceMesh->element_ptr_range())
-    {
-        EXPECT_LT(elem->type(), 7) << "Not all elements are 2D, as would be expected from a skinned mesh";
-    }
+    // ASSERT_EQ();
 }
