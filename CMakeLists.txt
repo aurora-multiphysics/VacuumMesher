@@ -7,6 +7,15 @@ add_compile_options(-O3)
 #Project Path
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+#Check if MOOSE_DIR is defined
+if(NOT DEFINED MOOSE_DIR)
+    message(SEND_ERROR "Please define your MOOSE dir")
+endif()
+
+#Get gtest and MPI packages
+find_package(GTest REQUIRED)
+find_package(MPI REQUIRED)
+
 #libigl
 option(LIBIGL_INSTALL            "Enable installation of libigl targets" ON)
 
@@ -27,13 +36,8 @@ option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 
 include(libigl)
 # Locate GTest and MPI
-find_package(GTest REQUIRED)
-find_package(MPI REQUIRED)
-
-include_directories(${GTEST_INCLUDE_DIRS})
 
 execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-# execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include 
     ${MOOSE_DIR}/libmesh/installed/include/libmesh 
