@@ -20,3 +20,5 @@ test/testingMeshes/
 *.step
 *.jou
 *.csv
+*~
+Visualisations/*
