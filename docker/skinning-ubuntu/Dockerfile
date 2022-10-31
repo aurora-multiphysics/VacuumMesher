@@ -13,8 +13,9 @@ RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y \
     curl \
     libboost-all-dev \
+    openmpi-bin \
     libnetcdf-dev \
-    libhdf5-mpich-dev \
+    libhdf5-openmpi-dev \
     libssl-dev \
     xxd \
     libfontconfig1-dev \
