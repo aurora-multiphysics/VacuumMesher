@@ -15,3 +15,8 @@ build/
 CMakeFiles/
 Meshes/
 test/testingMeshes/
+*.face
+*.node
+*.step
+*.jou
+*.csv
