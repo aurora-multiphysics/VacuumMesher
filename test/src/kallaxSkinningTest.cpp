@@ -4,7 +4,6 @@ class kallaxSkinningTest : public SkinningTest
 {
  protected:
     kallaxSkinningTest() : SkinningTest("kallax.e"){} 
-
     virtual void OverRide() {BasicTest::TearDown();}
 };
 
@@ -37,5 +36,7 @@ TEST_F(kallaxSkinningTest, check2DElems)
 
 TEST_F(kallaxSkinningTest, checkNumParts)
 {
-    // ASSERT_EQ();
+    std::vector<std::vector<libMesh::dof_id_type>> groups;
+    groupElems(*surfaceMesh, groups);
+    ASSERT_EQ(groups.size(), 5);
 }

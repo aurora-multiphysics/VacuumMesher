@@ -1,0 +1,26 @@
+name: BuildTest
+on:
+  push:
+    branches:
+       - master
+       - manifoldSplitter
+  pull_request:
+    branches:
+       - master
+       - manifoldSplitter
+
+jobs:
+  docker-build-test-ubuntu:
+    runs-on: ubuntu-latest
+    name: BuildTestUbuntu
+    env:
+      PRCOMMITSHA : ${{ github.event.pull_request.head.sha }}
+    steps:
+      # First check out the repository to get the docker file
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Now build in a container with all deps
+      - name: PrintGithubContext
+        run: echo $PRCOMMITSHA
+      - name:  DockerBuildTestPush
+        run: docker build -t ci-libskin-ubuntu docker/skinning-ubuntu/name: BuildTest

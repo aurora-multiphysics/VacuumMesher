@@ -1,5 +1,5 @@
 # Get base image
-FROM idaholab/moose:latest
+FROM ubuntu:latest
 
 # By default one core is used to compile
 ARG compile_cores=6
@@ -8,9 +8,9 @@ ARG compile_cores=6
 ARG WORKDIR="opt"
 ARG build_git_sha="master"
 
+RUN apt-get update -y && apt-get upgrade -y
 # Install apt dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y \
-    clang-format-9 \
     curl \
     libboost-all-dev \
     libnetcdf-dev \
@@ -23,7 +23,12 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install 
     libglew-dev \
     libglm-dev \
     libpng-dev \
-    ninja-build
+    ninja-build \
+    build-essential \
+    git \
+    python3 \
+    python-is-python3 \
+    flex bison
 
 # Install CMake
 RUN cd /$WORKDIR && \
@@ -35,8 +40,20 @@ RUN cd /$WORKDIR && \
     make install && \
     alias cmake='/$WORKDIR/CMake/bin/cmake'
 
-# Get libIGL
+#install moose
+RUN cd /$WORKDIR && \
+    git clone https://github.com/idaholab/moose.git && \
+    cd moose && \
+    git checkout master && \
+    MOOSE_JOBS="$compile_cores" && \
+    ./scripts/update_and_rebuild_petsc.sh && \
+    ./scripts/update_and_rebuild_libmesh.sh && \
+    cd /$WORKDIR/moose/test && \
+    make -j "$compile_cores"
 
+
+
+# Get libIGL
 RUN cd /$WORKDIR && \
     git clone https://github.com/libigl/libigl.git && \
     cd libigl && \
@@ -50,7 +67,10 @@ RUN cd /$WORKDIR && \
     git checkout manifoldSplitter && \
     mkdir build && \
     cd build && \
-    cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DMOOSE_DIR=/opt/moose ../
+    cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DMOOSE_DIR=/opt/moose ../ && \
+    make -j "$compile_cores" && \
+    cd /opt/libmeshSkinning && \
+    ./build/tests/runTests
 
 
 

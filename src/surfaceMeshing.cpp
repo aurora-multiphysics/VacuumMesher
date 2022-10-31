@@ -174,7 +174,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh,
     std::cout << "Created skinned mesh" << std::endl;
 }
 
-
 // Get surface for when the user DOES want only a subset of the mesh skinned
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet, bool writeMesh, std::string outputFilename)
 {   
@@ -280,7 +279,6 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
         surfaceMesh.write(outputFilename);
     }
 }
-
 
 void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>& groups)
 {
