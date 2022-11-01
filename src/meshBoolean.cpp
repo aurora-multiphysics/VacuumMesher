@@ -1,41 +1,33 @@
 #include"meshBoolean.hpp"
 
-// namespace fs = std::filesystem;
 
-void genBooleanBound(std::string& boundPath, std::string& surfacePath, 
-                     libMesh::Mesh& boundaryMesh, libMesh::Mesh& surfaceMesh)
+void genBooleanBound(libMesh::Mesh& boundaryMesh, 
+                     libMesh::Mesh& surfaceMesh, 
+                     libMesh::Mesh& mesh)
 {   
-    std::string boundDir = std::filesystem::path(boundPath).parent_path().string() + "/";
-    std::string boundStem = std::filesystem::path(boundPath).stem().string();
-    std::string surfDir = std::filesystem::path(surfacePath).parent_path().string() + "/";
-    std::string surfStem = std::filesystem::path(surfacePath).stem().string();
-    std::string boundOffPath = boundDir + boundStem + ".off"; 
-    std::string surfOffPath = surfDir + surfStem + ".off"; 
-    std::string boundOutOffPath = boundDir + boundStem + "_out.off"; 
+    // Normals for visualising
+    Eigen::MatrixXd N_faces;
 
-    convertMesh(boundPath, "off");
-    convertMesh(surfacePath, "off");
-    std::cout << surfOffPath << " " << boundOffPath << std::endl;
     Eigen::MatrixXd VA,VB,VC;
     Eigen::MatrixXi FA, FB, FC;  
-    Eigen::VectorXi J,I;
-    std::cout << boundPath << std::endl;
-    igl::readOFF(surfOffPath, VA, FA);
-    igl::readOFF(boundOffPath, VB, FB);
-    std::cout << VA.rows() << " " << VB.rows() << std::endl;
-    igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_XOR);
+    Eigen::VectorXi J,surfaceMeshI;
+    libMeshToIGL(surfaceMesh, VA, FA);
+    libMeshToIGL(boundaryMesh, VB, FB);
+
+    std::vector<libMesh::dof_id_type> element_id;
+    std::vector<short unsigned int> side_id;
+    std::vector<libMesh::boundary_id_type> bd_id;
+    surfaceMesh.get_boundary_info().build_side_list(element_id, side_id, bd_id);
+    for(int i = 0; i<FA.rows(); i++)
+    {   
+        if(!std::binary_search(element_id.begin(), element_id.end(), i))
+        {
+            reverseNormal(i, FA);
+        }
+    }
+
+    igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_RESOLVE);
 
     igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
-    igl::writeOFF(boundOutOffPath, VC, FC);
-    // igl::writeOFF("./testingworkingsurface.off", VB, FB);
-
-
-
-    
-    convertMesh(boundOutOffPath, "e");
-    // convertMesh("./testingworkingsurface.off", "e");
-
-    //Deleting unnecessary filetypes
-    // unlink(tetFilepath.c_str());
-    // unlink(offFilepath.c_str());
+    IGLToLibMesh(mesh, VC, FC);    
 }

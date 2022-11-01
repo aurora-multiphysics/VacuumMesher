@@ -35,15 +35,22 @@ int main(int argc, char** argv)
 
     surfaceMesh.read(surfFilepath);
 
-    // boundaryMesh.read(boundFilepath);
+    boundaryMesh.read(boundFilepath);
 
-    // genBooleanBound(boundFilepath, surfFilepath, boundaryMesh, surfaceMesh);
+    genBooleanBound(boundaryMesh, surfaceMesh, mesh);
 
-    createEdgeMesh(surfaceMesh, boundaryMesh);
+    mesh.write("booleanTesting.e");
+    // createEdgeMesh(surfaceMesh, boundaryMesh);
 
     // vacuumMesh.read(tetFilepath);
 
     // createFullGeometry(mesh, vacuumMesh);
+    int i = 2;
+    if(true)
+    {
+        i = 3;
+    }
+    std::cout << i << std::endl;
 
     return 0;
 }

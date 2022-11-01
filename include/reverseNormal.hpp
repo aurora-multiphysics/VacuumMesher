@@ -9,4 +9,4 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <chrono>
 
-void flipNormals(std::string filename);
+void reverseNormal(unsigned int facetID , Eigen::MatrixXi& F);
