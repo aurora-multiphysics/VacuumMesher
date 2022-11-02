@@ -49,35 +49,46 @@ int main(int argc, char** argv)
     //Create mesh object to store surface mesh
     Mesh surfaceMesh(init.comm());
 
+    Mesh libmeshTry(init.comm());
+
     std::cout << "Reading Mesh" << std::endl;
     //Read volume mesh
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
+    
+    std::set<libMesh::boundary_id_type> bids = {1};
+
+    
+    mesh.get_boundary_info().sync(libmeshTry);
+    
+    libmeshTry.write("plsnowork.e");
 
     std::vector<int> elems;
 
     std::cout << "Skinning Beginning" << std::endl;
 
     auto start1 = std::chrono::steady_clock::now();
-    getSurface(mesh, surfaceMesh, true, surfFilepath);
+    // getSurface(mesh, surfaceMesh, false, surfFilepath);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
     
+    
+    
 
 
 
-    std::vector<std::vector<libMesh::dof_id_type>> groups;
+    // std::vector<std::vector<libMesh::dof_id_type>> groups;
 
-    auto start = std::chrono::steady_clock::now();
-    // groupElems(surfaceMesh, groups);
-    // saveGroupedElems(init, surfaceMesh, groups, "block6_");
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-    << " ms" << std::endl;
-    surfaceMesh.write("surgery.e");
+    // auto start = std::chrono::steady_clock::now();
+    // // groupElems(surfaceMesh, groups);
+    // // saveGroupedElems(init, surfaceMesh, groups, "block6_");
+    // auto end = std::chrono::steady_clock::now();
+    // std::cout << "Elapsed time in milliseconds: "
+    // << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+    // << " ms" << std::endl;
+    // surfaceMesh.write("surgery.e");
 
     return 0;
 }

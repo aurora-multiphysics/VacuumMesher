@@ -26,7 +26,7 @@ void genBooleanBound(libMesh::Mesh& boundaryMesh,
         }
     }
 
-    igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_RESOLVE);
+    igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_UNION);
 
     igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
     IGLToLibMesh(mesh, VC, FC);    

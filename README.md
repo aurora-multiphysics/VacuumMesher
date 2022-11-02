@@ -18,3 +18,8 @@ Leading on from the mesh skinning is the ability to generate a tetragedra
 ### gotcha's
 Currently all the functionality of all the tools in this repo only apply to tet/tri meshes, as this is what libIGL primarily supports. But if this changes at some ambiguous, arbitrary time in the future, then these tools can be updated to provide functionality for other elements types. 
 
+
+### To do's (More for me than anyone else)
+-Make sure the normals on the geometry/vacuum boundary point OUTWARD into the vacuum for MOOSE reasons
+-Get libmesh to CGAL working 
+
