@@ -1,5 +1,8 @@
 #include "libmeshToIgl.hpp"
 
+
+
+
 void 
 libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
 {
@@ -75,4 +78,56 @@ getElemType(Eigen::MatrixXi& F)
             return(libMesh::TET10);
     }
     return libMesh::INVALID_ELEM;
+}
+
+
+bool
+libmeshToCGAL(libMesh::Mesh& libmeshMesh, 
+              CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly)
+{
+    // Definition of our cgalPoly, which will be the base for our
+    // nefPoly
+    // CGAL::Polyhedron_3 cgalPoly;
+
+    // typedefs for cleanliness
+    typedef typename CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3>::HalfedgeDS HalfedgeDS;
+    typedef typename HalfedgeDS::Vertex Vertex;
+    typedef typename Vertex::Point Point;
+    CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
+    B.begin_surface(libmeshMesh.n_nodes(), libmeshMesh.n_elem());
+
+    // 
+    for(int v = 0;v<libmeshMesh.n_nodes();v++)
+    {
+        libMesh::Node libNode = libmeshMesh.node_ref(v);
+        B.add_vertex(Point(libNode(0), libNode(1), libNode(2)));
+    }
+
+    for(int f=0; f<libmeshMesh.n_elem(); f++)
+    {
+        libMesh::Elem* libPtr = libmeshMesh.elem_ptr(f);
+        std::vector<libMesh::dof_id_type> connec;
+        libPtr->connectivity(0, libMesh::IOPackage::VTK, connec);
+        B.begin_facet();
+        for(int c = 0;c<3;c++)
+        {
+            B.add_vertex_to_facet(connec[c]);
+        }
+        B.end_facet();
+    }
+    if(B.error())
+    {
+        B.rollback();
+        return false;
+    }
+    B.end_surface();
+    return poly.is_valid();
+}
+
+template<typename Polyhedron>
+bool
+CGALToLibmesh(libMesh::Mesh& libmeshMesh,
+              CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly)
+{
+    return true;
 }

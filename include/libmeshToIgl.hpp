@@ -9,6 +9,11 @@
 #include "libmesh/boundary_info.h"
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
+#include <igl/copyleft/cgal/mesh_boolean.h>
+#include "CGAL/Polyhedron_3.h"
+#include "CGAL/Nef_polyhedron_3.h"
+#include "CGAL/Polyhedron_incremental_builder_3.h"
+#include <CGAL/Polyhedron_items_with_id_3.h> 
 
 
 #include "utility"
@@ -21,3 +26,10 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 
 libMesh::ElemType
 getElemType(Eigen::MatrixXi& F);
+
+bool
+libmeshToCGAL(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
+
+bool
+CGALToLibmesh(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
+
