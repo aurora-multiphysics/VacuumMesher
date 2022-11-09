@@ -25,6 +25,8 @@
 void 
 tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints);
 
-// Returns the list of seed points to be used for generating the vacuum mesh
+void 
+tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh);
+
 Eigen::MatrixXd 
 getSeeds(libMesh::Mesh mesh);

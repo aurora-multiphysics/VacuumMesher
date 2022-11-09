@@ -13,7 +13,8 @@
 #include "CGAL/Polyhedron_3.h"
 #include "CGAL/Nef_polyhedron_3.h"
 #include "CGAL/Polyhedron_incremental_builder_3.h"
-#include <CGAL/Polyhedron_items_with_id_3.h> 
+#include "CGAL/Polyhedron_items_with_id_3.h" 
+#include <igl/copyleft/cgal/assign_scalar.h>
 
 
 #include "utility"
@@ -24,12 +25,14 @@ libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
 void
 IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 
+template<typename Polyhedron>
+void
+libmeshToCGAL(libMesh::Mesh& libmeshMesh, Polyhedron & poly);
+
+template<typename Polyhedron>
+void
+CGALToLibmesh(libMesh::Mesh& libmeshMesh, Polyhedron & poly);
+
 libMesh::ElemType
 getElemType(Eigen::MatrixXi& F);
-
-bool
-libmeshToCGAL(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
-
-bool
-CGALToLibmesh(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
 

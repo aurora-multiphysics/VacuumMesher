@@ -1,8 +1,5 @@
 #include "libmeshToIgl.hpp"
 
-
-
-
 void 
 libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
 {
@@ -80,17 +77,13 @@ getElemType(Eigen::MatrixXi& F)
     return libMesh::INVALID_ELEM;
 }
 
-
-bool
+template<typename Polyhedron>
+void
 libmeshToCGAL(libMesh::Mesh& libmeshMesh, 
-              CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly)
+              Polyhedron& poly)
 {
-    // Definition of our cgalPoly, which will be the base for our
-    // nefPoly
-    // CGAL::Polyhedron_3 cgalPoly;
-
     // typedefs for cleanliness
-    typedef typename CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3>::HalfedgeDS HalfedgeDS;
+    typedef typename Polyhedron::HalfedgeDS HalfedgeDS;
     typedef typename HalfedgeDS::Vertex Vertex;
     typedef typename Vertex::Point Point;
     CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
@@ -115,19 +108,67 @@ libmeshToCGAL(libMesh::Mesh& libmeshMesh,
         }
         B.end_facet();
     }
-    if(B.error())
-    {
-        B.rollback();
-        return false;
-    }
+
     B.end_surface();
-    return poly.is_valid();
+    return;
 }
 
 template<typename Polyhedron>
-bool
+void
 CGALToLibmesh(libMesh::Mesh& libmeshMesh,
-              CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly)
+              Polyhedron & poly)
 {
-    return true;
+    // typdef the vertex iterator for cleanliness
+    typedef typename Polyhedron::Vertex_const_iterator Vertex_iterator;
+    // Clear libmesh mesh incase anything is in it
+    libmeshMesh.clear();
+    // 
+    std::map<Vertex_iterator, unsigned int> vertex_to_index;
+    // Counter to give nodes correct ID in libmesh mesh
+    unsigned int id = 0;
+    {
+        double pnt[3];
+        double x,y,z;
+        // Loop over vertices in cgal mesh to 
+        for(Vertex_iterator p = poly.vertices_begin(); 
+            p != poly.vertices_end();
+            p++)
+        {
+            pnt[0]=CGAL::to_double(p->point().x());
+            pnt[1]=CGAL::to_double(p->point().y());
+            pnt[2]=CGAL::to_double(p->point().z());
+            libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+            libmeshMesh.add_point(xyz, id);
+            vertex_to_index[p] = id;
+            id++;
+        }
+    }
+    
+    {
+        for(typename Polyhedron::Facet_const_iterator facet = poly.facets_begin();
+            facet != poly.facets_end();
+            ++facet)
+
+        {
+            // Create libmesh element that represents the CGAL facet, and release it from it's unique_ptr
+            libMesh::Elem* elem = libMesh::Elem::build(libMesh::TRI3).release();
+
+            typename Polyhedron::Halfedge_around_facet_const_circulator he = facet->facet_begin();
+            unsigned int j = 0;
+            do 
+            {
+                elem->set_node(j) = libmeshMesh.node_ptr(vertex_to_index[he->vertex()]);
+                j++;
+            } while ( ++he != facet->facet_begin());
+            libmeshMesh.add_elem(elem);
+        }
+    }
+    libmeshMesh.prepare_for_use();
+    
 }
+
+template void libmeshToCGAL(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
+
+template void CGALToLibmesh(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
+
+

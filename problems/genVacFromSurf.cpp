@@ -53,7 +53,9 @@ int main(int argc, char** argv)
     
     //Read volume mesh
     // mesh.read(filepath);
-    surfMesh.read(filepath);
+    surfaceMesh.read(surfFilepath);
+    boundaryMesh.read(boundFilepath);
+    removeDupeNodes(boundaryMesh);
     std::cout << "Mesh read successfully" << std::endl;
     // 1. Produce Skinned Mesh 
         // Perhaps I need to make sure that the centroid of the shape is set to 0,0,0 at or 
@@ -70,7 +72,7 @@ int main(int argc, char** argv)
         // Convert exodus mesh to .off for libIGL
         // Use get seed points 
         // Delete off mesh that was created 
-    Eigen::MatrixXd seed_points;//getSeeds(surfFilepath);
+    Eigen::MatrixXd seed_points = getSeeds(surfaceMesh);
     
     // 3. Add bounding volume to skinned mesh
     // createBoundary(init, surfMesh);

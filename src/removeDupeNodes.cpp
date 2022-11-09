@@ -69,9 +69,12 @@ combineMesh(const double& tol,
     // time taken to discover duplicate nodes.
     RTree<int, double, 3, float> rtree;
 
-    // Generate the initial tree, containing all the nodes of the vacuum mesh. We will 
-    //  check the nodes of the part mesh against this tree to search for duplicate nodes
-    createTree(rtree, vacMesh, tol);
+            else if(abs((*node_1)(0) == (*node_2)(0)) < 1e-8 &&
+                    abs((*node_1)(1) == (*node_2)(1)) < 1e-8 &&
+                    abs((*node_1)(2) - (*node_2)(2)) < 1e-8)
+            {           
+                libMesh::dof_id_type old_id = id_1 > id_2 ? id_1 : id_2;
+                libMesh::dof_id_type new_id = id_1 < id_2 ? id_1 : id_2;
 
     // This is a map which helps us keep track of the node id's of the duplicate nodes. For example,
     // if Node 4 in the surface mesh and Node 6 in the vacuum mesh are the same, "id_map[4]" will return 6

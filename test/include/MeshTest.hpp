@@ -14,6 +14,7 @@ protected:
 
     virtual void SetUp() override
     {
+        getFilePaths();
         setMesh();
     }
 
@@ -26,7 +27,7 @@ protected:
 
     virtual void setMesh() 
     {   
-        getFilePaths();
+        
         mesh = std::make_shared<libMesh::Mesh>(init->comm());
         readMesh(mesh, filepath);
     }

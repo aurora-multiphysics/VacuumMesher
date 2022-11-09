@@ -14,6 +14,7 @@ protected:
 
     virtual void SetUp() override
     {
+        getFilePaths();
         setMesh();
     }
 

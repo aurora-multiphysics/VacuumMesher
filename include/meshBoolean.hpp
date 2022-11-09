@@ -19,8 +19,13 @@
 #include "libmeshToIgl.hpp"
 #include "reverseNormal.hpp"
 
-
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+typedef typename CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
+typedef typename CGAL::Nef_polyhedron_3<K> Nef_Polyhedron;
 
 void genBooleanBound(libMesh::Mesh& boundaryMesh, 
                      libMesh::Mesh& surfaceMesh, 
                      libMesh::Mesh& newMesh);
+
+Polyhedron 
+subtract_volumes_poly(Polyhedron geom, Polyhedron bound);

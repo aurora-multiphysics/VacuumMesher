@@ -15,6 +15,7 @@ protected:
 
     virtual void SetUp() override
     {
+        getFilePaths();
         setMesh();
     }
 
@@ -27,7 +28,6 @@ protected:
 
     virtual void setMesh() override
     {   
-        getFilePaths();
         createBound(filepath);
         readMesh(mesh, boundaryPath);
     }

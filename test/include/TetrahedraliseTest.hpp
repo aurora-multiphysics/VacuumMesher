@@ -13,13 +13,13 @@ protected:
 e
     virtual void SetUp() override
     {
+        getFilePaths();
         setMesh();
     }
 
     
     virtual void setMesh() override
     {   
-        MeshTest::getFilePaths();
         // MeshTest::setMesh();
         vacuumMesh = std::make_shared<libMesh::Mesh>(init->comm());
         //Set up seeding points for tetrahedralisation
