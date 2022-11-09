@@ -1,4 +1,3 @@
-
 #include"SkinningTest.hpp"
 
 class cubeSkinningTest : public SkinningTest 

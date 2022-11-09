@@ -8,10 +8,6 @@ class TransferTest : public MeshTest
 public:
     
 protected:
-    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-    typedef typename CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
-    typedef typename CGAL::Nef_polyhedron_3<K> Nef_Polyhedron;
-
     TransferTest(std::string meshFile) : MeshTest(meshFile)
     {
     }
@@ -22,9 +18,8 @@ protected:
         setMesh();
     }
 
-    virtual void setMesh() 
+    virtual void setMesh() override
     {   
-        MeshTest::setMesh();
         refMesh = std::make_shared<libMesh::Mesh>(init->comm());
     }
 

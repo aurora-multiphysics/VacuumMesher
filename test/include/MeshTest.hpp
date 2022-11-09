@@ -27,7 +27,6 @@ protected:
 
     virtual void setMesh() 
     {   
-        
         mesh = std::make_shared<libMesh::Mesh>(init->comm());
         readMesh(mesh, filepath);
     }
