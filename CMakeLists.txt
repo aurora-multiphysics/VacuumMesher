@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.01)
 
 project(LibMeshSkinning)
 
-add_compile_options(-O3)
+add_compile_options(-std=c++17)
 
 #Project Path
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -46,7 +46,7 @@ set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include
     /usr/include/tirpc)
 
 FILE(GLOB projectSrc ./src/*)
-FILE(GLOB testSrc ./test/src/*.cpp)
+FILE(GLOB testSrc ./test/src/*)
 
 link_libraries(MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
