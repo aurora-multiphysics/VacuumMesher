@@ -1,20 +1,20 @@
 #include"CGALTransferTest.hpp"
 
-class CGALKallaxTransfer : public CGALTransferTest 
+class CGALCubeTransfer : public CGALTransferTest 
 {
  protected:
-    CGALKallaxTransfer() : CGALTransferTest("kallax.e"){} 
+    CGALCubeTransfer() : CGALTransferTest("unit_cube.e"){} 
 
     virtual void OverRide() {BasicTest::TearDown();}
 };
 
-TEST_F(CGALKallaxTransfer, checkNums)
+TEST_F(CGALCubeTransfer, checkNums)
 {
     ASSERT_EQ(mesh->n_nodes(), refMesh->n_nodes());
     ASSERT_EQ(mesh->n_elem(), refMesh->n_elem());
 }
 
-TEST_F(CGALKallaxTransfer, checkNodeSimilarity)
+TEST_F(CGALCubeTransfer, checkNodeSimilarity)
 {
     for(int i = 0; i < mesh->max_node_id(); i++)
     {

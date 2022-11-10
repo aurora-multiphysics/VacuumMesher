@@ -18,10 +18,10 @@ TEST_F(cubeSkinningTest, checkNumElems)
     ASSERT_EQ(surfaceMesh->n_elem(), 1404) << "Number of elements does not align with verified mesh";
 }
 
-TEST_F(cubeSkinningTest, checkNodePositions)
+TEST_F(cubeSkinningTest, checkNodeSimilarity)
 {
     refSurfaceMesh->read(refSurfaceFilepath);
-    for(int node = 0; node < surfaceMesh->n_nodes(); node++)
+    for(int node = 0; node < surfaceMesh->max_node_id(); node++)
     {
         ASSERT_EQ(surfaceMesh->node_ref(node), refSurfaceMesh->node_ref(node));
     }

@@ -44,12 +44,6 @@ int main(int argc, char** argv)
     // vacuumMesh.read(tetFilepath);
 
     // createFullGeometry(mesh, vacuumMesh);
-    int i = 2;
-    if(true)
-    {
-        i = 3;
-    }
-    std::cout << i << std::endl;
 
     return 0;
 }
