@@ -40,7 +40,10 @@ include(libigl)
 execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+# Get rid of "-I" from libmesh_INCLUDE string
+string(REPLACE "-I" "" libmesh_INCLUDE ${libmesh_INCLUDE})
 
+message(STATUS ${libmesh_INCLUDE})
 # set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include 
 #     ${MOOSE_DIR}/libmesh/installed/include/libmesh 
 #     ${MOOSE_DIR}/petsc/arch-moose/include/ 
