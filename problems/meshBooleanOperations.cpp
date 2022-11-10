@@ -1,6 +1,8 @@
 #include "generateBoundaries.hpp"
 #include "meshBoolean.hpp"
 
+#include <igl/copyleft/cgal/remesh_intersections.h>
+
 int main(int argc, char** argv)
 {
     std::string appName(argv[0]);
@@ -37,6 +39,19 @@ int main(int argc, char** argv)
     boundaryMesh.read(boundFilepath);
 
     genBooleanBound(boundaryMesh, surfaceMesh, mesh);
+
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    Eigen::MatrixXd VV;
+    Eigen::MatrixXi FF;
+    Eigen::MatrixXi IF;
+    Eigen::VectorXi J;
+    Eigen::VectorXi IM;
+    igl::copyleft::cgal::RemeshSelfIntersectionsParam param;
+    // libMeshToIGL(mesh, V, F);
+    // igl::copyleft::cgal::remesh_self_intersections(V, F, param, VV, FF, IF, J, IM);
+    // IGLToLibMesh(mesh, VV, FF);
+
 
     mesh.write("booleanTesting.e");
     // createEdgeMesh(surfaceMesh, boundaryMesh);

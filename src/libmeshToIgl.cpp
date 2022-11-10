@@ -30,30 +30,36 @@ libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
 void 
 IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
-    std::cout << V.rows() << std::endl;
-    for(int nodeID = 0; nodeID < V.rows(); nodeID++)
+    libmeshMesh.clear();
     {
-        double pnt[V.cols()];
-        for(int i = 0; i<V.cols(); i++)
+        std::cout << V.rows() << std::endl;
+        for(int nodeID = 0; nodeID < V.rows(); nodeID++)
         {
-            pnt[i] = V(nodeID, i);
-        }
+            double pnt[V.cols()];
+            for(int i = 0; i<V.cols(); i++)
+            {
+                pnt[i] = V(nodeID, i);
+            }
 
-        libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
-        libmeshMesh.add_point(xyz, nodeID);
-    }
-    for(int elemID = 0; elemID < F.rows(); elemID++)
-    {
-        libMesh::Elem* elem = libMesh::Elem::build(getElemType(F)).release();
-        for(int j = 0; j < F.cols(); j++)
-        {
-            elem->set_node(j) = libmeshMesh.node_ptr(F(elemID, j));
+            libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
+            libmeshMesh.add_point(xyz, nodeID);
         }
-        elem->set_id(elemID);
-        libmeshMesh.add_elem(elem);
     }
-    libmeshMesh.set_spatial_dimension(V.cols());
-    libmeshMesh.set_mesh_dimension(2);
+
+    {
+        for(int elemID = 0; elemID < F.rows(); elemID++)
+        {
+            libMesh::Elem* elem = libMesh::Elem::build(getElemType(F)).release();
+            for(int j = 0; j < F.cols(); j++)
+            {
+                elem->set_node(j) = libmeshMesh.node_ptr(F(elemID, j));
+            }
+            elem->set_id(elemID);
+            libmeshMesh.add_elem(elem);
+        }
+    }
+    // libmeshMesh.set_spatial_dimension(V.cols());
+    // libmeshMesh.set_mesh_dimension(2);
     libmeshMesh.prepare_for_use();
 }
 
