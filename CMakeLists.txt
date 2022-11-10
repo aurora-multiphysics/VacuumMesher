@@ -38,12 +38,14 @@ include(libigl)
 # Locate GTest and MPI
 
 execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include 
-    ${MOOSE_DIR}/libmesh/installed/include/libmesh 
-    ${MOOSE_DIR}/petsc/arch-moose/include/ 
-    ${MOOSE_DIR}/petsc/include 
-    /usr/include/tirpc)
+
+# set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include 
+#     ${MOOSE_DIR}/libmesh/installed/include/libmesh 
+#     ${MOOSE_DIR}/petsc/arch-moose/include/ 
+#     ${MOOSE_DIR}/petsc/include 
+#     /usr/include/tirpc)
 
 FILE(GLOB projectSrc ./src/*)
 FILE(GLOB testSrc ./test/src/*)
