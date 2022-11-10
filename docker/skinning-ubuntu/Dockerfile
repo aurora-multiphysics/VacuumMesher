@@ -2,7 +2,7 @@
 FROM idaholab/moose:latest
 
 # By default one core is used to compile
-ARG compile_cores=6
+ARG compile_cores=2
 
 # By default checkout mfem-moose branch
 ARG WORKDIR="opt"
