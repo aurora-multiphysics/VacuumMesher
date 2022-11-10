@@ -68,10 +68,10 @@ RUN cd /$WORKDIR && \
     git checkout manifoldSplitter && \
     mkdir build && \
     cd build && \
-    cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DMOOSE_DIR=/opt/moose ../ && \
+    cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DLIBMESH_CONF_DIR=/usr/local/bin ../ && \
     make -j "$compile_cores" && \
     cd /opt/libmeshSkinning && \
-    ./build/tests/runTests
+    ./build/test/runTests
 
 
 
