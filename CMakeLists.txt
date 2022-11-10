@@ -8,8 +8,8 @@ add_compile_options(-std=c++17)
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 #Check if MOOSE_DIR is defined
-if(NOT DEFINED MOOSE_DIR)
-    message(SEND_ERROR "Please define your MOOSE dir")
+if(NOT DEFINED LIBMESH_CONF_DIR)
+    message(SEND_ERROR "Please define your the directory of your libmesh config executable")
 endif()
 
 #Get gtest and MPI packages
@@ -37,13 +37,14 @@ option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 include(libigl)
 # Locate GTest and MPI
 
-execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND ${MOOSE_DIR}/libmesh/installed/bin/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${LIBMESH_CONF_DIR}/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${LIBMESH_CONF_DIR}/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # Get rid of "-I" from libmesh_INCLUDE string
-string(REPLACE "-I" "" libmesh_INCLUDE ${libmesh_INCLUDE})
-
-message(STATUS ${libmesh_INCLUDE})
+string(REPLACE "-I" "" libmesh_INCLUDE "${libmesh_INCLUDE}")
+string(REPLACE " " ";" libmesh_INCLUDE "${libmesh_INCLUDE}")
+# set(libmesh_INCLUDEWORKING /home/bill/projects/moose/scripts/../libmesh/installed/include /home/bill/projects/moose/petsc/arch-moose/include /home/bill/projects/moose/petsc/include /usr/include /usr/include/tirpc)
+string(STRIP "${libmesh_INCLUDE}" libmesh_INCLUDE)
 # set(libmesh_INCLUDE ${MOOSE_DIR}/libmesh/installed/include 
 #     ${MOOSE_DIR}/libmesh/installed/include/libmesh 
 #     ${MOOSE_DIR}/petsc/arch-moose/include/ 
