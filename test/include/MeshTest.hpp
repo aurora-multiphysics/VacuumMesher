@@ -1,23 +1,44 @@
-#include"BasicTest.hpp"
+#pragma once
+#include "BasicTest.hpp"
 
-class MeshTest : public BasicTest {
+class MeshTest : public BasicTest
+{
+
+public:
     
- protected:
-    MeshTest(std::string meshFile) : meshFileName(meshFile), BasicTest()
+protected:
+    MeshTest(std::string meshFile) : BasicTest(), filename(meshFile)
     {
-
     }
 
-    void setMesh(){mesh->read(meshFileName);}
 
     virtual void SetUp() override
     {
-        std::cout << "createLibEnv" << std::endl;
-        createLibmeshEnv();
-        std::cout << "NextBit" << std::endl;
         setMesh();
-        // mesh->print_info();
     }
 
-    std::string meshFileName;
+    virtual void getFilePaths() 
+    {
+        filenameNoExt = std::filesystem::path(filename).stem().string();
+        filepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + ".e"; 
+        refSurfaceFilepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + "_surf.e";
+    }
+
+    virtual void setMesh() 
+    {   
+        getFilePaths();
+        mesh = std::make_shared<libMesh::Mesh>(init->comm());
+        readMesh(mesh, filepath);
+    }
+
+    virtual void readMesh(std::shared_ptr<libMesh::Mesh> libmeshMesh, std::string filename) 
+    {
+        libmeshMesh->read(filename);
+    }
+
+    //Libmesh Mesh object
+    std::shared_ptr<libMesh::Mesh> mesh = nullptr;
+    
+    //File name of the mesh to be skinned
+    std::string filename, filenameNoExt, filepath, refSurfaceFilepath, refBoundaryFilepath, vacuumFilepath;
 };

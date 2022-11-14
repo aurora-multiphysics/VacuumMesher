@@ -1,12 +1,20 @@
 #include <fstream>
 #include <string>
-#include "LoadUnitsTests.h"
+#include "initer.h"
 #include "gtest/gtest.h"
 
+
+libMesh::LibMeshInit* init;
+
 GTEST_API_ int main(int argc, char** argv) {
-  // gtest removes (only) its args from argc and argv - so this  must be before
-  // moose init
+
+  init = new libMesh::LibMeshInit(argc, argv);
+
   testing::InitGoogleTest(&argc, argv);
 
-  return RUN_ALL_TESTS();
+  int ret = RUN_ALL_TESTS();
+
+  delete(init);
+
+  return ret;
 }

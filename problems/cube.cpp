@@ -19,16 +19,18 @@ int main(int argc, char** argv)
 
     mesh.read("../chimeraExo.e");
 
-    std::set<int> elems;
-    for (int i = 0; i < 24668779; ++i)
+    std::vector<int> elems;
+    elems.reserve(mesh.n_elem());
+    for (int i = 0; i < mesh.n_elem(); ++i)
     {
-        elems.emplace_hint(elems.end(), i);
+        elems.emplace_back(i);
     }
+    std::sort(elems.begin(), elems.end());
     
     mesh.print_info();
     std::cout << "Skinning Beginning" << std::endl;
     // auto start = std::chrono::high_resolution_clock::now();
-    getSurface(mesh, surfaceMesh, elems, init);
+    getSurface(mesh, surfaceMesh, elems);
     const std::string file = "cubeSkinned.e";
     surfaceMesh.write(file);
     surfaceMesh.print_info();
