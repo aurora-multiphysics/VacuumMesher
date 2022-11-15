@@ -1,8 +1,8 @@
 # libmeshSkinning
 
-## What is this? Does it have anything to do with taxidermy?
+## What is this?
 
-No taxidermy here. The tools in this repo utilise LibMesh and libIGL to perform various functions on an input mesh.
+The tools in this repo utilise LibMesh and libIGL to perform various functions on an input mesh.
 Initially this was all centred around obtaining the surface of a mesh, or the 'skin', but has developed and flourished to offer other functionality as well.
 
 ## Mesh skinning
