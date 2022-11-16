@@ -1,4 +1,4 @@
-#include "genFullMesh.hpp"
+#include "removeDupeNodes.hpp"
 
 int main(int argc, char** argv)
 {
@@ -23,19 +23,18 @@ int main(int argc, char** argv)
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
     libMesh::Mesh mesh(init.comm());
-    //Create mesh object to store surface mesh
-    // libMesh::Mesh surfaceMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
-    std::cout << "Reading geometry mesh...\n" << std::endl; 
     mesh.read(filepath);
-    std::cout << "Geometry mesh read\n" << std::endl; 
-    // surfaceMesh.read(surfFilepath);
-    std::cout << "Reading vacuum mesh...\n" << std::endl; 
-    vacuumMesh.read(tetFilepath);
-    std::cout << "Vacuum mesh read\n" << std::endl; 
-    createFullGeometry(mesh, vacuumMesh);
 
+    RTree<int, double, 3, float> rtree;
+
+    createTree(rtree, mesh, 1e-06);
+
+
+
+
+    
     return 0;
 }

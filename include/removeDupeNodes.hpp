@@ -8,6 +8,7 @@
 #include "libmesh/enum_elem_type.h"
 #include "libmesh/boundary_info.h"
 #include "surfaceMeshing.hpp"
+#include "RTree.hpp"
 #include "utility"
 
 /**
@@ -18,5 +19,43 @@
 * mesh + the vacuum mesh), the tools found in gen full mesh probably the better choice as they're more efficient,
 * but this is a nice to have and can be useful sometimes
 */
+
+struct Box
+{
+    Box();
+    Box(std::array<double, 3> node,
+        double tol,
+        unsigned int node_id)
+    {
+        centre = node;
+
+        min = {node[0] - tol,
+               node[1] - tol,
+               node[2] - tol};
+
+        max = {node[0] + tol,
+               node[1] + tol,
+               node[2] + tol};
+
+        this->node_id = node_id;
+    }
+
+    public:
+        std::array<double,3> centre; /// the midpoint of the box
+        std::array<double,3> min;    /// lowest coordinates of the box
+        std::array<double,3> max;    /// largest coorinates of the box
+    private:
+        unsigned int node_id;
+};
+
 void 
-removeDupeNodes(libMesh::Mesh& mesh);
+insertNode(RTree<int, double, 3, float> rtree, libMesh::Node& node, int count);
+
+int
+createTree(RTree<int, double, 3, float> rtree, libMesh::Mesh& mesh, double tol);
+
+bool
+searchTree(RTree<int, double, 3, float> rtree, libMesh::Node& node);
+
+
+
