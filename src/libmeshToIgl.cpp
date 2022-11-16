@@ -128,7 +128,7 @@ CGALToLibmesh(libMesh::Mesh& libmeshMesh,
     typedef typename Polyhedron::Vertex_const_iterator Vertex_iterator;
     // Clear libmesh mesh incase anything is in it
     libmeshMesh.clear();
-    // 
+    // Map of CGAL vertex iteration to node id in the libmesh mesh
     std::map<Vertex_iterator, unsigned int> vertex_to_index;
     // Counter to give nodes correct ID in libmesh mesh
     unsigned int id = 0;
@@ -143,8 +143,11 @@ CGALToLibmesh(libMesh::Mesh& libmeshMesh,
             pnt[0]=CGAL::to_double(p->point().x());
             pnt[1]=CGAL::to_double(p->point().y());
             pnt[2]=CGAL::to_double(p->point().z());
+            // Generate libmesh points representitive of current point
             libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+            // Add point to the mesh
             libmeshMesh.add_point(xyz, id);
+            // Add point to the map
             vertex_to_index[p] = id;
             id++;
         }
@@ -170,7 +173,6 @@ CGALToLibmesh(libMesh::Mesh& libmeshMesh,
         }
     }
     libmeshMesh.prepare_for_use();
-    
 }
 
 template void libmeshToCGAL(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
