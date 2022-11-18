@@ -26,11 +26,13 @@ int main(int argc, char** argv)
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
-    mesh.read(filepath);
+    mesh.read(surfFilepath);
+    vacuumMesh.read(tetFilepath);
 
     RTree<int, double, 3, float> rtree;
-
-    createTree(rtree, mesh, 1e-06);
+    double tol = 1e-05;
+    createTree(rtree, vacuumMesh, tol);
+    combineMesh(rtree, tol, mesh, vacuumMesh);
 
 
 

@@ -44,18 +44,20 @@ struct Box
         std::array<double,3> centre; /// the midpoint of the box
         std::array<double,3> min;    /// lowest coordinates of the box
         std::array<double,3> max;    /// largest coorinates of the box
-    private:
         unsigned int node_id;
 };
 
 void 
-insertNode(RTree<int, double, 3, float> rtree, libMesh::Node& node, int count);
+insertNode(RTree<int, double, 3, float> &rtree, Box& node_box);
 
-int
-createTree(RTree<int, double, 3, float> rtree, libMesh::Mesh& mesh, double tol);
+void
+createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, double& tol);
 
 bool
-searchTree(RTree<int, double, 3, float> rtree, libMesh::Node& node);
+searchTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, libMesh::Node& node);
+
+void 
+combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& surfMesh, libMesh::Mesh& vacMesh);
 
 
 
