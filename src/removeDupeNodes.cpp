@@ -3,6 +3,7 @@
 // Global hits
 std::vector<int> hits;
 
+// callback function for rtree
 bool callback(int id) {  
   hits.push_back(id);
   return true;
@@ -28,31 +29,32 @@ insertNode(RTree<int, double, 3, float> &rtree, Box& node_box)
 }
 
 bool
-searchTree(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& vacMesh, libMesh::Node* node)
+searchTree(RTree<int, double, 3, float> &rtree, 
+           double& tol,
+           std::map<unsigned int, unsigned int>& id_map,
+           libMesh::Mesh& vacMesh,
+           libMesh::Node* node)
 {
-    std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
-    Box node_box = Box(node_coords, tol, node->id());
     // Empty global hits vector so it doesn't contain results of previous search
     hits.clear();
+    // 
+    int node_indent = vacMesh.n_nodes();
+    // 
+    std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
+    Box node_box = Box(node_coords, tol, node->id());
+    
+    
     // Search tree to see if thie node already exists 
     int nhits = rtree.Search(node_box.min.data(), node_box.max.data(), callback);
     if(!nhits)
     {
+        id_map[node->id()] = node_indent + 1;
         return true;
     }
-    else
+    else if(nhits == 1)
     {   
-        for(auto& hit: hits)
-        {
-            for(int i = 0; i<3;i++)
-            {
-                if(((*node)(i) - (*(vacMesh.node_ptr(hit)))(i)) > 1e-02)
-                {
-                    std::cout << "BAD" << std::endl;
-                }
-            }
-        }
-        return false;
+        id_map[node->id()] = hits[0];
+        return false;        
     }
     return true;
 }
@@ -62,10 +64,35 @@ searchTree(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& vacM
 void 
 combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& surfMesh, libMesh::Mesh& vacMesh)
 {
+    int count = 0;
+    std::map<unsigned int, unsigned int> id_map;
+    
     for(auto& node: surfMesh.local_node_ptr_range())
     {
-        if(!searchTree(rtree, tol, vacMesh, node))
+        // If there are no matches in the vacuumMesh 
+        if(searchTree(rtree, tol, id_map, vacMesh, node))
         {
+            double pnt[3];
+            pnt[0] = (*node)(0);
+            pnt[1] = (*node)(1);
+            pnt[2] = (*node)(2);
+            libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+            vacMesh.add_point(xyz, id_map[node->id()]);
+            count++;
         }
     }
+    
+    for(auto& elem: libMesh::as_range(surfMesh.local_elements_begin(), surfMesh.local_elements_end()))
+    {
+        unsigned int el_id = 1 + vacMesh.n_elem(); 
+        libMesh::Elem* new_elem = libMesh::Elem::build(libMesh::TET4).release();
+        for(int j = 0; j < new_elem->n_nodes(); j++)
+        {
+            new_elem->set_node(j) = vacMesh.node_ptr(id_map[elem->node_ptr(j)->id()]);
+        }
+        new_elem->set_id(el_id);
+        vacMesh.add_elem(new_elem);
+    }
+    vacMesh.prepare_for_use();
+    std::cout << "count " << count << std::endl;
 }

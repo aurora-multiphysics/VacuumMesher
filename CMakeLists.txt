@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.01)
 
 project(LibMeshSkinning)
 
-add_compile_options(-std=c++17)
+add_compile_options(-std=c++17 -g)
 
 #Project Path
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
