@@ -8,6 +8,7 @@
 #include "libmesh/enum_elem_type.h"
 #include "libmesh/boundary_info.h"
 #include "surfaceMeshing.hpp"
+#include "generateBoundaries.hpp"
 #include "RTree.hpp"
 #include "utility"
 
@@ -57,7 +58,10 @@ bool
 searchTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, libMesh::Node& node);
 
 void 
-combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& surfMesh, libMesh::Mesh& vacMesh);
+combineMesh(RTree<int, double, 3, float> &rtree, 
+            double& tol, libMesh::Mesh& surfMesh, 
+            libMesh::Mesh& vacMesh, 
+            std::multimap<unsigned int, unsigned int> surfaceFaceMap);
 
 
 

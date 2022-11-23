@@ -59,17 +59,22 @@ searchTree(RTree<int, double, 3, float> &rtree,
     return true;
 }
 
-
-
 void 
-combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& surfMesh, libMesh::Mesh& vacMesh)
+combineMesh(RTree<int, double, 3, float> &rtree, 
+            double& tol, 
+            libMesh::Mesh& surfMesh, 
+            libMesh::Mesh& vacMesh,
+            std::multimap<unsigned int, unsigned int> surfaceFaceMap)
 {
-    int count = 0;
+    // This is a map which helps us keep track of the node id's of the duplicate nodes. For example,
+    // if Node 4 in the surface mesh and Node 6 in the vacuum mesh are the same, "id_map[4]" will return 6
     std::map<unsigned int, unsigned int> id_map;
     
+    // Loop over all the nodes in the original geometry. If the node is not a duplicate, add it to the mesh
+    // , if the node is a duplicate, it is  
     for(auto& node: surfMesh.local_node_ptr_range())
     {
-        // If there are no matches in the vacuumMesh 
+        // If there are no matches in the vacuumMesh, then we add the point 
         if(searchTree(rtree, tol, id_map, vacMesh, node))
         {
             double pnt[3];
@@ -78,10 +83,11 @@ combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& sur
             pnt[2] = (*node)(2);
             libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
             vacMesh.add_point(xyz, id_map[node->id()]);
-            count++;
         }
     }
     
+    // Loop adds all elements from original geometry to vacuum mesh. The id_map is used to make sure the correct connectivity
+    // is used where there are duplicate nodes
     for(auto& elem: libMesh::as_range(surfMesh.local_elements_begin(), surfMesh.local_elements_end()))
     {
         unsigned int el_id = 1 + vacMesh.n_elem(); 
@@ -92,7 +98,15 @@ combineMesh(RTree<int, double, 3, float> &rtree, double& tol, libMesh::Mesh& sur
         }
         new_elem->set_id(el_id);
         vacMesh.add_elem(new_elem);
+
+        // Makes the boundary between the original geometry and the vacuum mesh a sideset in the mesh,
+        // and names it boundary
+        for(auto& boundSide: libMesh::as_range(surfaceFaceMap.equal_range(elem->id())))
+        {
+            vacMesh.get_boundary_info().add_side(el_id, boundSide.second, 1);
+        }
     }
+    // Prepare the mesh for use. This libmesh method does some id renumbering etc, generally a good idea
+    // to call it after constructing a mesh
     vacMesh.prepare_for_use();
-    std::cout << "count " << count << std::endl;
 }

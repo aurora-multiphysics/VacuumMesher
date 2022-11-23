@@ -1,5 +1,5 @@
 #include "removeDupeNodes.hpp"
-
+#include <chrono>
 int main(int argc, char** argv)
 {
     std::string appName(argv[0]);
@@ -23,23 +23,37 @@ int main(int argc, char** argv)
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
     libMesh::Mesh mesh(init.comm());
-
+    //Create mesh object to store surface mesh
     libMesh::Mesh surfMesh(init.comm());
+    // 
+    libMesh::Mesh boundMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
     mesh.read(filepath);
     vacuumMesh.read(tetFilepath);
-    surfMesh.read(surfFilepath);
 
-    std::cout << mesh.n_nodes() << std::endl;
-    std::cout << surfMesh.n_nodes() << std::endl;
-    RTree<int, double, 3, float> rtree;
-    double tol = 1e-07;
-    createTree(rtree, vacuumMesh, tol);
-    combineMesh(rtree, tol, mesh, vacuumMesh);
-    rtree.RemoveAll();
-    vacuumMesh.write("combMeshOut.e");
+
+
+    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+    getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
+    surfMesh.write("copytest.e");
+    createBoundary(init, surfMesh, boundMesh);
+    
+    // Set up rTree with specified tolerance
+    // RTree<int, double, 3, float> rtree;
+    // double tol = 1e-07;
+
+
+    // auto start1 = std::chrono::steady_clock::now();
+    // createTree(rtree, vacuumMesh, tol);
+    // combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
+    // auto end1 = std::chrono::steady_clock::now();
+    // std::cout << "Elapsed time in milliseconds: "
+    // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    // << " ms" << std::endl;
+    // vacuumMesh.write("combMeshOut.e");
 
     return 0;
 }
