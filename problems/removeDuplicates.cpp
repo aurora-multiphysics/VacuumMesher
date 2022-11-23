@@ -31,15 +31,16 @@ int main(int argc, char** argv)
     libMesh::Mesh vacuumMesh(init.comm());
 
     mesh.read(filepath);
+    surfMesh.read(surfFilepath);
     vacuumMesh.read(tetFilepath);
 
 
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
-    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
-    surfMesh.write("copytest.e");
+    // std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+    // getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
     createBoundary(init, surfMesh, boundMesh);
+    surfMesh.write("boundTest2.e");
     
     // Set up rTree with specified tolerance
     // RTree<int, double, 3, float> rtree;
