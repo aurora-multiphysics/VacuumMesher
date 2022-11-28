@@ -37,24 +37,24 @@ int main(int argc, char** argv)
 
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
-    // std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    // getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+    getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
     createBoundary(init, surfMesh, boundMesh);
     surfMesh.write("boundTest2.e");
     
     // Set up rTree with specified tolerance
-    // RTree<int, double, 3, float> rtree;
-    // double tol = 1e-07;
+    RTree<int, double, 3, float> rtree;
+    double tol = 1e-07;
 
 
     // auto start1 = std::chrono::steady_clock::now();
-    // createTree(rtree, vacuumMesh, tol);
-    // combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
+    createTree(rtree, vacuumMesh, tol);
+    combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     // << " ms" << std::endl;
-    // vacuumMesh.write("combMeshOut.e");
+    vacuumMesh.write("combMeshOut.e");
 
     return 0;
 }
