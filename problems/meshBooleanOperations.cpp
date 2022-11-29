@@ -32,28 +32,14 @@ int main(int argc, char** argv)
     // libMesh::Mesh vacuumMesh(init.comm());
     libMesh::Mesh boundaryMesh(init.comm());
 
-    // mesh.read(filepath);
-
     surfaceMesh.read(surfFilepath);
 
     boundaryMesh.read(boundFilepath);
 
+    // Puts combined mesh into 
     genBooleanBound(boundaryMesh, surfaceMesh, mesh);
 
-    Eigen::MatrixXd V;
-    Eigen::MatrixXi F;
-    Eigen::MatrixXd VV;
-    Eigen::MatrixXi FF;
-    Eigen::MatrixXi IF;
-    Eigen::VectorXi J;
-    Eigen::VectorXi IM;
-    igl::copyleft::cgal::RemeshSelfIntersectionsParam param;
-    // libMeshToIGL(mesh, V, F);
-    // igl::copyleft::cgal::remesh_self_intersections(V, F, param, VV, FF, IF, J, IM);
-    // IGLToLibMesh(mesh, VV, FF);
-
-
-    mesh.write("booleanTesting.e");
+    mesh.write("cgalCoilBool.e");
     // createEdgeMesh(surfaceMesh, boundaryMesh);
 
     // vacuumMesh.read(tetFilepath);
