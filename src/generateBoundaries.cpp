@@ -1,13 +1,32 @@
 #include "generateBoundaries.hpp"
 
-void createBoundary(libMesh::LibMeshInit &init, libMesh::Mesh& surfMesh, libMesh::Mesh& boundaryMesh)
+void createBoundary(libMesh::LibMeshInit &init, libMesh::Mesh& surfMesh)
 {
     auto box = libMesh::MeshTools::create_bounding_box(surfMesh);
     libMesh::Mesh cubeMesh(init.comm());
+    libMesh::Mesh boundaryMesh(init.comm());
+    libMesh::Point centre;
 
     // Scale the bounding box by a scaling factor
-    box.min() *= 1.3;
-    box.max() *= 1.3;
+    double max_length = 0;
+    box.max().print();
+    box.min().print();
+
+    for(int i = 0; i<3; i++)
+    {
+        centre(i) = box.max()(i) - ((box.max()(i) - box.min()(i))/2);
+        max_length = std::abs(box.max()(i) - box.min()(i)) > max_length ? std::abs(box.max()(i) - box.min()(i)) : max_length;
+    }
+    centre.print();
+    std::cout << max_length << std::endl;
+    for(int i = 0; i<3;i++)
+    {
+        box.min()(i) = centre(i) - max_length;
+        box.max()(i) = centre(i) + max_length;
+    }
+
+    box.min() *= 1.5;
+    box.max() *= 1.5;
 
     // Generate a cube which we will then get the skin of to create boundary mesh
     libMesh::MeshTools::Generation::build_cube(cubeMesh, 5, 5, 5, 

@@ -19,7 +19,7 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXi FT;
     size_t numRegions;
     
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCQY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
     IGLToLibMesh(vacuumMesh, TV, TT);
 }

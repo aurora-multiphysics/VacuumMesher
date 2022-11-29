@@ -9,6 +9,7 @@
 #include "libmesh/boundary_info.h"
 #include "surfaceMeshing.hpp"
 #include "generateBoundaries.hpp"
+#include "tetMaker.hpp"
 #include "RTree.hpp"
 #include "utility"
 

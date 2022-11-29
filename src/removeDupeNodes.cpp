@@ -97,6 +97,7 @@ combineMesh(RTree<int, double, 3, float> &rtree,
             new_elem->set_node(j) = vacMesh.node_ptr(id_map[elem->node_ptr(j)->id()]);
         }
         new_elem->set_id(el_id);
+        new_elem->subdomain_id() = 2;
         vacMesh.add_elem(new_elem);
 
         // Makes the boundary between the original geometry and the vacuum mesh a sideset in the mesh,

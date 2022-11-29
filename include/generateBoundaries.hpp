@@ -21,4 +21,4 @@
 #include "utility"
 #include "getElemInfo.hpp"
 
-void createBoundary(libMesh::LibMeshInit &init, libMesh::Mesh& surfMesh, libMesh::Mesh& boundaryMesh);
+void createBoundary(libMesh::LibMeshInit &init, libMesh::Mesh& surfMesh);

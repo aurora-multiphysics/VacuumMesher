@@ -25,34 +25,37 @@ int main(int argc, char** argv)
     libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
     libMesh::Mesh surfMesh(init.comm());
-    // 
-    libMesh::Mesh boundMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
+    auto start1 = std::chrono::steady_clock::now();
     mesh.read(filepath);
-    // surfMesh.read(surfFilepath);
-    vacuumMesh.read(tetFilepath);
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, false, surfFilepath);
-    // createBoundary(init, surfMesh, boundMesh);
-    // surfMesh.write("boundTest2.e");
+    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
+    // Get seed points for tetrahedralisation 
+    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+
+    // Adds a boundary to the surface mesh
+    createBoundary(init, surfMesh);
+
     
+    // Tetrahedralise everything
+    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
     // Set up rTree with specified tolerance
     RTree<int, double, 3, float> rtree;
     double tol = 1e-07;
 
 
-    // auto start1 = std::chrono::steady_clock::now();
+    
     createTree(rtree, vacuumMesh, tol);
     combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
-    // auto end1 = std::chrono::steady_clock::now();
-    // std::cout << "Elapsed time in milliseconds: "
-    // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    // << " ms" << std::endl;
-    vacuumMesh.write("combMeshOut.e");
+    auto end1 = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time in milliseconds: "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    << " ms" << std::endl;
+    vacuumMesh.write(tetFilepath);
 
     return 0;
 }

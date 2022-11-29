@@ -123,3 +123,9 @@ target_link_libraries(meshBool PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl
 add_executable(transfer libiglTransfer.cpp ${projectSrc})
 target_include_directories(transfer PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(transfer PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+
+
+#Full Run
+add_executable(fullRun fullRun.cpp ${projectSrc})
+target_include_directories(fullRun PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(fullRun PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)

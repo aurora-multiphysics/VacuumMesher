@@ -48,14 +48,14 @@ int main(int argc, char** argv)
     //Create mesh object to store original model mesh
     libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
-    libMesh::Mesh surfaceMesh(init.comm());
+    libMesh::Mesh surfMesh(init.comm());
     libMesh::Mesh boundaryMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
     
     //Read volume mesh
     // mesh.read(filepath);
-    surfaceMesh.read(surfFilepath);
+    surfMesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
     // 1. Produce Skinned Mesh 
         // Perhaps I need to make sure that the centroid of the shape is set to 0,0,0 at or 
@@ -75,17 +75,11 @@ int main(int argc, char** argv)
     Eigen::MatrixXd seed_points;//getSeeds(surfFilepath);
     
     // 3. Add bounding volume to skinned mesh
-        // Should be able to choose shape type and size 
-        // Should check that the bounding area is larger than the bounding box of the shape 
-    // createBound(surfFilepath);
+    // createBoundary(init, surfMesh);
     
     // 4. Tetrahedralise
+    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
+    vacuumMesh.write("gyroidFull.e");
 
-    tetrahedraliseVacuumRegion(boundaryMesh, vacuumMesh, seed_points);
-
-    // 5. Output
-        // Should the output be one big exodus mesh or just the vacuum
-
-    // visualiseSeedPoints(path + filenameNoExt + "_bound.off", seed_points);
     return 0;
 }
