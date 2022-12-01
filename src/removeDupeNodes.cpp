@@ -10,7 +10,7 @@ bool callback(int id) {
 }
 
 void 
-createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& vacMesh, double& tol)
+createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& vacMesh, const double& tol)
 {
     // Add all existing verts to rTree
     for(auto& node: vacMesh.local_node_ptr_range())
@@ -30,7 +30,7 @@ insertNode(RTree<int, double, 3, float> &rtree, Box& node_box)
 
 bool
 searchTree(RTree<int, double, 3, float> &rtree, 
-           double& tol,
+           const double& tol,
            std::map<unsigned int, unsigned int>& id_map,
            libMesh::Mesh& vacMesh,
            libMesh::Node* node)
@@ -60,8 +60,7 @@ searchTree(RTree<int, double, 3, float> &rtree,
 }
 
 void 
-combineMesh(//RTree<int, double, 3, float> &rtree, 
-            double& tol,
+combineMesh(const double& tol,
             libMesh::Mesh& surfMesh, 
             libMesh::Mesh& vacMesh,
             std::multimap<unsigned int, unsigned int> surfaceFaceMap)

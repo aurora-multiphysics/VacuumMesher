@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
 
     // Combine the vacuum mesh and the part mesh 
-    double tol = 1e-07;
+    const double tol = 1e-07;
     combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
