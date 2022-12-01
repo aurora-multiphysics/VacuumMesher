@@ -2,11 +2,11 @@ name: BuildTest
 on:
   push:
     branches:
-       - main
+       - master
        - manifoldSplitter
   pull_request:
     branches:
-       - main
+       - master
        - manifoldSplitter
 
 jobs:
