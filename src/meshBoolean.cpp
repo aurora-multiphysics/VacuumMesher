@@ -1,8 +1,16 @@
 #include"meshBoolean.hpp"
 
+// TYPEDEFS IMPORTANT FOR CGAL PRECISION
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef typename CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
 typedef typename CGAL::Nef_polyhedron_3<K> Nef_Polyhedron;
+typedef std::vector<K::Point_3> Polyline_type;
+typedef std::list< Polyline_type > Polylines;
+CGAL
+typedef CGAL::Surface_mesh<K::Point_3> Mesh;
+typedef CGAL::AABB_halfedge_graph_segment_primitive<Mesh> HGSP;
+typedef CGAL::AABB_traits<K, HGSP>    AABB_traits;
+typedef CGAL::AABB_tree<AABB_traits>  AABB_tree;
 
 void genBooleanBound(libMesh::Mesh& boundaryMesh, 
                      libMesh::Mesh& surfaceMesh, 
@@ -37,6 +45,7 @@ subtract_volumes_poly(Polyhedron geom, Polyhedron bound)
   np2.clear();
 
   Polyhedron difference;
+  sub.
   // intersect.convert_to_polyhedron(difference);
   return sub;
 }
