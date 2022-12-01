@@ -8,15 +8,69 @@
 #include "libmesh/enum_elem_type.h"
 #include "libmesh/boundary_info.h"
 #include "surfaceMeshing.hpp"
+#include "generateBoundaries.hpp"
+#include "tetMaker.hpp"
+#include "RTree.hpp"
 #include "utility"
 
-/**
-* A more general purpose util than that found in genFullMesh.hpp. Removes duplicate nodes in
-* a mesh by checking all nodes against all other nodes. If a duplicate is found, the node with the lower
-* node.id() is kept, and the duplicate node removed. All elements that relied on that duplicate node 
-* for connectivity are corrected to use the node that got kept. FOr generating the full mesh (i.e., the geometry
-* mesh + the vacuum mesh), the tools found in gen full mesh probably the better choice as they're more efficient,
-* but this is a nice to have and can be useful sometimes
-*/
+// Box struct that is inserted into the rTree. Each node gets it's own Box struct which is then
+//  inserted. 
+struct Box
+{
+    Box();
+    Box(std::array<double, 3> node,
+        const double tol,
+        unsigned int node_id)
+    {
+        centre = node;
+
+        min = {node[0] - tol,
+               node[1] - tol,
+               node[2] - tol};
+
+        max = {node[0] + tol,
+               node[1] + tol,
+               node[2] + tol};
+
+        this->node_id = node_id;
+    }
+
+    public:
+        std::array<double,3> centre; /// the midpoint of the box
+        std::array<double,3> min;    /// lowest coordinates of the box
+        std::array<double,3> max;    /// largest coorinates of the box
+        unsigned int node_id;
+};
+
+// Method for inserting individual nodes into rTree. Instantiates their Box,
+//  and then uses the rTree insert methods to add it.
 void 
-removeDupeNodes(libMesh::Mesh& mesh);
+insertNode(RTree<int, double, 3, float> &rtree, Box& node_box);
+
+// Function for creating the initial tree. This method adds all the nodes from a libmesh mesh
+//  into the rTree. Then, when adding more nodes to this mesh, we can check the rTree to see if they
+//   already exist 
+void
+createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, const double& tol);
+
+// Function for searching the rTree. Takes in a libMesh node and checks if it already exists
+//  in the tree. Note the argument, "mesh". This refers to the mesh that already has it's
+//  nodes in the rTree, and was likely passed into createTree. Here it is passed in so we can know
+//  the number of nodes it has, so that if we do find a novel node to add, we can know what ID to give it to
+//  ensure that it is higher than that which already exists in the mesh. We also keep a map "id_map" to map 
+//  from old node id's to new node id's for the nodes being added, as well as ones that stay the same
+bool
+searchTree(RTree<int, double, 3, float> &rtree, 
+           const double& tol, std::map<unsigned int,
+           unsigned int>& id_map, 
+           libMesh::Mesh& mesh, 
+           libMesh::Node& node);
+
+// Calls the functions that have been defined to create the combined mesh
+void 
+combineMesh(const double& tol, libMesh::Mesh& surfMesh, 
+            libMesh::Mesh& vacMesh, 
+            std::multimap<unsigned int, unsigned int> surfaceFaceMap);
+
+
+

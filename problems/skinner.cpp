@@ -41,38 +41,31 @@ int main(int argc, char** argv)
     boundFilepath = path + boundFilename;
     tetFilepath = path + tetFilename; 
 
+    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+
     //Initialise libmesh functions and mpi    
     LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store volume mesh
     Mesh mesh(init.comm());
-
     //Create mesh object to store surface mesh
     Mesh surfaceMesh(init.comm());
 
-    Mesh libmeshTry(init.comm());
 
     std::cout << "Reading Mesh" << std::endl;
     //Read volume mesh
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
     
-    std::set<libMesh::boundary_id_type> bids = {1};
-
-    
-    mesh.get_boundary_info().sync(libmeshTry);
-    
-    libmeshTry.write("plsnowork.e");
-
-    std::vector<int> elems;
-
     std::cout << "Skinning Beginning" << std::endl;
 
-    auto start1 = std::chrono::steady_clock::now();
-    // getSurface(mesh, surfaceMesh, false, surfFilepath);
-    auto end1 = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    << " ms" << std::endl;
+    // auto start1 = std::chrono::steady_clock::now();
+    getSurface(mesh, surfaceMesh, surfaceFaceMap, false, surfFilepath);
+    
+    // auto end1 = std::chrono::steady_clock::now();
+    // std::cout << "Elapsed time in milliseconds: "
+    // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    // << " ms" << std::endl;
     
     
     

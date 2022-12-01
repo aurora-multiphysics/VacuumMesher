@@ -12,9 +12,11 @@
 
 // using namespace libMesh;
 
-void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet, bool writeMesh = false, std::string outputFilename = "surface_mesh.e");
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::multimap<unsigned int, unsigned int>& surfaceFaceMap, bool writeMesh=false, std::string outputFilename = "surface_mesh.e");
 
 void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, bool writeMesh=false, std::string outputFilename = "surface_mesh.e");
+
+void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int>& elSet, bool writeMesh = false, std::string outputFilename = "surface_mesh.e");
 
 int getNumSurfaceElems();
 
