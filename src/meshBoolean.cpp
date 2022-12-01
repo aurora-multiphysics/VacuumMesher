@@ -23,23 +23,20 @@ subtract_volumes_poly(Polyhedron geom, Polyhedron bound)
   Nef_Polyhedron np1(geom);
   Nef_Polyhedron np2(bound);
 
-  Nef_Polyhedron intersect = np2 * np1;
-  Nef_Polyhedron up2 = np2 - intersect;
-  Polyhedron intersection;
-  up2.convert_to_polyhedron(intersection);
-  up2.clear();
-
+  Nef_Polyhedron subtraction = np2-np1;
+  Nef_Polyhedron shape = np2+subtraction;
+  Polyhedron sub;
+  shape.convert_to_polyhedron(sub);
   // Just the coil
-  Nef_Polyhedron up1 = np1 - intersect;
-  Polyhedron update1;
-  up1.convert_to_polyhedron(update1);
-  up1.clear();
+  // Nef_Polyhedron up1 = np1 - intersect;
+  // Polyhedron update1;
+  // up1.convert_to_polyhedron(update1);
+  // up1.clear();
     
   np1.clear();
   np2.clear();
 
   Polyhedron difference;
-  intersect.convert_to_polyhedron(difference);
-  intersect.clear(); 
-  return intersection;
+  // intersect.convert_to_polyhedron(difference);
+  return sub;
 }
