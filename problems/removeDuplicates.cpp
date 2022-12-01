@@ -41,13 +41,11 @@ int main(int argc, char** argv)
     // surfMesh.write("boundTest2.e");
     
     // Set up rTree with specified tolerance
-    RTree<int, double, 3, float> rtree;
     double tol = 1e-07;
 
-
     // auto start1 = std::chrono::steady_clock::now();
-    createTree(rtree, vacuumMesh, tol);
-    combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
+
+    combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

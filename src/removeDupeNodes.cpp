@@ -60,12 +60,20 @@ searchTree(RTree<int, double, 3, float> &rtree,
 }
 
 void 
-combineMesh(RTree<int, double, 3, float> &rtree, 
-            double& tol, 
+combineMesh(//RTree<int, double, 3, float> &rtree, 
+            double& tol,
             libMesh::Mesh& surfMesh, 
             libMesh::Mesh& vacMesh,
             std::multimap<unsigned int, unsigned int> surfaceFaceMap)
 {
+    // Instantiate an rTree. Using a rTree data structure significantly reduces the amount of
+    // time taken to discover duplicate nodes.
+    RTree<int, double, 3, float> rtree;
+
+    // Generate the initial tree, containing all the nodes of the vacuum mesh. We will 
+    //  check the nodes of the part mesh against this tree to search for duplicate nodes
+    createTree(rtree, vacMesh, tol);
+
     // This is a map which helps us keep track of the node id's of the duplicate nodes. For example,
     // if Node 4 in the surface mesh and Node 6 in the vacuum mesh are the same, "id_map[4]" will return 6
     std::map<unsigned int, unsigned int> id_map;
@@ -101,11 +109,12 @@ combineMesh(RTree<int, double, 3, float> &rtree,
         vacMesh.add_elem(new_elem);
 
         // Makes the boundary between the original geometry and the vacuum mesh a sideset in the mesh,
-        // and names it boundary
+        // and names it "vacuum_boundary"
         for(auto& boundSide: libMesh::as_range(surfaceFaceMap.equal_range(elem->id())))
         {
             vacMesh.get_boundary_info().add_side(el_id, boundSide.second, 1);
         }
+        // Set boundary name!
     }
     // Prepare the mesh for use. This libmesh method does some id renumbering etc, generally a good idea
     // to call it after constructing a mesh

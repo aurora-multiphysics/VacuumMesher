@@ -59,8 +59,7 @@ bool
 searchTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, libMesh::Node& node);
 
 void 
-combineMesh(RTree<int, double, 3, float> &rtree, 
-            double& tol, libMesh::Mesh& surfMesh, 
+combineMesh(double& tol, libMesh::Mesh& surfMesh, 
             libMesh::Mesh& vacMesh, 
             std::multimap<unsigned int, unsigned int> surfaceFaceMap);
 
