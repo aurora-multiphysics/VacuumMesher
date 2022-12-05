@@ -8,7 +8,6 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXi F;
     libMeshToIGL(boundaryMesh, V, F);
 
-    // visualiseSeedPoints(offFilepath, seedPoints);
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;  

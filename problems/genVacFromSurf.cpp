@@ -7,8 +7,6 @@
 #include "tetMaker.hpp"
 #include "surfaceMeshing.hpp"
 #include "algorithm"
-#include"visualiseSeedPoints.hpp"
-#include "pythonTools.hpp"
 #include "removeDupeNodes.hpp"
 
 int main(int argc, char** argv)

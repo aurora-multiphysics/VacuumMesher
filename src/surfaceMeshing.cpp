@@ -1,4 +1,5 @@
 #include "surfaceMeshing.hpp"
+#include "libmesh/cell_tet4.h"
 #include <algorithm>
 // isElementSurface for if user wants the whole mesh skinned
 void isElementSurface(libMesh::Elem& element, 
@@ -48,14 +49,18 @@ void getSurface(libMesh::Mesh& mesh,
                 std::string outputFilename)
 {   
     std::cout << "Beginning skinning mesh" << std::endl;
-    //LibMesh method that has to be run in order to access neighbor info
-    mesh.find_neighbors();
     
     //Variables to store element information so it is easily accessible later
     //This implementation does assume only one element type is used
     libMesh::ElemType elem_type, face_type; 
     int num_elem_faces, num_face_nodes;
 
+    libMesh::Elem* elem = mesh.elem_ptr(0);
+
+    //Use getElemInfo method to retrieve Element Info 
+    getElemInfo(elem_type, face_type, 
+        elem, num_elem_faces, num_face_nodes);
+        
     // //Counter to store the number of surface elements
     int surface_elem_counter = 0;
 
@@ -64,8 +69,6 @@ void getSurface(libMesh::Mesh& mesh,
     // std::vector<libMesh::boundary_id_type> boundary_id;
     std::map<int, std::vector<libMesh::boundary_id_type>> boundary_data;
 
-
-
     //Map from old node ids to the new ones in the surface mesh
     std::vector<int> currentNodeIds;
     std::map<int, int> newNodeIds;
@@ -73,13 +76,8 @@ void getSurface(libMesh::Mesh& mesh,
     //Connectivity of all the elements in the surface mesh
     std::vector<int> connectivity;
 
-    //Use getElemInfo method to retrieve Element Info 
-    libMesh::Elem* elem = mesh.elem_ptr(0);
-    
-    getElemInfo(elem_type, face_type, 
-                elem, num_elem_faces, num_face_nodes);
     // Loops over all the elements in the input vector 
-    for(int elem = 0; elem< mesh.n_elem(); elem++)
+    for(int elem = 0; elem < mesh.n_elem(); elem++)
     {
         //Get ptr to current element
         libMesh::Elem& element = mesh.elem_ref(elem);
@@ -87,7 +85,7 @@ void getSurface(libMesh::Mesh& mesh,
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
-        std::vector<int> surfaceFaces(num_elem_faces, -1);
+        std::vector<int> surfaceFaces(num_face_nodes, -1);
         // surfaceFaces.reserve(num_elem_faces);
 
         //Method to check whether the current element has faces that are on the surface
@@ -153,7 +151,7 @@ void getSurface(libMesh::Mesh& mesh,
         libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
         for(int j = 0; j < num_face_nodes; j++)
         {
-            elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
+            elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*(face_type))+j]]);
         }
         elem->set_id(i);
         surfaceMesh.add_elem(elem);
@@ -213,6 +211,7 @@ void getSurface(libMesh::Mesh& mesh,
     
     getElemInfo(elem_type, face_type, 
                 elem, num_elem_faces, num_face_nodes);
+                
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)
     {
