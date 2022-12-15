@@ -11,6 +11,9 @@
 #include <igl/readOFF.h>
 #include <igl/writeOFF.h>
 #include <igl/per_face_normals.h>
+#include <CGAL/AABB_halfedge_graph_segment_primitive.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/Surface_mesh/IO/OFF.h>
 // #include <igl/opengl/glfw/Viewer.h>
 #include "pythonTools.hpp"
 #include "filesystem"

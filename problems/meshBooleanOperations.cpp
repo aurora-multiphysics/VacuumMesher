@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     // Puts combined mesh into 
     genBooleanBound(boundaryMesh, surfaceMesh, mesh);
 
-    mesh.write("cgalCoilBool.e");
+    mesh.write("polygonSoup.e");
     // createEdgeMesh(surfaceMesh, boundaryMesh);
 
     // vacuumMesh.read(tetFilepath);
