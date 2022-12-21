@@ -21,6 +21,8 @@
 #include "utility"
 #include "libmeshToIgl.hpp"
 #include "reverseNormal.hpp"
+#include "RTree.hpp"
+#include "box.hpp"
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef typename CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
@@ -32,3 +34,6 @@ void genBooleanBound(libMesh::Mesh& boundaryMesh,
 
 Polyhedron 
 subtract_volumes_poly(Polyhedron geom, Polyhedron bound);
+
+void
+removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol);
