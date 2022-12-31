@@ -24,16 +24,12 @@
 #include "RTree.hpp"
 #include "box.hpp"
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-typedef typename CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
-typedef typename CGAL::Nef_polyhedron_3<K> Nef_Polyhedron;
 
 void genBooleanBound(libMesh::Mesh& boundaryMesh, 
-                     libMesh::Mesh& surfaceMesh, 
-                     libMesh::Mesh& newMesh);
+                     libMesh::Mesh& surfaceMesh);
 
 Polyhedron 
-subtract_volumes_poly(Polyhedron geom, Polyhedron bound);
+subtract_volumes_poly(Polyhedron& geom, Polyhedron& bound);
 
 void
 removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol);

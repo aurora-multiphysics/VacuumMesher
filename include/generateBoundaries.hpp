@@ -20,5 +20,14 @@
 #include <igl/decimate.h>
 #include "utility"
 #include "getElemInfo.hpp"
+#include "meshBoolean.hpp"
 
-void createBoundary(libMesh::LibMeshInit &init, libMesh::Mesh& surfMesh);
+void createBoundary(libMesh::LibMeshInit &init, 
+                    libMesh::Mesh& surfMesh,
+                    double scaleFactor);
+
+// Very similar method, but makes sure the boundary is made in such a way so that
+//  one surface is coplanar with the coil in/out faces
+void createCoilBoundary(libMesh::LibMeshInit &init, 
+                        libMesh::Mesh& surfMesh, 
+                        double scaleFactor);                    

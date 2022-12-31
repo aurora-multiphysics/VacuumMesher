@@ -30,47 +30,36 @@ bool tree_callback(int id) {
 }
 
 void genBooleanBound(libMesh::Mesh& boundaryMesh, 
-                     libMesh::Mesh& surfaceMesh, 
-                     libMesh::Mesh& mesh)
+                     libMesh::Mesh& surfaceMesh)
 {   
   Polyhedron polGeom;
   Polyhedron polBound;
-  libmeshToCGAL<Polyhedron>(surfaceMesh, polGeom);
-  libmeshToCGAL<Polyhedron>(boundaryMesh, polBound);
+  
+  libmeshToCGAL(surfaceMesh, polGeom);
+  std::cout << "converted surface" << std::endl;
+  libmeshToCGAL(boundaryMesh, polBound);
+  std::cout << "converted bound" << std::endl;
   Polyhedron difference = subtract_volumes_poly(polGeom, polBound);
-  CGALToLibmesh(mesh, difference);
-  removeDegenerateTris(mesh, 1e-07);
+  CGALToLibmesh(surfaceMesh, difference);
+  // removeDegenerateTris(boundaryMesh, 1e-07);
 }
 
 // Use CGAL to generate the boundary for the coil
 Polyhedron 
-subtract_volumes_poly(Polyhedron geom, Polyhedron bound)
+subtract_volumes_poly(Polyhedron& geom, Polyhedron& bound)
 {    
-  Polyhedron out;
-  bool valid_union = CGAL::Polygon_mesh_processing::corefine_and_compute_union(geom,bound, out);
-
   Nef_Polyhedron np1(geom);
   Nef_Polyhedron np2(bound);
 
-  Nef_Polyhedron subtraction = np1*np2;
-  Nef_Polyhedron shape = np2 - subtraction;
+  Nef_Polyhedron subtraction = np2 - np1;
   Polyhedron booleanBound;
-  Polyhedron booleanBoundOut;
-  shape.convert_to_Polyhedron(booleanBound);
+  subtraction.convert_to_Polyhedron(booleanBound);
 
-  // std::ofstream fileOut("CGAL.off");
-  // CGAL::IO::write_OFF(fileOut, booleanBound);
+  std::ofstream fileOut("CGAL.off");
+  CGAL::IO::write_OFF(fileOut, booleanBound);
   np1.clear();
   np2.clear();
   
-
-  std::vector<Vertex> points;
-  std::vector<std::vector<std::size_t> > polygons;
-
-  CGAL::Polygon_mesh_processing::merge_duplicated_vertices_in_boundary_cycles(booleanBound);
-  CGAL::Polygon_mesh_processing::remove_degenerate_edges(booleanBound);
-  CGAL::Polygon_mesh_processing::remove_degenerate_faces(booleanBound);
-
   return booleanBound;
 }
 
@@ -115,12 +104,10 @@ removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol)
       libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
       for(int j = 0; j < new_elem->n_nodes(); j++)
       {
-        std::cout << j << std::endl;
         new_elem->set_node(j) = cgalMesh.node_ptr(id_map[elem->node_ptr(j)->id()]);
       }
       cgalMesh.add_elem(new_elem);
     }
   } 
-  
   cgalMesh.prepare_for_use();
 }

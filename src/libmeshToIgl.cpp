@@ -1,5 +1,6 @@
 #include "libmeshToIgl.hpp"
 
+
 void 
 libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
 {
@@ -83,7 +84,6 @@ getElemType(Eigen::MatrixXi& F)
     return libMesh::INVALID_ELEM;
 }
 
-template<typename Polyhedron>
 void
 libmeshToCGAL(libMesh::Mesh& libmeshMesh, 
               Polyhedron& poly)
@@ -92,6 +92,7 @@ libmeshToCGAL(libMesh::Mesh& libmeshMesh,
     typedef typename Polyhedron::HalfedgeDS HalfedgeDS;
     typedef typename HalfedgeDS::Vertex Vertex;
     typedef typename Vertex::Point Point;
+
     CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
     B.begin_surface(libmeshMesh.n_nodes(), libmeshMesh.n_elem());
 
@@ -119,7 +120,6 @@ libmeshToCGAL(libMesh::Mesh& libmeshMesh,
     return;
 }
 
-template<typename Polyhedron>
 void
 CGALToLibmesh(libMesh::Mesh& libmeshMesh,
               Polyhedron & poly)
@@ -174,9 +174,4 @@ CGALToLibmesh(libMesh::Mesh& libmeshMesh,
     }
     libmeshMesh.prepare_for_use();
 }
-
-template void libmeshToCGAL(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
-
-template void CGALToLibmesh(libMesh::Mesh& libmeshMesh, CGAL::Polyhedron_3<CGAL::Exact_predicates_exact_constructions_kernel, CGAL::Polyhedron_items_with_id_3> & poly);
-
 
