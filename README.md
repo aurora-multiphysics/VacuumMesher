@@ -12,7 +12,16 @@ The "vacuum region" surrounding a piece of geometry (i.e. a coil) is often not m
 ## Duplicate Node Removal
 As part of the vacuum region generation, the vacuum mesh must be recombined with the original mesh. As both meshes will share facets at the boundary of the original part, there will be duplicate facets/nodes present. This is never good news. Using an rTree, each node is checked to see if it is a duplicate of a pre-existing node. If a duplicate is found, it is not added to the final mesh, and the element connectivity of all the elements is changed to account for the change in node id's that occurs due to not adding these duplicate nodes.
 
+# Building
+To build everything, follow a very familiar cmake build procedure with a couple of extra arguments.
 
+- First create a build folder and `cd` into it
+```
+mkdir build
+cd build
+```
+
+# Examples
 
 ### gotcha's
 Currently all the functionality of all the tools in this repo only apply to tet/tri meshes, as this is what libIGL primarily supports. But if this changes at some ambiguous, arbitrary time in the future, then these tools can be updated to provide functionality for other elements types. 
