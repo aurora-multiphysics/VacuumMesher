@@ -24,13 +24,13 @@ mkdir build
 cd build
 `
 - Next run `cmake ..`, with two extra arguments. These arguments are
-`
+```
 -DFETCHCONTENT_SOURCE_DIR_LIBIGL=<path-to-libigl>
-`
+```
 and
-`
+```
 -DLIBMESH_CONF_DIR
-`
+```
 - The first argument specifies where the downloaded libIGL source is, the second where to locate the libmesh-configure exextutable is, which will allow cmake to easily fetch the necessary includes and libs to get libmesh working
 
 # Examples
