@@ -13,13 +13,25 @@ The "vacuum region" surrounding a piece of geometry (i.e. a coil) is often not m
 As part of the vacuum region generation, the vacuum mesh must be recombined with the original mesh. As both meshes will share facets at the boundary of the original part, there will be duplicate facets/nodes present. This is never good news. Using an rTree, each node is checked to see if it is a duplicate of a pre-existing node. If a duplicate is found, it is not added to the final mesh, and the element connectivity of all the elements is changed to account for the change in node id's that occurs due to not adding these duplicate nodes.
 
 # Building
-To build everything, follow a very familiar cmake build procedure with a couple of extra arguments.
+To build everything, follow a very familiar cmake build procedure with a couple of extra arguments. Also important to mention is that this tool has been made to accomodate for a pre-existing moose install, as I imagine most of the people using it will have one, and therefore probably have an existing libmesh install that can be used. I have only tested this will a "from source" MOOSE build. If you used conda to install MOOSE, seek help and/or a hug. 
+
+- Download libIGL from "url here". LibIGL is used for tetrahedralisation of the vacuum region.
 
 - First create a build folder and `cd` into it
-```
+
+`
 mkdir build
 cd build
-```
+`
+- Next run `cmake ..`, with two extra arguments. These arguments are
+`
+-DFETCHCONTENT_SOURCE_DIR_LIBIGL=<path-to-libigl>
+`
+and
+`
+-DLIBMESH_CONF_DIR
+`
+- The first argument specifies where the downloaded libIGL source is, the second where to locate the libmesh-configure exextutable is, which will allow cmake to easily fetch the necessary includes and libs to get libmesh working
 
 # Examples
 
