@@ -1,18 +1,17 @@
 # libmeshSkinning
+The tools in this repo utilise LibMesh and libIGL to help produce a "vacuum mesh" (implicit complement) from the mesh
+of an initial part geometry. The repo is misleadingly called libmesh skinning when it should be called "Vacuum mesh generation" or something of that ilk, but hopefully this read me helps clarify the functionality implemented here.
 
-## What is this?
-
-The tools in this repo utilise LibMesh and libIGL to perform various functions on an input mesh.
-Initially this was all centred around obtaining the surface of a mesh, or the 'skin', but has developed and flourished to offer other functionality as well.
-
-## Mesh skinning
-
+# Available functionality
+## Mesh Skinning
 One of the tools available is a mesh skinner. This will take an input mesh, and return to you the skin of that mesh. This can either be the skin of the whole mesh, or the skin of a subset of the elements of the mesh. If the user asks for the skin of set of elements in the mesh, and these elements are discontinous, the user may prompt these various different parts to be output as seperate files. Discontinous in this case refers to disconintous at the sides of elements. If two elements are only touching at an edge, they are considered discontinous. In future this functionality can be improved.   
 
 ## Vacuum region generation 
-Leading on from the mesh skinning is the ability to generate a tetragedra
+The "vacuum region" surrounding a piece of geometry (i.e. a coil) is often not modolled when the part is initially meshed. Functionality in this repo allows for the vacuum region of an initial part to be generated. This vacuum mesh will conform to the nodes/ facets on the boundary of the original part's mesh. This new mesh will then be recombined with the mesh of the original part, ready to be used in problems that require a vacuum region to be modelled.
 
 ## Duplicate Node Removal
+As part of the vacuum region generation, the vacuum mesh must be recombined with the original mesh. As both meshes will share facets at the boundary of the original part, there will be duplicate facets/nodes present. This is never good news. Using an rTree, each node is checked to see if it is a duplicate of a pre-existing node. If a duplicate is found, it is not added to the final mesh, and the element connectivity of all the elements is changed to account for the change in node id's that occurs due to not adding these duplicate nodes.
+
 
 
 ### gotcha's
