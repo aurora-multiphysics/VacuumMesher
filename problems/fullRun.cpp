@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     Eigen::MatrixXd seed_points = getSeeds(surfMesh);
 
     // Adds a boundary to the surface mesh
-    createBoundary(init, surfMesh);
+    createBoundary(init, surfMesh, 1.2);
 
     
     // Tetrahedralise everything

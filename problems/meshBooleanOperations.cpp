@@ -1,5 +1,7 @@
 #include "generateBoundaries.hpp"
+#include "tetMaker.hpp"
 #include "meshBoolean.hpp"
+#include "removeDupeNodes.hpp"
 
 #include <igl/copyleft/cgal/remesh_intersections.h>
 
@@ -23,28 +25,35 @@ int main(int argc, char** argv)
     boundFilepath = path + boundFilename;
     tetFilepath = path + tetFilename; 
 
+    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
     libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
     libMesh::Mesh surfaceMesh(init.comm());
     //Create mesh object to store vacuum mesh
-    // libMesh::Mesh vacuumMesh(init.comm());
+    libMesh::Mesh vacuumMesh(init.comm());
     libMesh::Mesh boundaryMesh(init.comm());
+
+
 
     surfaceMesh.read(surfFilepath);
 
     boundaryMesh.read(boundFilepath);
-
     // Puts combined mesh into 
-    genBooleanBound(boundaryMesh, surfaceMesh, mesh);
-
-    mesh.write("polygonSoup.e");
+    std::cout << "genning boolean bound" << std::endl;
+    genBooleanBound(boundaryMesh, surfaceMesh);
+    boundaryMesh.write("booleanBoxTest.e");
+    std::cout << "gennED boolean bound" << std::endl;
+    // tetrahedraliseVacuumRegion(boundaryMesh, vacuumMesh);
+    // vacuumMesh.write("vacuumMeshCoilTest.e");
     // createEdgeMesh(surfaceMesh, boundaryMesh);
 
     // vacuumMesh.read(tetFilepath);
 
-    // createFullGeometry(mesh, vacuumMesh);
+    // combineMesh(mesh, vacuumMesh);
 
     return 0;
 }

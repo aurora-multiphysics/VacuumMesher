@@ -35,27 +35,22 @@ int main(int argc, char** argv)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
     getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
     // Get seed points for tetrahedralisation 
-    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+    // Eigen::MatrixXd seed_points = getSeeds(surfMesh);
 
-    // Adds a boundary to the surface mesh
-    // createBoundary(init, surfMesh);
-
+    // Adds a boundary to the coil mesh, that is coincident with the xy plane (z=0)
+    createCoilBoundary(init, surfMesh, 2);
     
     // Tetrahedralise everything
-    // tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
+    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh);
     // Set up rTree with specified tolerance
-    RTree<int, double, 3, float> rtree;
     double tol = 1e-07;
 
-
-    
-    createTree(rtree, vacuumMesh, tol);
-    combineMesh(rtree, tol, mesh, vacuumMesh, surfaceFaceMap);
+    combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
-    vacuumMesh.write("fullCoil.e");
+    vacuumMesh.write(tetFilepath);
 
     return 0;
 }

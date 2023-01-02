@@ -1,5 +1,4 @@
 #include "surfaceMeshing.hpp"
-#include "libmesh/cell_tet4.h"
 #include <algorithm>
 // isElementSurface for if user wants the whole mesh skinned
 void isElementSurface(libMesh::Elem& element, 
@@ -197,8 +196,6 @@ void getSurface(libMesh::Mesh& mesh,
     // std::vector<libMesh::boundary_id_type> boundary_id;
     std::map<int, std::vector<libMesh::boundary_id_type>> boundary_data;
 
-
-
     //Map from old node ids to the new ones in the surface mesh
     std::vector<int> currentNodeIds;
     std::map<int, int> newNodeIds;
@@ -207,10 +204,8 @@ void getSurface(libMesh::Mesh& mesh,
     std::vector<int> connectivity;
 
     //Use getElemInfo method to retrieve Element Info 
-    libMesh::Elem* elem = mesh.elem_ptr(0);
-    
     getElemInfo(elem_type, face_type, 
-                elem, num_elem_faces, num_face_nodes);
+                mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
                 
     // Loops over all the elements in the input vector 
     for(int elem = 0; elem< mesh.n_elem(); elem++)

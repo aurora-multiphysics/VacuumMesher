@@ -41,7 +41,7 @@ void genBooleanBound(libMesh::Mesh& boundaryMesh,
   std::cout << "converted bound" << std::endl;
   Polyhedron difference = subtract_volumes_poly(polGeom, polBound);
   CGALToLibmesh(surfaceMesh, difference);
-  // removeDegenerateTris(boundaryMesh, 1e-07);
+  removeDegenerateTris(surfaceMesh, 1e-07);
 }
 
 // Use CGAL to generate the boundary for the coil

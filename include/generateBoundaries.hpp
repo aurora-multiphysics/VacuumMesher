@@ -22,6 +22,9 @@
 #include "getElemInfo.hpp"
 #include "meshBoolean.hpp"
 
+
+// Method to create boundary around the surface mesh. The space between the surface mesh and
+//  the boundary mesh are what becomes the vacuum mesh
 void createBoundary(libMesh::LibMeshInit &init, 
                     libMesh::Mesh& surfMesh,
                     double scaleFactor);
