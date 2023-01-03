@@ -23,3 +23,5 @@ test/testingMeshes/
 *~
 Visualisations/*
 profiling/*
+*.stl
+*.log
