@@ -31,7 +31,7 @@ and
 ```
 -DLIBMESH_CONF_DIR
 ```
-- The first argument specifies where the downloaded libIGL source is, the second where to locate the libmesh-configure exextutable is, which will allow cmake to easily fetch the necessary includes and libs to get libmesh working
+The first argument specifies where the downloaded libIGL source is, the second where to locate the libmesh-configure exextutable is, which will allow cmake to easily fetch the necessary includes and libs to get libmesh working
 
 # Examples
 

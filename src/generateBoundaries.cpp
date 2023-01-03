@@ -88,16 +88,12 @@ void createCoilBoundary(libMesh::LibMeshInit &init,
 
     // Scale the bounding box by a scaling factor
     double max_length = 0;
-    box.max().print();
-    box.min().print();
 
     for(int i = 0; i<3; i++)
     {
         centre(i) = ((box.max()(i) + box.min()(i))/2);
         max_length = std::abs(box.max()(i) - box.min()(i)) > max_length ? std::abs(box.max()(i) - box.min()(i)) : max_length;
     }
-    centre.print();
-    std::cout << max_length << std::endl;
     // We have i in the range 0<=i<2 so that the z co-ordinate is unaffected 
     for(int i = 0; i<3;i++)
     {

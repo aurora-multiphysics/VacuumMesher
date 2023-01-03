@@ -1,7 +1,4 @@
 #include "meshBoolean.hpp"
-#include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include <CGAL/Polygon_mesh_processing/polygon_mesh_to_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
 #include <CGAL/polygon_mesh_processing.h>
 #include <CGAL/IO/polygon_soup_io.h>
@@ -36,9 +33,7 @@ void genBooleanBound(libMesh::Mesh& boundaryMesh,
   Polyhedron polBound;
   
   libmeshToCGAL(surfaceMesh, polGeom);
-  std::cout << "converted surface" << std::endl;
   libmeshToCGAL(boundaryMesh, polBound);
-  std::cout << "converted bound" << std::endl;
   Polyhedron difference = subtract_volumes_poly(polGeom, polBound);
   CGALToLibmesh(surfaceMesh, difference);
   removeDegenerateTris(surfaceMesh, 1e-07);
@@ -53,9 +48,10 @@ subtract_volumes_poly(Polyhedron& geom, Polyhedron& bound)
 
   Nef_Polyhedron subtraction = np2 - np1;
   Polyhedron booleanBound;
+  Mesh polymesh;
   subtraction.convert_to_Polyhedron(booleanBound);
 
-  std::ofstream fileOut("CGAL.off");
+  std::ofstream fileOut("polymesh.off");
   CGAL::IO::write_OFF(fileOut, booleanBound);
   np1.clear();
   np2.clear();
@@ -70,8 +66,9 @@ removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol)
   libMesh::Mesh meshCopy(cgalMesh);
   // Clear original mesh
   cgalMesh.clear();
-  // Map to keep track of 
+  // Map to keep track of node ids
   std::unordered_map<unsigned int, unsigned int> id_map;
+  // 
   RTree<int, double, 3, float> rtree;
 
   for(auto& node: meshCopy.local_node_ptr_range())
@@ -85,11 +82,14 @@ removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol)
       id_map[node->id()] =  node->id();
       rtree.Insert(node_box.min.data(), node_box.max.data(), node_box.node_id);
       double pnt[3];
+
       for(uint i = 0; i<3; i++){pnt[i] = (*node)(i);}
+
       libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
       cgalMesh.add_point(xyz, id_map[node->id()]);
     }
     else{
+      // Add fail safe
       id_map[node->id()] =  tree_hits[0];
     }
   }
@@ -99,7 +99,8 @@ removeDegenerateTris(libMesh::Mesh& cgalMesh, const double& tol)
 
   for(auto& elem: libMesh::as_range(meshCopy.local_elements_begin(), meshCopy.local_elements_end()))
   {
-    if(elem->volume() > tol)
+    // switch logic here to prevent nesting
+    if(elem->volume() > tol) 
     {
       libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
       for(int j = 0; j < new_elem->n_nodes(); j++)

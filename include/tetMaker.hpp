@@ -18,7 +18,7 @@
 #include <filesystem>
 #include "pythonTools.hpp"
 #include "visualiseSeedPoints.hpp"
-#include "libmeshToIgl.hpp"
+#include "libmeshConversions.hpp"
 
 
 // Method used to generate the tetrehedra between the boundary mesh and the part mesh i.e. generates the vacuum mesh
