@@ -2,8 +2,8 @@
 #include "libmesh/libmesh.h"
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
-#include "tetMaker.hpp"
-#include "surfaceMeshing.hpp"
+#include "Tetrahedralisation/tetMaker.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include <chrono>
 #include "algorithm"
 

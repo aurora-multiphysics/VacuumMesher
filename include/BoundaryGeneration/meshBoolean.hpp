@@ -6,7 +6,7 @@
 #include "libmesh/boundary_info.h"
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
-#include "surfaceMeshing.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include <igl/copyleft/cgal/mesh_boolean.h>
 #include <igl/readOFF.h>
 #include <igl/writeOFF.h>
@@ -19,14 +19,13 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
 // #include <igl/opengl/glfw/Viewer.h>
-#include "pythonTools.hpp"
 #include "filesystem"
 #include <algorithm>
 #include "utility"
-#include "libmeshConversions.hpp"
-#include "reverseNormal.hpp"
-#include "RTree.hpp"
-#include "box.hpp"
+#include "Utils/libmeshConversions.hpp"
+#include "Utils/reverseNormal.hpp"
+#include "Utils/RTree.hpp"
+#include "Utils/box.hpp"
 
 
 void genBooleanBound(libMesh::Mesh& boundaryMesh, 

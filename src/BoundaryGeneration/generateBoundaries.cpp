@@ -1,4 +1,4 @@
-#include "generateBoundaries.hpp"
+#include "BoundaryGeneration/generateBoundaries.hpp"
 
 void createBoundary(libMesh::LibMeshInit &init, 
                     libMesh::Mesh& surfMesh, 

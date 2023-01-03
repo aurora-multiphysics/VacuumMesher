@@ -1,6 +1,6 @@
 #pragma once
 #include "MeshTest.hpp"
-#include "surfaceMeshing.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "surfaceMeshing.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 
 // Box struct that is inserted into the rTree. Each node gets it's own Box struct which is then
 //  inserted. 

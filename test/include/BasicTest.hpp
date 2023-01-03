@@ -6,10 +6,9 @@
 #include "libmesh/libmesh.h"
 #include "argsHelper.h"
 #include "initer.h"
-#include "tetMaker.hpp"
-#include "surfaceMeshing.hpp"
+#include "Tetrahedralisation/tetMaker.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include "algorithm"
-#include "pythonTools.hpp"
 #include <filesystem>
 
 

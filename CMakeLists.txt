@@ -51,8 +51,8 @@ string(STRIP "${libmesh_INCLUDE}" libmesh_INCLUDE)
 #     ${MOOSE_DIR}/petsc/include 
 #     /usr/include/tirpc)
 
-FILE(GLOB projectSrc ./src/*)
-FILE(GLOB testSrc ./test/src/*)
+FILE(GLOB_RECURSE projectSrc ./src/*)
+FILE(GLOB_RECURSE testSrc ./test/src/*)
 
 link_libraries(MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 

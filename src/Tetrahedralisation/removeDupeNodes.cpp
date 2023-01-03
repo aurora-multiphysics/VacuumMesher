@@ -1,4 +1,4 @@
-#include "removeDupeNodes.hpp"
+#include "Tetrahedralisation/removeDupeNodes.hpp"
 
 // Global hits
 std::vector<int> hits;

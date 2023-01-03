@@ -1,4 +1,4 @@
-#include "surfaceMeshing.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include <algorithm>
 // isElementSurface for if user wants the whole mesh skinned
 void isElementSurface(libMesh::Elem& element, 

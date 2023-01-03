@@ -1,4 +1,4 @@
-#include "reverseNormal.hpp"
+#include "Utils/reverseNormal.hpp"
 
 void
 reverseNormal(unsigned int facetID , Eigen::MatrixXi& F)

@@ -1,6 +1,5 @@
 #pragma once 
 
-#include "genFullMesh.hpp"
 #include "libmesh/elem.h"
 #include "libmesh/mesh.h"
 #include "libmesh/libmesh.h"
@@ -19,8 +18,8 @@
 #include <igl/writeOFF.h>
 #include <igl/decimate.h>
 #include "utility"
-#include "getElemInfo.hpp"
-#include "meshBoolean.hpp"
+#include "Utils/getElemInfo.hpp"
+#include "BoundaryGeneration/meshBoolean.hpp"
 
 
 // Method to create boundary around the surface mesh. The space between the surface mesh and

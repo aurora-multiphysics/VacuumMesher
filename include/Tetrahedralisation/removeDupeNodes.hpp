@@ -7,12 +7,12 @@
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
 #include "libmesh/boundary_info.h"
-#include "surfaceMeshing.hpp"
-#include "generateBoundaries.hpp"
-#include "tetMaker.hpp"
-#include "RTree.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
+#include "BoundaryGeneration/generateBoundaries.hpp"
+#include "Tetrahedralisation/tetMaker.hpp"
+#include "Utils/RTree.hpp"
 #include "utility"
-#include "box.hpp"
+#include "Utils/box.hpp"
 
 
 // Method for inserting individual nodes into rTree. Instantiates their Box,

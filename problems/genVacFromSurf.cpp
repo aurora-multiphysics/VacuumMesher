@@ -4,10 +4,10 @@
 #include "libmesh/libmesh.h"
 #include "libmesh/enum_io_package.h"
 #include "libmesh/enum_elem_type.h"
-#include "tetMaker.hpp"
-#include "surfaceMeshing.hpp"
+#include "Tetrahedralisation/tetMaker.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include "algorithm"
-#include "removeDupeNodes.hpp"
+#include "Tetrahedralisation/removeDupeNodes.hpp"
 
 int main(int argc, char** argv)
 {   

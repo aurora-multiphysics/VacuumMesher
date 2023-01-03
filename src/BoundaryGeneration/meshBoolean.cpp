@@ -1,4 +1,4 @@
-#include "meshBoolean.hpp"
+#include "BoundaryGeneration/meshBoolean.hpp"
 #include <CGAL/Polygon_mesh_processing/orientation.h>
 #include <CGAL/polygon_mesh_processing.h>
 #include <CGAL/IO/polygon_soup_io.h>

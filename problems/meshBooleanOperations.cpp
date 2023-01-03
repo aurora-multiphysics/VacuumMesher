@@ -1,7 +1,7 @@
-#include "generateBoundaries.hpp"
-#include "tetMaker.hpp"
-#include "meshBoolean.hpp"
-#include "removeDupeNodes.hpp"
+#include "BoundaryGeneration/generateBoundaries.hpp"
+#include "Tetrahedralisation/tetMaker.hpp"
+#include "BoundaryGeneration/meshBoolean.hpp"
+#include "Tetrahedralisation/removeDupeNodes.hpp"
 
 #include <igl/copyleft/cgal/remesh_intersections.h>
 
