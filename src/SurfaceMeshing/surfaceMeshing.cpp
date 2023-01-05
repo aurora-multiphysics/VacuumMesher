@@ -429,6 +429,7 @@ void groupElems(libMesh::Mesh mesh,
         libMesh::dof_id_type next = *(it);
         elems.erase(it);
         std::set<libMesh::dof_id_type> neighbors;
+        
         //Adding first element to nesighbors
         neighbors.insert(next);
         std::vector<libMesh::dof_id_type> groupElems(0);

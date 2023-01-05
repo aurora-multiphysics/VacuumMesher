@@ -37,6 +37,7 @@ option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 include(libigl)
 # Locate GTest and MPI
 
+# Get libmesh includes and libs
 execute_process(COMMAND ${LIBMESH_CONF_DIR}/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND ${LIBMESH_CONF_DIR}/libmesh-config --include OUTPUT_VARIABLE libmesh_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
