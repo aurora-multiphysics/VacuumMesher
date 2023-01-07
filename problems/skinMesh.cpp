@@ -47,21 +47,27 @@ int main(int argc, char** argv)
     //Initialise libmesh functions and mpi    
     LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store volume mesh
-    Mesh mesh(init.comm());
+    libMesh::Mesh mesh(init.comm());
     //Create mesh object to store surface mesh
-    Mesh surfaceMesh(init.comm());
+    libMesh::Mesh surfaceMesh(init.comm());
 
 
     std::cout << "Reading Mesh" << std::endl;
     //Read volume mesh
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
-    
-    std::cout << "Skinning Beginning" << std::endl;
-
+    std::cout << mesh.spatial_dimension() << std::endl;
     // auto start1 = std::chrono::steady_clock::now();
-    getSurface(mesh, surfaceMesh, surfaceFaceMap, false, surfFilepath);
+    getSurface(mesh, surfaceMesh, surfaceFaceMap, true, surfFilepath);
     
+    libMesh::Mesh sidesetMesh(init.comm());
+    libMesh::Mesh sidesetBoundMesh(init.comm());
+    std::set<libMesh::boundary_id_type> bounds;
+    bounds.insert(1);
+    mesh.get_boundary_info().sync(sidesetMesh);
+    sidesetMesh.write("IDK.e");
+    getSurface(sidesetMesh, sidesetBoundMesh, surfaceFaceMap, false, "sidesetTest.e");
+
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

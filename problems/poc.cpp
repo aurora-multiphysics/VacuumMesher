@@ -1,7 +1,5 @@
-
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include <chrono>
-
 int main(int argc, char** argv)
 {
     std::string appName(argv[0]);
@@ -9,7 +7,7 @@ int main(int argc, char** argv)
     std::string path, filepath, filenameNoExt, surfFilename, boundFilename, tetFilename; 
     std::string surfFilepath, boundFilepath, tetFilepath; 
     std::string filename(argv[1]);
-    
+
     path = "./Meshes/";
     filepath = path + filename;
     filenameNoExt = filename.substr(0, filename.find("."));
@@ -32,22 +30,27 @@ int main(int argc, char** argv)
 
     auto start1 = std::chrono::steady_clock::now();
     mesh.read(filepath);
-    vacuumMesh.read(tetFilepath);
+    std::cout << mesh.n_nodes() << std::endl;
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
+    // getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
     // Get seed points for tetrahedralisation 
-    // Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+    Eigen::MatrixXd seed_points(1, 3);
+    seed_points << -0.04, 2.63, -0.04;
 
-    // Adds a boundary to the coil mesh, that is coincident with the xy plane (z=0)
-    createCoilBoundary(init, surfMesh, 2);
-    
+    std::cout << seed_points << std::endl;
+
+    // Adds a boundary to the surface mesh
+    // createBoundary(init, surfMesh, 1.2);
+
+    std::cout << "lmao" << std::endl;
     // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh);
-    // Set up rTree with specified tolerance
-    double tol = 1e-07;
+    tetrahedraliseVacuumRegion(mesh, vacuumMesh, seed_points);
 
-    combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
+
+    // Combine the vacuum mesh and the part mesh 
+    const double tol = 1e-07;
+    // combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
