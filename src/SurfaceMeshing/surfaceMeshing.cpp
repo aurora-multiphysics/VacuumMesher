@@ -145,12 +145,13 @@ void getSurface(libMesh::Mesh& mesh,
     
     //For all of the surface elements, create the representitive 2D libmesh element 
     //Connectivity is set and the element is added to the new mesh
+    std::cout << surface_elem_counter << std::endl;
     for(int i = 0; i < surface_elem_counter; i++)
     {
         libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
         for(int j = 0; j < num_face_nodes; j++)
         {
-            elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*(face_type))+j]]);
+            elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
         }
         elem->set_id(i);
         surfaceMesh.add_elem(elem);
@@ -159,11 +160,7 @@ void getSurface(libMesh::Mesh& mesh,
             surfaceMesh.boundary_info->add_side(i, 0, id);
         }
     }
-    // 
-    // surfaceMesh.boundary_info->build_side_list_from_node_list();
     //Set mesh dimensions 
-    surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
-    surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
 
     libMesh::BoundingBox box = libMesh::MeshTools::create_bounding_box(surfaceMesh);
