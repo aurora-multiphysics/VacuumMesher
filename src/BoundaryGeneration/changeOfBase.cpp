@@ -67,6 +67,14 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     }
     // newMesh.set_mesh_dimension(3);
     newMesh.prepare_for_use();
+    
+    auto box = libMesh::MeshTools::create_bounding_box(newMesh);
+    Eigen::MatrixXd holes;
+    // for(u_int i = 0; i<2; i++){holes(0, i) = ((box.max()(i) + box.min()(i))/2);}
+    std::cout << holes << std::endl;
+    libMesh::Mesh triangulation(newMesh.comm());
+    generateTriangleBound(newMesh, triangulation, holes);
+
 }
 
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
@@ -94,7 +102,26 @@ Eigen::Vector3d calculateLocalCoords(Eigen::Matrix3d& basisMatrix, Eigen::Vector
     return localCoords;
 }
 
+void generateTriangleBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, Eigen::MatrixXd& holes)
+{
+    Eigen::MatrixXd verts, newVerts;
+    Eigen::MatrixXi elems, newElems;
+    libMeshToIGL(mesh, verts, elems, 2);
+    // igl::opengl::glfw::Viewer viewer;
+    // viewer.data().set_mesh(verts, elems);
+    // viewer.launch();
+    // std::cout << "converted to igl" << std::endl;
+    igl::triangle::triangulate(verts, elems, holes, "a0.005q", newVerts, newElems);
+    IGLToLibMesh(outputMesh, newVerts, newElems);
+    // std::cout << "converted to lib" << std::endl;
+    outputMesh.write("triangles.e");
 
+}
+
+void getVoidCoords()
+{
+    
+}
 // void doubleCheck(Eigen::Matrix3d& basisMatrix, Eigen::Vector3d& origin, Eigen::Vector3d& point, Eigen::Vector3d& initialPoint)
 // {
 //     std::cout << origin + (basisMatrix * point) << std::endl;
