@@ -1,5 +1,7 @@
+
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include <chrono>
+
 int main(int argc, char** argv)
 {
     std::string appName(argv[0]);
@@ -22,36 +24,43 @@ int main(int argc, char** argv)
     
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     //Create mesh object to store original model mesh
-    libMesh::Mesh mesh(init.comm());
+    libMesh::Mesh coilMesh(init.comm());
     //Create mesh object to store surface mesh
-    libMesh::Mesh surfMesh(init.comm());
+    libMesh::Mesh targetMesh(init.comm());
+    // 
+    libMesh::Mesh targetSurfMesh(init.comm());
+
+    // 
+    libMesh::Mesh boundaryMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
     auto start1 = std::chrono::steady_clock::now();
-    mesh.read(filepath);
-
+    coilMesh.read(filepath);
+    boundaryMesh.read("./Meshes/hive_coil_boundary.e");
+    targetMesh.read("./Meshes/target.e");
+    // vacuumMesh.read(tetFilepath);
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
+    getSurface(targetMesh, targetSurfMesh, surfaceFaceMap, true, surfFilepath);
     // Get seed points for tetrahedralisation 
-    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+    Eigen::MatrixXd seed_points = getSeeds(targetSurfMesh);
 
-    // Adds a boundary to the surface mesh
-    createBoundary(init, surfMesh, 1.2);
+    // Adds a boundary to the coil mesh, that is coincident with the xy plane (z=0)
+    // createCoilBoundary(init, surfMesh, 2);
 
     // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
+    tetrahedraliseVacuumRegion(boundaryMesh, vacuumMesh, seed_points);
+    vacuumMesh.write("hive_vac.e");
+    // // Set up rTree with specified tolerance
+    // double tol = 1e-07;
 
-
-    // Combine the vacuum mesh and the part mesh 
-    const double tol = 1e-07;
-    combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
-    auto end1 = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    << " ms" << std::endl;
-    vacuumMesh.write(tetFilepath);
+    // combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
+    // auto end1 = std::chrono::steady_clock::now();
+    // std::cout << "Elapsed time in milliseconds: "
+    // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    // << " ms" << std::endl;
+    // vacuumMesh.write(tetFilepath);
 
     return 0;
 }

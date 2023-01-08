@@ -1,6 +1,6 @@
 #include "BoundaryGeneration/changeOfBase.hpp"
 
-void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& newMesh)
+void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh::Mesh& newMesh)
 {
     // Eigen stuff
     Eigen::Matrix3d plane_points;
@@ -34,38 +34,39 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& newMesh)
     Eigen::Vector3d origin = plane_points.row(0);
     getBasisMatrix(basisMatrix, plane_points);
 
-    for(u_int i = 0; i < bc_id_list.size(); i++)
+    for(auto& node: sidesetMesh.node_ptr_range())
     {
-        bd_side_ptr = nullptr;
-        if(bc_id_list[i] != coil_in_id)
-        {
-            continue;
-        }
 
         // Eigen::Vector to store node coords
         Eigen::Vector3d point, newPoint;
         // ptr to a boundary side
-        bd_side_ptr = (mesh.elem_ptr(element_id_list[i])->side_ptr(side_list[i]));
 
-        for(auto& node_id: bd_side_ptr->node_ref_range())
-        {
-            // std::cout << node_id(0) << " " << node_id(1) << " " << node_id(2) << std::endl;
-            for(u_int i = 0; i < 3; i++){point(i) = node_id(i);}
-        }
+        for(u_int i = 0; i < 3; i++){point(i) = (*node)(i);}
 
         newPoint = calculateLocalCoords(basisMatrix, origin, point);
         // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
-        std::cout << newPoint.transpose() << std::endl;
+        // std::cout << newPoint.transpose() << std::endl;
+
         double pnt[3];
         for(u_int i = 0; i < 3; i++){pnt[i] = newPoint(i);}
 
         libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
         // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
-        newMesh.add_point(xyz);
+        newMesh.add_point(xyz, node->id());
+    }
+
+    std::cout << "making elems" << std::endl;
+    for(auto& elem: sidesetMesh.element_ptr_range())
+    {
+        libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
+        for(int j = 0; j < elem->n_nodes(); j++)
+        {
+            new_elem->set_node(j) = newMesh.node_ptr(elem->node_ref(j).id());
+        }
+        newMesh.add_elem(new_elem);
     }
     // newMesh.set_mesh_dimension(3);
     newMesh.prepare_for_use();
-    newMesh.write("coolTest.e");
 }
 
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)

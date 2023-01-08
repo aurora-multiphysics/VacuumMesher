@@ -1,6 +1,6 @@
 #include "BoundaryGeneration/generateBoundaries.hpp"
 
-void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& newMesh);
+void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh::Mesh& newMesh);
 
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points);
 

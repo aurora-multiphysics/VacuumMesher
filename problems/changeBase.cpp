@@ -28,6 +28,8 @@ int main(int argc, char** argv)
     libMesh::Mesh mesh(init.comm());
 
     libMesh::Mesh sidesetMesh(init.comm());
+    libMesh::Mesh sidesetBoundMesh(init.comm());
+
     //Create mesh object to store surface mesh
     libMesh::Mesh surfMesh(init.comm());
     //Create mesh object to store vacuum mesh
@@ -38,11 +40,12 @@ int main(int argc, char** argv)
 
     std::set<libMesh::boundary_id_type> ids;
     ids.insert(1);
+    mesh.get_boundary_info().sync(ids, sidesetMesh);
+    getSurface(sidesetMesh, sidesetBoundMesh, true, "sidesetTest.e");
 
-    mesh.boundary_info().sync(sidesetMesh, ids);
-
-    getBasisChangeMatrix(mesh, surfMesh);
-
+    getBasisChangeMesh(mesh, sidesetBoundMesh, surfMesh);
+    surfMesh.write("wannaGoBed.e");
+ 
     // vacuumMesh.read(tetFilepath);
     // // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     // std::multimap<unsigned int, unsigned int> surfaceFaceMap;
