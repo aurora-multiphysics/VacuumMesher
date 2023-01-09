@@ -145,7 +145,6 @@ void getSurface(libMesh::Mesh& mesh,
     
     //For all of the surface elements, create the representitive 2D libmesh element 
     //Connectivity is set and the element is added to the new mesh
-    std::cout << surface_elem_counter << std::endl;
     for(int i = 0; i < surface_elem_counter; i++)
     {
         libMesh::Elem* elem = libMesh::Elem::build(face_type).release();

@@ -5,6 +5,11 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     // Eigen stuff
     Eigen::Matrix3d plane_points;
 
+    auto coilBbox = libMesh::MeshTools::create_bounding_box(mesh);
+    libMesh::Point boxVec = coilBbox.max() - coilBbox.min();
+    double boundWidth = 0;
+    for(u_int i = 0; i<3; i++){boundWidth = boxVec(i) > boundWidth ?  std::abs(boxVec(i)) : boundWidth;}
+
     // Ptr to out sideset element
     std::unique_ptr<libMesh::Elem> bd_side_ptr;
 
@@ -70,7 +75,7 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     
     auto box = libMesh::MeshTools::create_bounding_box(newMesh);
     Eigen::MatrixXd holes;
-    // for(u_int i = 0; i<2; i++){holes(0, i) = ((box.max()(i) + box.min()(i))/2);}
+    for(u_int i = 0; i<2; i++){holes(0, i) = ((box.max()(i) + box.min()(i))/2);}
     std::cout << holes << std::endl;
     libMesh::Mesh triangulation(newMesh.comm());
     generateTriangleBound(newMesh, triangulation, holes);
@@ -102,14 +107,12 @@ Eigen::Vector3d calculateLocalCoords(Eigen::Matrix3d& basisMatrix, Eigen::Vector
     return localCoords;
 }
 
-void generateTriangleBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, Eigen::MatrixXd& holes)
+void generateTriangleBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, Eigen::MatrixXd& holes, double boundLength)
 {
     Eigen::MatrixXd verts, newVerts;
     Eigen::MatrixXi elems, newElems;
+    genSidesetBounds(mesh, boundLength);
     libMeshToIGL(mesh, verts, elems, 2);
-    // igl::opengl::glfw::Viewer viewer;
-    // viewer.data().set_mesh(verts, elems);
-    // viewer.launch();
     // std::cout << "converted to igl" << std::endl;
     igl::triangle::triangulate(verts, elems, holes, "a0.005q", newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
@@ -118,10 +121,56 @@ void generateTriangleBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, Eigen
 
 }
 
-void getVoidCoords()
+void genSidesetBounds(libMesh::Mesh& sidesetMesh, double length)
+{
+    auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
+    libMesh::Point centre = (box.max() + box.min()/2);
+
+    libMesh::Point topLeft(-length/2, length/2);
+    libMesh::Point topRight(length/2, length/2);
+    libMesh::Point bottomLeft(-length/2, -length/2);
+    libMesh::Point bottomRight(length/2, -length/2);
+
+    std::vector<libMesh::dof_id_type> conn{1, 2, 2, 3, 3, 4, 4, 1};
+    // Vector of points to make it easier to iterate through
+    std::vector<libMesh::Point> points{topLeft, topRight, bottomLeft, bottomRight};
+
+    // Starting node ID for points
+    libMesh::dof_id_type startingNode = sidesetMesh.max_node_id();
+
+    for(u_int i = 0; i<4; i++)
+    {
+        sidesetMesh.add_point(points[i], startingNode + (i+1));
+        conn.push_back(startingNode + (i+1));
+    }
+
+    for(u_int i = 0; i<4; i++)
+    {
+        libMesh::Elem* elem = libMesh::Elem::build(0).release();
+        for(int j = 0; j < 2; j++)
+        {
+            elem->set_node(j) = sidesetMesh.node_ptr(startingNode + conn[(i*2)+j]);
+        }
+        elem->set_id(i);
+        sidesetMesh.add_elem(elem);
+    }
+    sidesetMesh.prepare_for_use();
+}
+
+void genRemainingBoundary()
+{
+
+}
+
+void genSquare()
 {
     
 }
+
+// void getVoidCoords()
+// {
+    
+// }
 // void doubleCheck(Eigen::Matrix3d& basisMatrix, Eigen::Vector3d& origin, Eigen::Vector3d& point, Eigen::Vector3d& initialPoint)
 // {
 //     std::cout << origin + (basisMatrix * point) << std::endl;
