@@ -24,7 +24,7 @@ insertNode(RTree<int, double, 3, float> &rtree, Box& node_box);
 //  into the rTree. Then, when adding more nodes to this mesh, we can check the rTree to see if they
 //   already exist 
 void
-createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, const double& tol);
+createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, const double tol);
 
 // Function for searching the rTree. Takes in a libMesh node and checks if it already exists
 //  in the tree. Note the argument, "mesh". This refers to the mesh that already has it's
@@ -34,16 +34,22 @@ createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& mesh, const doubl
 //  from old node id's to new node id's for the nodes being added, as well as ones that stay the same
 bool
 searchTree(RTree<int, double, 3, float> &rtree, 
-           const double& tol, std::map<unsigned int,
-           unsigned int>& id_map, 
-           libMesh::Mesh& mesh, 
+           const double tol, 
+           std::map<unsigned int, unsigned int>& id_map, 
+           libMesh::Mesh& meshOne, 
            libMesh::Node& node);
 
 // Calls the functions that have been defined to create the combined mesh
 void 
-combineMesh(const double& tol, libMesh::Mesh& surfMesh, 
-            libMesh::Mesh& vacMesh, 
+combineMeshes(const double tol, 
+            libMesh::Mesh& meshTwo, 
+            libMesh::Mesh& meshOne, 
             std::multimap<unsigned int, unsigned int> surfaceFaceMap);
+
+void 
+combineMeshes(const double tol,
+              libMesh::Mesh& meshOne,
+              libMesh::Mesh& meshTwo);
 
 
 

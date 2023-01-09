@@ -5,11 +5,6 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     // Eigen stuff
     Eigen::Matrix3d plane_points;
 
-    auto coilBbox = libMesh::MeshTools::create_bounding_box(mesh);
-    libMesh::Point boxVec = coilBbox.max() - coilBbox.min();
-    double boundWidth = 0;
-    for(u_int i = 0; i<3; i++){boundWidth = boxVec(i) > boundWidth ?  std::abs(boxVec(i)) : boundWidth;}
-
     // Ptr to out sideset element
     std::unique_ptr<libMesh::Elem> bd_side_ptr;
 
@@ -38,17 +33,72 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     Eigen::Matrix3d basisMatrix;
     Eigen::Vector3d origin = plane_points.row(0);
     getBasisMatrix(basisMatrix, plane_points);
+    changeMeshBasis(sidesetMesh, origin, basisMatrix);
+    
+    // for(auto& node: sidesetMesh.node_ptr_range())
+    // {
+    //     // Eigen::Vector to store node coords
+    //     Eigen::Vector3d point, newPoint;
+    //     // ptr to a boundary side
 
-    for(auto& node: sidesetMesh.node_ptr_range())
+    //     for(u_int i = 0; i < 3; i++){point(i) = (*node)(i);}
+
+    //     newPoint = calculateLocalCoords(basisMatrix, origin, point);
+    //     // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
+    //     // std::cout << newPoint.transpose() << std::endl;
+
+    //     double pnt[3];
+    //     for(u_int i = 0; i < 3; i++){pnt[i] = newPoint(i);}
+
+    //     libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
+    //     // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
+    //     newMesh.add_point(xyz, node->id());
+    // }
+
+    // std::cout << "making elems" << std::endl;
+    // for(auto& elem: sidesetMesh.element_ptr_range())
+    // {
+    //     libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
+    //     for(int j = 0; j < elem->n_nodes(); j++)
+    //     {
+    //         new_elem->set_node(j) = newMesh.node_ptr(elem->node_ref(j).id());
+    //     }
+    //     newMesh.add_elem(new_elem);
+    // }
+    // newMesh.set_mesh_dimension(3);
+    // newMesh.prepare_for_use();
+    auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
+
+    Eigen::MatrixXd holes(2, 2);
+    Eigen::Vector3d hole1 = {-6.518418, 14.362826, 15.356430};
+    Eigen::Vector3d hole2 = {0.014017, 0.017588, -0.033021};
+    Eigen::Vector3d hole1T = calculateLocalCoords(hole1, origin, basisMatrix);
+    Eigen::Vector3d hole2T = calculateLocalCoords(hole2, origin, basisMatrix);
+    
+    holes << hole1T(0), hole1T(1),
+             hole2T(0), hole2T(1);
+    std::cout << holes << std::endl;
+    libMesh::Mesh remainingBoundary(newMesh.comm());
+    remainingBoundary.read("remainingBoundary.e");
+    libMesh::Mesh triangulation(newMesh.comm());
+    generateCoilFaceBound(sidesetMesh, triangulation, remainingBoundary, holes);
+    changeMeshBasis(triangulation, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
+    triangulation.write("triangles.e");
+}
+
+
+void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis)
+{
+    libMesh::Mesh meshCopy(mesh);
+    mesh.clear();
+    for(auto& node: meshCopy.node_ptr_range())
     {
-
         // Eigen::Vector to store node coords
         Eigen::Vector3d point, newPoint;
-        // ptr to a boundary side
 
         for(u_int i = 0; i < 3; i++){point(i) = (*node)(i);}
 
-        newPoint = calculateLocalCoords(basisMatrix, origin, point);
+        newPoint = calculateLocalCoords(point, newOrigin, newBasis);
         // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
         // std::cout << newPoint.transpose() << std::endl;
 
@@ -57,29 +107,20 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
 
         libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
         // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
-        newMesh.add_point(xyz, node->id());
+        mesh.add_point(xyz, node->id());
     }
 
     std::cout << "making elems" << std::endl;
-    for(auto& elem: sidesetMesh.element_ptr_range())
+    for(auto& elem: meshCopy.element_ptr_range())
     {
         libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
         for(int j = 0; j < elem->n_nodes(); j++)
         {
-            new_elem->set_node(j) = newMesh.node_ptr(elem->node_ref(j).id());
+            new_elem->set_node(j) = mesh.node_ptr(elem->node_ref(j).id());
         }
-        newMesh.add_elem(new_elem);
+        mesh.add_elem(new_elem);
     }
-    // newMesh.set_mesh_dimension(3);
-    newMesh.prepare_for_use();
-    
-    auto box = libMesh::MeshTools::create_bounding_box(newMesh);
-    Eigen::MatrixXd holes;
-    for(u_int i = 0; i<2; i++){holes(0, i) = ((box.max()(i) + box.min()(i))/2);}
-    std::cout << holes << std::endl;
-    libMesh::Mesh triangulation(newMesh.comm());
-    generateTriangleBound(newMesh, triangulation, holes);
-
+    mesh.prepare_for_use();
 }
 
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
@@ -100,60 +141,101 @@ bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
     return true;
 }
 
-Eigen::Vector3d calculateLocalCoords(Eigen::Matrix3d& basisMatrix, Eigen::Vector3d& origin, Eigen::Vector3d& point)
+Eigen::Vector3d calculateLocalCoords(Eigen::Vector3d& point, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis)
 {
-    Eigen::Matrix3d identity = Eigen::Matrix3d::Identity();
-    Eigen::Vector3d localCoords = basisMatrix.inverse() * (-origin + (identity * point));
+    Eigen::Vector3d localCoords = newBasis.inverse() * (oldOrigin - newOrigin + (oldBasis * point));
     return localCoords;
 }
 
-void generateTriangleBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, Eigen::MatrixXd& holes, double boundLength)
+void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes)
 {
+
     Eigen::MatrixXd verts, newVerts;
     Eigen::MatrixXi elems, newElems;
-    genSidesetBounds(mesh, boundLength);
+    genSidesetBounds(mesh, remainingBoundary);
+    mesh.write("twosid.e");
     libMeshToIGL(mesh, verts, elems, 2);
-    // std::cout << "converted to igl" << std::endl;
-    igl::triangle::triangulate(verts, elems, holes, "a0.005q", newVerts, newElems);
+    igl::triangle::triangulate(verts, elems, holes, "qY", newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
-    // std::cout << "converted to lib" << std::endl;
-    outputMesh.write("triangles.e");
-
+    combineMeshes(1e-07, outputMesh, remainingBoundary);
+    
 }
 
-void genSidesetBounds(libMesh::Mesh& sidesetMesh, double length)
+void genSidesetBounds(libMesh::Mesh& sidesetMesh, double boundLength)
 {
+
     auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
-    libMesh::Point centre = (box.max() + box.min()/2);
+    libMesh::Point centre = ((box.max() + box.min())/2);
+    std::cout << centre << std::endl;
+    libMesh::Point topLeft(centre(0) - (boundLength/2), centre(1) + (boundLength/2));
+    libMesh::Point topRight(centre(0) + (boundLength/2), centre(1) + (boundLength/2));
+    libMesh::Point bottomLeft(centre(0) - (boundLength/2), centre(1) - (boundLength/2));
+    libMesh::Point bottomRight(centre(0) + (boundLength/2), centre(1) - (boundLength/2));
 
-    libMesh::Point topLeft(-length/2, length/2);
-    libMesh::Point topRight(length/2, length/2);
-    libMesh::Point bottomLeft(-length/2, -length/2);
-    libMesh::Point bottomRight(length/2, -length/2);
-
-    std::vector<libMesh::dof_id_type> conn{1, 2, 2, 3, 3, 4, 4, 1};
+    
     // Vector of points to make it easier to iterate through
-    std::vector<libMesh::Point> points{topLeft, topRight, bottomLeft, bottomRight};
+    std::vector<libMesh::Point> points{topLeft, topRight, bottomRight, bottomLeft};
 
     // Starting node ID for points
     libMesh::dof_id_type startingNode = sidesetMesh.max_node_id();
-
+    libMesh::dof_id_type startingElem = sidesetMesh.max_elem_id();
+    std::vector<libMesh::dof_id_type> conn{startingNode + 1, startingNode + 2, startingNode + 2, startingNode + 3, startingNode + 3, startingNode + 4, startingNode + 4, startingNode + 1,};
+    
     for(u_int i = 0; i<4; i++)
     {
+        std::cout << startingNode + (i+1) << std::endl;
         sidesetMesh.add_point(points[i], startingNode + (i+1));
-        conn.push_back(startingNode + (i+1));
+        // conn.push_back(startingNode + (i+1));
     }
 
     for(u_int i = 0; i<4; i++)
     {
-        libMesh::Elem* elem = libMesh::Elem::build(0).release();
+        libMesh::Elem* elem = libMesh::Elem::build(libMesh::ElemType::EDGE2).release();
         for(int j = 0; j < 2; j++)
         {
-            elem->set_node(j) = sidesetMesh.node_ptr(startingNode + conn[(i*2)+j]);
+            std::cout << conn[(i*2)+j] << " ";
+            elem->set_node(j) = sidesetMesh.node_ptr(conn[(i*2)+j]);
         }
-        elem->set_id(i);
+        std::cout << std::endl;
+        elem->set_id(startingElem + (i+1));
         sidesetMesh.add_elem(elem);
     }
+    sidesetMesh.prepare_for_use();
+}
+
+void genSidesetBounds(libMesh::Mesh& sidesetMesh, libMesh::Mesh& remainingBoundary)
+{
+
+    std::unordered_map<u_int, libMesh::dof_id_type> id_map;
+    libMesh::Mesh skinnedBound(sidesetMesh.comm());
+    getSurface(remainingBoundary, skinnedBound);
+    
+    // Starting node ID for points
+    libMesh::dof_id_type startingNode = sidesetMesh.max_node_id() + 1;
+    libMesh::dof_id_type startingElem = sidesetMesh.max_elem_id() + 1;
+    
+    for(auto& node: skinnedBound.node_ptr_range())
+    {
+        double pnt[2];
+        for(u_int i = 0; i<2; i++){pnt[i] = (*node)(i);}
+        libMesh::Point xyz(pnt[0], pnt[1]);
+        id_map[node->id()] = startingNode;
+        sidesetMesh.add_point(xyz, startingNode);
+        startingNode++;
+    }
+
+    for(auto& elem: skinnedBound.element_ptr_range())
+    {
+        libMesh::Elem* newElem = libMesh::Elem::build(elem->type()).release();
+        for(int j = 0; j < elem->n_nodes(); j++)
+        {
+            // std::cout << id_map[elem->node_id(j)] << std::endl;
+            newElem->set_node(j) = sidesetMesh.node_ptr(id_map[elem->node_id(j)]);
+        }
+        newElem->set_id(startingElem++);
+        sidesetMesh.add_elem(newElem);
+    }
+
     sidesetMesh.prepare_for_use();
 }
 
@@ -162,10 +244,10 @@ void genRemainingBoundary()
 
 }
 
-void genSquare()
-{
+// void genSquare()
+// {
     
-}
+// }
 
 // void getVoidCoords()
 // {

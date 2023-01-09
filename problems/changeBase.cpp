@@ -40,6 +40,7 @@ int main(int argc, char** argv)
 
     std::set<libMesh::boundary_id_type> ids;
     ids.insert(1);
+    ids.insert(2);
     mesh.get_boundary_info().sync(ids, sidesetMesh);
     getSurface(sidesetMesh, sidesetBoundMesh, true, "sidesetTest.e");
 
