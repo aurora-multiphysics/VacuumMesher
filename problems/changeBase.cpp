@@ -47,15 +47,15 @@ int main(int argc, char** argv)
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     
-    getSurface(sidesetMesh, sidesetBoundMesh);
+    // getSurface(sidesetMesh, sidesetBoundMesh);
 
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
     getSurface(mesh, surfMesh, surfaceFaceMap);
     // Get seed points
     Eigen::MatrixXd seed_points = getSeeds(surfMesh);
     // Turn surfMesh into boundaryMEsh
-    getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
-    boundMesh.write("boundaryCheck.e");
+    // getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
+    boundMesh.read(boundFilepath);
      
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(boundMesh, vacuumMesh, seed_points);

@@ -9,11 +9,11 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     libMeshToIGL(boundaryMesh, V, F);
-    igl::opengl::glfw::Viewer viewer;
-    viewer.data().set_mesh(V,F);
-    Eigen::Vector3d colour = {254, 0, 0};
-    viewer.data().add_points(seedPoints, colour);
-    viewer.launch();
+    // igl::opengl::glfw::Viewer viewer;
+    // viewer.data().set_mesh(V,F);
+    // Eigen::Vector3d colour = {254, 0, 0};
+    // viewer.data().add_points(seedPoints, colour);
+    // viewer.launch();
     
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;

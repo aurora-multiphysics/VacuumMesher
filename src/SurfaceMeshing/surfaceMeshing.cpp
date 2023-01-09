@@ -1,15 +1,13 @@
 #include "SurfaceMeshing/surfaceMeshing.hpp"
 #include <algorithm>
 // isElementSurface for if user wants the whole mesh skinned
-void isElementSurface(libMesh::Elem& element, 
+void isElementSurface(libMesh::Elem* element, 
                       std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
-    for(int side = 0; side < element.n_sides(); side++)
+    for(int side = 0; side < element->n_sides(); side++)
     {   
-        // std::cout << side << std::endl;
-        auto neighbor = element.neighbor_ptr(side);
-        if(neighbor == nullptr)
+        if(element->neighbor_ptr(side) == nullptr)
         {
             surfaceFaces[neighbor_counter++] = side;
         }
@@ -17,21 +15,20 @@ void isElementSurface(libMesh::Elem& element,
 }
 
 // isElementSurface for if user specifies an elSet in getSurface
-void isElementSurface(libMesh::Elem& element, 
+void isElementSurface(libMesh::Elem* element, 
                       std::vector<int>& elSet, 
                       std::vector<int>& surfaceFaces)
 {
     int neighbor_counter = 0;
-    for(int side = 0; side < element.n_sides(); side++)
+    for(int side = 0; side < element->n_sides(); side++)
     {   
-        auto neighbor = element.neighbor_ptr(side);
-        if(neighbor == nullptr)
+        if(element->neighbor_ptr(side) == nullptr)
         {
             surfaceFaces[neighbor_counter++] = side;
         }
         else 
         {
-            if(!std::binary_search(elSet.begin(), elSet.end(), neighbor->id()))
+            if(!std::binary_search(elSet.begin(), elSet.end(), element->neighbor_ptr(side)->id()))
             {
                 surfaceFaces[neighbor_counter++] = side;
             }
@@ -54,13 +51,11 @@ void getSurface(libMesh::Mesh& mesh,
     libMesh::ElemType elem_type, face_type; 
     int num_elem_faces, num_face_nodes;
 
-    libMesh::Elem* elem = mesh.elem_ptr(0);
-
     //Use getElemInfo method to retrieve Element Info 
     getElemInfo(elem_type, face_type, 
-        elem, num_elem_faces, num_face_nodes);
+        mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
         
-    // //Counter to store the number of surface elements
+    //Counter to store the number of surface elements
     int surface_elem_counter = 0;
 
     // Sideset info
@@ -76,11 +71,8 @@ void getSurface(libMesh::Mesh& mesh,
     std::vector<int> connectivity;
 
     // Loops over all the elements in the input vector 
-    for(int elem = 0; elem < mesh.n_elem(); elem++)
+    for(auto& elem: mesh.element_ptr_range())
     {
-        //Get ptr to current element
-        libMesh::Elem& element = mesh.elem_ref(elem);
-
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
@@ -89,26 +81,26 @@ void getSurface(libMesh::Mesh& mesh,
 
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
-        isElementSurface(element, surfaceFaces);
+        isElementSurface(elem, surfaceFaces);
 
-        for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
+        for(int i = 0; (surfaceFaces[i] != -1) && (i < elem->n_sides()); i++)
         {
             // Check whether this side is a member of a sideset. If so, get the id of said sideset. Illiteration is fun. 
             std::vector<libMesh::boundary_id_type> boundary_ids;
 
-            mesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
+            mesh.get_boundary_info().boundary_ids(elem, surfaceFaces[i], boundary_ids);
 
             if(boundary_ids.size() > 0)
             {
                 boundary_data[surface_elem_counter] = boundary_ids;
             }
 
-            surfaceFaceMap.insert(std::make_pair(element.id(), surfaceFaces[i]));
+            surfaceFaceMap.insert(std::make_pair(elem->id(), surfaceFaces[i]));
 
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
-            for(auto localNodeId: element.nodes_on_side(surfaceFaces[i]))
+            for(auto localNodeId: elem->nodes_on_side(surfaceFaces[i]))
             {
-                int globalNodeId = element.node_id(localNodeId);
+                int globalNodeId = elem->node_id(localNodeId);
                 connectivity.push_back(globalNodeId);
                 currentNodeIds.push_back(globalNodeId);
             }
@@ -118,6 +110,7 @@ void getSurface(libMesh::Mesh& mesh,
         
     }
 
+    std::cout << surface_elem_counter << std::endl;
 
     //Sorts the node ids in the currentNodeIds in numerical order and removes duplicates
     std::sort(currentNodeIds.begin(), currentNodeIds.end());
@@ -136,9 +129,7 @@ void getSurface(libMesh::Mesh& mesh,
     {   
         libMesh::Node* node = mesh.node_ptr(nodeId);
         double pnt[3];
-        pnt[0] = (*node)(0);
-        pnt[1] = (*node)(1);
-        pnt[2] = (*node)(2);
+        for(u_int i = 0; i<3; i++){pnt[i] = (*node)(i);}
         libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
     }
@@ -153,6 +144,7 @@ void getSurface(libMesh::Mesh& mesh,
             elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
         }
         elem->set_id(i);
+        elem->subdomain_id() = 1;
         surfaceMesh.add_elem(elem);
         for(auto& id: boundary_data[i])
         {
@@ -205,11 +197,8 @@ void getSurface(libMesh::Mesh& mesh,
                 mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
                 
     // Loops over all the elements in the input vector 
-    for(int elem = 0; elem< mesh.n_elem(); elem++)
+    for(auto& elem : mesh.element_ptr_range())
     {
-        //Get ptr to current element
-        libMesh::Elem& element = mesh.elem_ref(elem);
-
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
@@ -218,14 +207,14 @@ void getSurface(libMesh::Mesh& mesh,
 
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
-        isElementSurface(element, surfaceFaces);
+        isElementSurface(elem, surfaceFaces);
 
-        for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
+        for(int i = 0; surfaceFaces[i] != -1 && i<elem->n_sides(); i++)
         {
             // Check whether this side is a member of a sideset. If so, get the id of said sideset. Illiteration is fun. 
             std::vector<libMesh::boundary_id_type> boundary_ids;
 
-            mesh.get_boundary_info().boundary_ids(&element, surfaceFaces[i], boundary_ids);
+            mesh.get_boundary_info().boundary_ids(elem, surfaceFaces[i], boundary_ids);
 
             if(boundary_ids.size() > 0)
             {
@@ -233,9 +222,9 @@ void getSurface(libMesh::Mesh& mesh,
             }
 
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
-            for(auto localNodeId: element.nodes_on_side(surfaceFaces[i]))
+            for(auto localNodeId: elem->nodes_on_side(surfaceFaces[i]))
             {
-                int globalNodeId = element.node_id(localNodeId);
+                int globalNodeId = elem->node_id(localNodeId);
                 connectivity.push_back(globalNodeId);
                 currentNodeIds.push_back(globalNodeId);
             }
@@ -346,7 +335,7 @@ void getSurface(libMesh::Mesh& mesh,
 
         //Method to check whether the current element has faces that are on the surface
         //Stores these faces (if they exist) in surfaceFaces vector
-        isElementSurface(element, elSet, surfaceFaces);
+        isElementSurface(&element, elSet, surfaceFaces);
         
         for(int i = 0; surfaceFaces[i] != -1 && i<element.n_sides(); i++)
         {
@@ -401,8 +390,6 @@ void getSurface(libMesh::Mesh& mesh,
     }
 
     //Set mesh dimensions 
-    surfaceMesh.set_mesh_dimension(2); //Should this be 2 or 3???
-    surfaceMesh.set_spatial_dimension(3);
     surfaceMesh.prepare_for_use();
 
     if(writeMesh)

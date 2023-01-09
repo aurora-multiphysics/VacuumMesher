@@ -30,6 +30,7 @@ int main(int argc, char** argv)
 
     auto start1 = std::chrono::steady_clock::now();
     mesh.read(filepath);
+    surfMesh.clear();
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
@@ -40,8 +41,6 @@ int main(int argc, char** argv)
 
     // Adds a boundary to the surface mesh
     createBoundary(init, surfMesh, 1.2);
-
-    surfMesh.write(boundFilepath);
 
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
