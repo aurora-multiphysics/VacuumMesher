@@ -83,7 +83,8 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     libMesh::Mesh triangulation(newMesh.comm());
     generateCoilFaceBound(sidesetMesh, triangulation, remainingBoundary, holes);
     changeMeshBasis(triangulation, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
-    triangulation.write("triangles.e");
+    combineMeshes(1e-07, triangulation, mesh);
+    triangulation.write("triangle.e");
 }
 
 
@@ -98,7 +99,7 @@ void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matr
 
         for(u_int i = 0; i < 3; i++){point(i) = (*node)(i);}
 
-        newPoint = calculateLocalCoords(point, newOrigin, newBasis);
+        newPoint = calculateLocalCoords(point, newOrigin, newBasis, oldOrigin, oldBasis);
         // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
         // std::cout << newPoint.transpose() << std::endl;
 
