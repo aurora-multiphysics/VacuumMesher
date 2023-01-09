@@ -32,42 +32,42 @@ int main(int argc, char** argv)
 
     //Create mesh object to store surface mesh
     libMesh::Mesh surfMesh(init.comm());
+    // 
+    libMesh::Mesh boundMesh(init.comm());
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
-    // auto start1 = std::chrono::steady_clock::now();
+    auto start1 = std::chrono::steady_clock::now();
     mesh.read(filepath);
 
     std::set<libMesh::boundary_id_type> ids;
     ids.insert(1);
     ids.insert(2);
     mesh.get_boundary_info().sync(ids, sidesetMesh);
-    getSurface(sidesetMesh, sidesetBoundMesh, true, "sidesetTest.e");
 
-    getBasisChangeMesh(mesh, sidesetBoundMesh, surfMesh);
-    surfMesh.write("wannaGoBed.e");
- 
-    // vacuumMesh.read(tetFilepath);
-    // // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
-    // std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    // getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
-    // // Get seed points for tetrahedralisation 
-    // // Eigen::MatrixXd seed_points = getSeeds(surfMesh);
-
-    // // Adds a boundary to the coil mesh, that is coincident with the xy plane (z=0)
-    // createCoilBoundary(init, surfMesh, 2);
+    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     
-    // // Tetrahedralise everything
-    // tetrahedraliseVacuumRegion(surfMesh, vacuumMesh);
-    // // Set up rTree with specified tolerance
-    // double tol = 1e-07;
+    getSurface(sidesetMesh, sidesetBoundMesh);
 
-    // combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+    getSurface(mesh, surfMesh, surfaceFaceMap);
+    // Get seed points
+    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+    // Turn surfMesh into boundaryMEsh
+    getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
+    boundMesh.write("boundaryCheck.e");
+     
+    // Tetrahedralise everything
+    tetrahedraliseVacuumRegion(boundMesh, vacuumMesh, seed_points);
+    // // Set up rTree with specified tolerance
+
+    // combineMeshes(1e-07, mesh, vacuumMesh, surfaceFaceMap);
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     // << " ms" << std::endl;
-    // vacuumMesh.write(tetFilepath);
+    // mesh.write("hiveTarget.e");
+    vacuumMesh.write(tetFilepath);
 
     return 0;
 }

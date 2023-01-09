@@ -35,10 +35,13 @@ int main(int argc, char** argv)
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
     getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
     // Get seed points for tetrahedralisation 
+    // surfMesh.read("./Meshes/target_surf_cubit.e");
     Eigen::MatrixXd seed_points = getSeeds(surfMesh);
 
     // Adds a boundary to the surface mesh
     createBoundary(init, surfMesh, 1.2);
+
+    surfMesh.write(boundFilepath);
 
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
@@ -46,7 +49,7 @@ int main(int argc, char** argv)
 
     // Combine the vacuum mesh and the part mesh 
     const double tol = 1e-07;
-    combineMesh(tol, mesh, vacuumMesh, surfaceFaceMap);
+    // combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

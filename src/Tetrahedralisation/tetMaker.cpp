@@ -9,7 +9,12 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     libMeshToIGL(boundaryMesh, V, F);
-
+    igl::opengl::glfw::Viewer viewer;
+    viewer.data().set_mesh(V,F);
+    Eigen::Vector3d colour = {254, 0, 0};
+    viewer.data().add_points(seedPoints, colour);
+    viewer.launch();
+    
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;  
@@ -19,8 +24,7 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXi PT;  
     Eigen::MatrixXi FT;
     size_t numRegions;
-    std::cout << "beginnign tetete" << std::endl;
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCQY", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
     IGLToLibMesh(vacuumMesh, TV, TT);
 }

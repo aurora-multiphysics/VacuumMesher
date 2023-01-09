@@ -157,6 +157,7 @@ void getSurface(libMesh::Mesh& mesh,
         for(auto& id: boundary_data[i])
         {
             surfaceMesh.boundary_info->add_side(i, 0, id);
+            surfaceMesh.boundary_info->sideset_name(id) = mesh.boundary_info->sideset_name(id);
         }
     }
     //Set mesh dimensions 
