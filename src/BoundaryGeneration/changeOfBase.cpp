@@ -70,8 +70,8 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
 
     Eigen::MatrixXd holes(2, 2);
-    Eigen::Vector3d hole1 = {13.648293, 63.404220, 0.000000};
-    Eigen::Vector3d hole2 = {34.867462, 70.662737, 0.000000};
+    Eigen::Vector3d hole1 = {-6.518418, 14.362826, 15.356430};
+    Eigen::Vector3d hole2 = {0.014017, 0.017588, -0.033021};
     Eigen::Vector3d hole1T = calculateLocalCoords(hole1, origin, basisMatrix);
     Eigen::Vector3d hole2T = calculateLocalCoords(hole2, origin, basisMatrix);
     
