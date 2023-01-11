@@ -9,11 +9,7 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     libMeshToIGL(boundaryMesh, V, F);
-    // igl::opengl::glfw::Viewer viewer;
-    // viewer.data().set_mesh(V,F);
-    // Eigen::Vector3d colour = {254, 0, 0};
-    // viewer.data().add_points(seedPoints, colour);
-    // viewer.launch();
+
     
     Eigen::MatrixXd R;
     Eigen::MatrixXd TV;
@@ -24,7 +20,7 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     Eigen::MatrixXi PT;  
     Eigen::MatrixXi FT;
     size_t numRegions;
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVY", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCVYY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
     IGLToLibMesh(vacuumMesh, TV, TT);
 }
@@ -49,17 +45,17 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacu
     size_t numRegions;
     
     
-    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCQY", TV, TT, TF, TR, TN, PT, FT, numRegions);
+    igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, "pqCQYY", TV, TT, TF, TR, TN, PT, FT, numRegions);
     
     IGLToLibMesh(vacuumMesh, TV, TT);
 }
 
 
-Eigen::MatrixXd getSeeds(libMesh::Mesh mesh)
+Eigen::MatrixXd getSeeds(libMesh::Mesh mesh, double tol)
 {
     Eigen::MatrixXd V;
-    Eigen::MatrixXi F;  
-
+    Eigen::MatrixXi F;
+    // Oreintated faces  
     libMeshToIGL(mesh, V, F);
 
     Eigen::MatrixXd N_faces;
@@ -74,9 +70,9 @@ Eigen::MatrixXd getSeeds(libMesh::Mesh mesh)
         std::vector<double> normal = {N_faces.row(i)[0], N_faces.row(i)[1], N_faces.row(i)[2]};
         std::vector<int> verts = {F.row(i)[0], F.row(i)[1], F.row(i)[2]};
         for(auto& vert: verts){
-            seed[0]+= (V.row(vert)[0] - 1e-10*normal[0])/3; // x component of seed
-            seed[1]+= (V.row(vert)[1]- 1e-10*normal[1])/3; // y component of seed
-            seed[2]+= (V.row(vert)[2]- 1e-10*normal[2])/3; // z component of seed
+            seed[0]+= (V.row(vert)[0] - tol*normal[0])/3; // x component of seed
+            seed[1]+= (V.row(vert)[1]- tol*normal[1])/3; // y component of seed
+            seed[2]+= (V.row(vert)[2]- tol*normal[2])/3; // z component of seed
         }
         seed_points.row(i) << seed[0], seed[1], seed[2];
     }

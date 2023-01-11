@@ -70,8 +70,11 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
 
     Eigen::MatrixXd holes(2, 2);
-    Eigen::Vector3d hole1 = {-6.518418, 14.362826, 15.356430};
-    Eigen::Vector3d hole2 = {0.014017, 0.017588, -0.033021};
+
+    // Eigen::Vector3d hole1 = {12.155965, -12.132885, -11.335621};
+    // Eigen::Vector3d hole2 = {-0.036019, 2.315669, 0.033588};
+    Eigen::Vector3d hole1 = {-16.682617, 14.362826, -0.000000};
+    Eigen::Vector3d hole2 = {0.035873, 0.017588, -0.000000};
     Eigen::Vector3d hole1T = calculateLocalCoords(hole1, origin, basisMatrix);
     Eigen::Vector3d hole2T = calculateLocalCoords(hole2, origin, basisMatrix);
     
@@ -153,7 +156,7 @@ void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMe
     Eigen::MatrixXi elems, newElems;
     genSidesetBounds(mesh, remainingBoundary);
     libMeshToIGL(mesh, verts, elems, 2);
-    igl::triangle::triangulate(verts, elems, holes, "qY", newVerts, newElems);
+    igl::triangle::triangulate(verts, elems, holes, "qYa130.0", newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
     combineMeshes(1e-05, outputMesh, remainingBoundary);
     

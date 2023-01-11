@@ -39,21 +39,24 @@ int main(int argc, char** argv)
     // surfMesh.read("./Meshes/target_surf_cubit.e");
     Eigen::MatrixXd seed_points = getSeeds(surfMesh);
 
+    long long int surfNodes = surfMesh.n_nodes();
     // Adds a boundary to the surface mesh
     createBoundary(init, surfMesh, 1.2);
 
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
-
-
+    long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
+    
+    vacuumMesh.write("targetVac.e");
     // Combine the vacuum mesh and the part mesh 
-    const double tol = 1e-07;
-    // combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
+    combineMeshes(1e-05, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
-    vacuumMesh.write(tetFilepath);
+    long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
+    std::cout << "Is this 0?: " << zero << std::endl;
+    mesh.write(tetFilepath);
 
     return 0;
 }

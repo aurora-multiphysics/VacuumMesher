@@ -65,6 +65,15 @@ combineMeshes(const double tol,
               libMesh::Mesh& meshTwo, 
               std::multimap<unsigned int, unsigned int> surfaceFaceMap)
 {
+    std::set<libMesh::subdomain_id_type> sub_ids;
+    meshOne.subdomain_ids(sub_ids);
+    libMesh::subdomain_id_type vacId = 2;
+    if (!sub_ids.empty())
+    {
+        vacId  = 1 + (*(sub_ids.rbegin()));
+        std::cout << "vac Id will be " << vacId << std::endl;
+    }
+    
     // Instantiate an rTree. Using a rTree data structure significantly reduces the amount of
     // time taken to discover duplicate nodes.
     RTree<int, double, 3, float> rtree;
@@ -105,7 +114,7 @@ combineMeshes(const double tol,
             new_elem->set_node(j) = meshOne.node_ptr(id_map[elem->node_ptr(j)->id()]);
         }
         new_elem->set_id(el_id);
-        new_elem->subdomain_id() = 2;
+        new_elem->subdomain_id() = vacId;
         meshOne.add_elem(new_elem);
 
         // Makes the boundary between the original geometry and the vacuum mesh a sideset in the mesh,
@@ -116,6 +125,7 @@ combineMeshes(const double tol,
         }
         // Set boundary name!
     }
+    meshOne.subdomain_name(vacId) = "VacuumMesh";
     // Prepare the mesh for use. This libmesh method does some id renumbering etc, generally a good idea
     // to call it after constructing a mesh
     meshOne.prepare_for_use();

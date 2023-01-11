@@ -47,27 +47,37 @@ int main(int argc, char** argv)
 
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
     
-    // getSurface(sidesetMesh, sidesetBoundMesh);
+    getSurface(sidesetMesh, sidesetBoundMesh);
 
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap);
+    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
+
+    long long int surfNodes = surfMesh.n_nodes() - sidesetMesh.n_nodes() + sidesetBoundMesh.n_nodes();
+    std::vector<int> badOnes = {1060, 1064, 1066, 1071, 1073, 1083, 1085, 1110, 1113, 1292};
     // Get seed points
-    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+    Eigen::MatrixXd seed_points = getSeeds(surfMesh, 1e-04);
+    
     // Turn surfMesh into boundaryMEsh
-    // getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
-    boundMesh.read(boundFilepath);
-     
+    getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
+    // boundMesh.read(boundFilepath);
+    boundMesh.write(boundFilepath);
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(boundMesh, vacuumMesh, seed_points);
     // // Set up rTree with specified tolerance
+    vacuumMesh.write("iscoilcorrect.e");
 
-    // combineMeshes(1e-07, mesh, vacuumMesh, surfaceFaceMap);
+    long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
+    
+    std::cout << surfNodes << std::endl;
+    combineMeshes(1e-05, mesh, vacuumMesh, surfaceFaceMap);
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     // << " ms" << std::endl;
-    // mesh.write("hiveTarget.e");
-    vacuumMesh.write(tetFilepath);
+    mesh.write(tetFilepath);
+    long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
+    std::cout << "Is this 0?: " << zero << std::endl;
+    std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;
 
     return 0;
 }
