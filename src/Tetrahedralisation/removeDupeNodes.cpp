@@ -10,7 +10,7 @@ bool callback(int id) {
 }
 
 void 
-createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& meshOne, const double tol)
+createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& meshOne, const double& tol)
 {
     // Add all existing verts to rTree
     for(auto& node: meshOne.local_node_ptr_range())
@@ -30,7 +30,7 @@ insertNode(RTree<int, double, 3, float> &rtree, Box& node_box)
 
 bool
 searchTree(RTree<int, double, 3, float> &rtree, 
-           const double tol,
+           const double& tol,
            std::map<unsigned int, unsigned int>& id_map,
            libMesh::Mesh& meshOne,
            libMesh::Node* node)
@@ -60,7 +60,7 @@ searchTree(RTree<int, double, 3, float> &rtree,
 }
 
 void 
-combineMeshes(const double tol,
+combineMeshes(const double& tol,
               libMesh::Mesh& meshOne,
               libMesh::Mesh& meshTwo, 
               std::multimap<unsigned int, unsigned int> surfaceFaceMap)
@@ -119,13 +119,17 @@ combineMeshes(const double tol,
 
         // Makes the boundary between the original geometry and the vacuum mesh a sideset in the mesh,
         // and names it "vacuum_boundary"
-        for(auto& boundSide: libMesh::as_range(surfaceFaceMap.equal_range(elem->id())))
-        {
-            meshOne.get_boundary_info().add_side(el_id, boundSide.second, 1);
-        }
+
         // Set boundary name!
     }
-    meshOne.subdomain_name(vacId) = "VacuumMesh";
+
+    for(auto boundSide = surfaceFaceMap.begin(); boundSide!=surfaceFaceMap.end(); boundSide++)
+    {
+        // std::cout << boundSide->first << std::endl;
+        meshOne.get_boundary_info().add_side(boundSide->first, boundSide->second, 5);
+    }
+    meshOne.boundary_info->set_sideset_name_map()[5] = "part_boundary";
+    meshOne.subdomain_name(vacId) = "vacuum_region";
     // Prepare the mesh for use. This libmesh method does some id renumbering etc, generally a good idea
     // to call it after constructing a mesh
     meshOne.prepare_for_use();
@@ -133,7 +137,7 @@ combineMeshes(const double tol,
 
 // Version of the method that doesn't require a surfaceFaceMap, just combines the meshes
 void 
-combineMeshes(const double tol,
+combineMeshes(const double& tol,
               libMesh::Mesh& meshOne,
               libMesh::Mesh& meshTwo)
 {
