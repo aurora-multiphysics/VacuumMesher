@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.01)
 
 project(LibMeshSkinning)
-
+# CMAKE build type to optimised code with debug symbols
+set(CMAKE_BUILD_TYPE Release)
 add_compile_options(-std=c++17)
 
 #Project Path

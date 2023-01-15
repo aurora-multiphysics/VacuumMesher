@@ -17,3 +17,5 @@ void genSidesetBounds(libMesh::Mesh& sidesetMesh, double length);
 void genSidesetBounds(libMesh::Mesh& sidesetMesh, libMesh::Mesh& remainingBoundary);
 
 void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin = {0, 0, 0}, Eigen::Matrix3d oldBasis = Eigen::Matrix3d::Identity());
+
+void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, std::string ss1_name = "coil_in", std::string ss2_name = "coil_out");

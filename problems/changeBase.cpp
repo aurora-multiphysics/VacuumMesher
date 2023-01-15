@@ -69,7 +69,8 @@ int main(int argc, char** argv)
     long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
     
     std::cout << surfNodes << std::endl;
-    combineMeshes(1e-05, mesh, vacuumMesh, surfaceFaceMap);
+    const double tol = 1e-05;
+    combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

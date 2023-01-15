@@ -35,57 +35,25 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     getBasisMatrix(basisMatrix, plane_points);
     changeMeshBasis(sidesetMesh, origin, basisMatrix);
     
-    // for(auto& node: sidesetMesh.node_ptr_range())
-    // {
-    //     // Eigen::Vector to store node coords
-    //     Eigen::Vector3d point, newPoint;
-    //     // ptr to a boundary side
-
-    //     for(u_int i = 0; i < 3; i++){point(i) = (*node)(i);}
-
-    //     newPoint = calculateLocalCoords(basisMatrix, origin, point);
-    //     // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
-    //     // std::cout << newPoint.transpose() << std::endl;
-
-    //     double pnt[3];
-    //     for(u_int i = 0; i < 3; i++){pnt[i] = newPoint(i);}
-
-    //     libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
-    //     // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
-    //     newMesh.add_point(xyz, node->id());
-    // }
-
-    // std::cout << "making elems" << std::endl;
-    // for(auto& elem: sidesetMesh.element_ptr_range())
-    // {
-    //     libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
-    //     for(int j = 0; j < elem->n_nodes(); j++)
-    //     {
-    //         new_elem->set_node(j) = newMesh.node_ptr(elem->node_ref(j).id());
-    //     }
-    //     newMesh.add_elem(new_elem);
-    // }
-    // newMesh.set_mesh_dimension(3);
-    // newMesh.prepare_for_use();
     auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
 
-    Eigen::MatrixXd holes(2, 2);
+    Eigen::MatrixXd seed_points(2, 3);
+    getCoplanarSeedPoints(mesh, seed_points);
 
-    // Eigen::Vector3d hole1 = {12.155965, -12.132885, -11.335621};
-    // Eigen::Vector3d hole2 = {-0.036019, 2.315669, 0.033588};
-    Eigen::Vector3d hole1 = {-16.682617, 14.362826, -0.000000};
-    Eigen::Vector3d hole2 = {0.035873, 0.017588, -0.000000};
-    Eigen::Vector3d hole1T = calculateLocalCoords(hole1, origin, basisMatrix);
-    Eigen::Vector3d hole2T = calculateLocalCoords(hole2, origin, basisMatrix);
-    
-    holes << hole1T(0), hole1T(1),
-             hole2T(0), hole2T(1);
-    std::cout << holes << std::endl;
+    for(u_int i = 0; i<seed_points.rows(); i++)
+    {
+        Eigen::Vector3d point(seed_points.row(i));
+        seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
+    }
+    Eigen::MatrixXd holes = seed_points.block(0,0,2,2);
+
     libMesh::Mesh remainingBoundary(newMesh.comm());
     remainingBoundary.read("remainingBoundary.e");
-    generateCoilFaceBound(sidesetMesh, newMesh, remainingBoundary, holes);
+    generateCoilFaceBound(sidesetMesh, newMesh, remainingBoundary, holes); 
     changeMeshBasis(newMesh, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
-    combineMeshes(1e-05, newMesh, mesh);
+
+    const double tol = 1e-05;
+    combineMeshes(tol, newMesh, mesh);
 }
 
 
@@ -239,6 +207,42 @@ void genSidesetBounds(libMesh::Mesh& sidesetMesh, libMesh::Mesh& remainingBounda
 
     sidesetMesh.prepare_for_use();
 }
+
+void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, std::string ss1_name, std::string ss2_name)
+{   
+    // generate separate meshes for two coil sidesets
+    std::set<libMesh::boundary_id_type> ss1_id, ss2_id;
+    ss1_id.insert(mesh.boundary_info->get_id_by_name(ss1_name));
+    ss2_id.insert(mesh.boundary_info->get_id_by_name(ss2_name)); 
+    libMesh::Mesh ss1(mesh.comm());
+    libMesh::Mesh ss2(mesh.comm());
+    mesh.boundary_info->sync(ss1_id, ss1);
+    mesh.boundary_info->sync(ss2_id, ss2);
+
+    libMesh::Point centre1, centre2;
+
+    // Create a bounding box around these 2D sidesets to figure out where a seeding point should be placed
+    auto box1 = libMesh::MeshTools::create_bounding_box(ss1);
+    auto box2 = libMesh::MeshTools::create_bounding_box(ss2);
+
+    centre1 = (box1.max() + box1.min())/2;
+    std::cout << centre1 << std::endl;
+    centre2 = (box2.max() + box2.min())/2;
+    std::cout << centre2 << std::endl;
+    //
+    for(u_int i = 0; i<3; i++)
+    {
+        seed_points.row(0)(i) = centre1(i);
+        seed_points.row(1)(i) = centre2(i);
+    } 
+
+}
+
+void genSquare(int length, int subdivisions)
+{
+
+}
+
 
 void genRemainingBoundary()
 {
