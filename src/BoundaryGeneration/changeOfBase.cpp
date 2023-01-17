@@ -31,29 +31,69 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
         plane_points.row(node_id) << node(0), node(1), node(2);
     }    
     Eigen::Matrix3d basisMatrix;
-    Eigen::Vector3d origin = plane_points.row(0);
-    getBasisMatrix(basisMatrix, plane_points);
-    changeMeshBasis(sidesetMesh, origin, basisMatrix);
-    
-    auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
 
+    // Define new origin as a point on the coil sideset(s), this will be fairly central
+    Eigen::Vector3d origin = plane_points.row(0);
+    auto start1 = std::chrono::steady_clock::now();
+    // Generate basis matrix based on 3 points that define a plane
+    getBasisMatrix(basisMatrix, plane_points);
+
+    std::cout << "Basis Matrix retrieved" << std::endl;
+    libMesh::Mesh iglBase(newMesh.comm());
+    Eigen::MatrixXd V, V_tri;
+    Eigen::MatrixXi F, F_tri;
+    
+    
+    libMeshToIGL(sidesetMesh, V, F);
+    std::cout << "Changing Mesh Basis" << std::endl;
+    
+    changeMeshBasis(V, origin, basisMatrix);
+    // IGLToLibMesh(iglBase, V, F);
+
+    // Define seed points matrix
     Eigen::MatrixXd seed_points(2, 3);
+
+    // Get the seed points of the coplanar coil boundaries
     getCoplanarSeedPoints(mesh, seed_points);
 
+    // Transform seed points into new coordinate system
     for(u_int i = 0; i<seed_points.rows(); i++)
     {
         Eigen::Vector3d point(seed_points.row(i));
         seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
     }
+
     Eigen::MatrixXd holes = seed_points.block(0,0,2,2);
+    
+    // libMesh::Mesh remainingBoundary(newMesh.comm());
+    // remainingBoundary.read("remainingBoundary.e");
+    
+    std::cout << "Generating coil face bound" << std::endl;
+    generateCoilFaceBound(V, F, holes, V_tri, F_tri);
+    std::cout << "Outputting mesh" << std::endl;
+    libMesh::Mesh square(newMesh.comm());
+    IGLToLibMesh(square, V_tri, F_tri);
+    square.write("plaseMrIGL.e");
 
-    libMesh::Mesh remainingBoundary(newMesh.comm());
-    remainingBoundary.read("remainingBoundary.e");
-    generateCoilFaceBound(sidesetMesh, newMesh, remainingBoundary, holes); 
-    changeMeshBasis(newMesh, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
+    auto end1 = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time in milliseconds: "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    << " ms" << std::endl;
 
-    const double tol = 1e-05;
-    combineMeshes(tol, newMesh, mesh);
+    // changeMeshBasis(newMesh, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
+
+    // const double tol = 1e-05;
+    // combineMeshes(tol, newMesh, mesh);
+
+    
+    // genSquare(3, 4, square);
+}
+
+
+Eigen::Vector3d calculateLocalCoords(Eigen::Vector3d& point, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis)
+{
+    Eigen::Vector3d localCoords = newBasis.inverse() * (oldOrigin - newOrigin + (oldBasis * point));
+    return localCoords;
 }
 
 
@@ -61,6 +101,7 @@ void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matr
 {
     libMesh::Mesh meshCopy(mesh);
     mesh.clear();
+
     for(auto& node: meshCopy.node_ptr_range())
     {
         // Eigen::Vector to store node coords
@@ -80,7 +121,6 @@ void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matr
         mesh.add_point(xyz, node->id());
     }
 
-    std::cout << "making elems" << std::endl;
     for(auto& elem: meshCopy.element_ptr_range())
     {
         libMesh::Elem* new_elem = libMesh::Elem::build(elem->type()).release();
@@ -91,6 +131,22 @@ void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matr
         mesh.add_elem(new_elem);
     }
     mesh.prepare_for_use();
+}
+
+// Change mesh basis for a libIGL (Eigen) mesh
+void changeMeshBasis(Eigen::MatrixXd& V, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis)
+{
+    // Inverse the new basis matrix 
+    Eigen::Matrix3d newBasisInverse = newBasis.inverse();
+    // We assume we are changing basis from bog standard cartesian coords.
+    //  i.e. an origin of 0,0,0 and basis vectors of (1,0,0), (0,1,0), (0,0,1)
+    Eigen::Matrix3d oldBasis(Eigen::Matrix3d::Identity());
+    Eigen::Vector3d oldOrigin(Eigen::Vector3d::Zero());
+    // Do row wise operations on
+    for(int i = 0; i < V.rows(); i++)
+    {
+        V.row(i) = newBasisInverse * (oldOrigin - newOrigin + (oldBasis * V.row(i).transpose()));
+    }
 }
 
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
@@ -111,10 +167,12 @@ bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
     return true;
 }
 
-Eigen::Vector3d calculateLocalCoords(Eigen::Vector3d& point, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis)
+void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F)
 {
-    Eigen::Vector3d localCoords = newBasis.inverse() * (oldOrigin - newOrigin + (oldBasis * point));
-    return localCoords;
+    Eigen::MatrixXd V_2d = V.block(0,0,V.rows(), 2);
+    Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
+    genSidesetBounds(V_2d, F_2d, 200, 25);
+    igl::triangle::triangulate(V_2d, F_2d, holes, "qY", tri_V, tri_F);
 }
 
 void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes)
@@ -126,50 +184,57 @@ void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMe
     libMeshToIGL(mesh, verts, elems, 2);
     igl::triangle::triangulate(verts, elems, holes, "qYa130.0", newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
-    combineMeshes(1e-05, outputMesh, remainingBoundary);
-    
+    combineMeshes(1e-05, outputMesh, remainingBoundary);    
 }
 
-void genSidesetBounds(libMesh::Mesh& sidesetMesh, double boundLength)
+void genSidesetBounds(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int subdivisions)
 {
+    Eigen::MatrixXd V_square((4*subdivisions), 2);
+    Eigen::MatrixXi F_square((4*subdivisions), 2);
+    std::cout << "generating square" << std::endl;
+    genSquare(V_square, F_square, length, subdivisions);
+    std::cout << "Combinging IGL meshes" << std::endl;
+    combineIGLMeshes(V, F, V_square, F_square);
+    std::cout << "Combinging IGL meshes" << std::endl;
 
-    auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
-    libMesh::Point centre = ((box.max() + box.min())/2);
-    std::cout << centre << std::endl;
-    libMesh::Point topLeft(centre(0) - (boundLength/2), centre(1) + (boundLength/2));
-    libMesh::Point topRight(centre(0) + (boundLength/2), centre(1) + (boundLength/2));
-    libMesh::Point bottomLeft(centre(0) - (boundLength/2), centre(1) - (boundLength/2));
-    libMesh::Point bottomRight(centre(0) + (boundLength/2), centre(1) - (boundLength/2));
+    // auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
+    // libMesh::Point centre = ((box.max() + box.min())/2);
+    // std::cout << centre << std::endl;
+    // libMesh::Point topLeft(centre(0) - (boundLength/2), centre(1) + (boundLength/2));
+    // libMesh::Point topRight(centre(0) + (boundLength/2), centre(1) + (boundLength/2));
+    // libMesh::Point bottomLeft(centre(0) - (boundLength/2), centre(1) - (boundLength/2));
+    // libMesh::Point bottomRight(centre(0) + (boundLength/2), centre(1) - (boundLength/2));
 
     
-    // Vector of points to make it easier to iterate through
-    std::vector<libMesh::Point> points{topLeft, topRight, bottomRight, bottomLeft};
+    // // Vector of points to make it easier to iterate through
+    // std::vector<libMesh::Point> points{topLeft, topRight, bottomRight, bottomLeft};
 
-    // Starting node ID for points
-    libMesh::dof_id_type startingNode = sidesetMesh.max_node_id();
-    libMesh::dof_id_type startingElem = sidesetMesh.max_elem_id();
-    std::vector<libMesh::dof_id_type> conn{startingNode + 1, startingNode + 2, startingNode + 2, startingNode + 3, startingNode + 3, startingNode + 4, startingNode + 4, startingNode + 1,};
+    // // Starting node ID for points
+    // libMesh::dof_id_type startingNode = sidesetMesh.max_node_id();
+    // libMesh::dof_id_type startingElem = sidesetMesh.max_elem_id();
+    // std::vector<libMesh::dof_id_type> conn{startingNode + 1, startingNode + 2, startingNode + 2, startingNode + 3, startingNode + 3, startingNode + 4, startingNode + 4, startingNode + 1,};
     
-    for(u_int i = 0; i<4; i++)
-    {
-        std::cout << startingNode + (i+1) << std::endl;
-        sidesetMesh.add_point(points[i], startingNode + (i+1));
-        // conn.push_back(startingNode + (i+1));
-    }
+    // for(u_int i = 0; i<4; i++)
+    // {
+    //     std::cout << startingNode + (i+1) << std::endl;
+    //     sidesetMesh.add_point(points[i], startingNode + (i+1));
+    //     // conn.push_back(startingNode + (i+1));
+    // }
 
-    for(u_int i = 0; i<4; i++)
-    {
-        libMesh::Elem* elem = libMesh::Elem::build(libMesh::ElemType::EDGE2).release();
-        for(int j = 0; j < 2; j++)
-        {
-            std::cout << conn[(i*2)+j] << " ";
-            elem->set_node(j) = sidesetMesh.node_ptr(conn[(i*2)+j]);
-        }
-        std::cout << std::endl;
-        elem->set_id(startingElem + (i+1));
-        sidesetMesh.add_elem(elem);
-    }
-    sidesetMesh.prepare_for_use();
+    // for(u_int i = 0; i<4; i++)
+    // {
+    //     libMesh::Elem* elem = libMesh::Elem::build(libMesh::ElemType::EDGE2).release();
+    //     for(int j = 0; j < 2; j++)
+    //     {
+    //         std::cout << conn[(i*2)+j] << " ";
+    //         elem->set_node(j) = sidesetMesh.node_ptr(conn[(i*2)+j]);
+    //     }
+    //     std::cout << std::endl;
+    //     elem->set_id(startingElem + (i+1));
+    //     sidesetMesh.add_elem(elem);
+    // }
+    // sidesetMesh.prepare_for_use();
+    
 }
 
 void genSidesetBounds(libMesh::Mesh& sidesetMesh, libMesh::Mesh& remainingBoundary)
@@ -238,16 +303,107 @@ void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, st
 
 }
 
-void genSquare(int length, int subdivisions)
+void genSquare(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int subdivisions)
 {
+    // Eigen::MatrixXd V((4*subdivisions), 2);
+    // Eigen::MatrixXi F((4*subdivisions), 2);
+    double increment  = (double)(length/subdivisions);
+    double offset = length/2;
+
+    long int row_num = 0;
+    for(int i = 0; i <= subdivisions; i++)
+    {
+        V.row(row_num) << -offset + (i*increment), -offset;
+        row_num++;
+    }
+
+    for(int i = 1; i <= subdivisions; i++)
+    {
+        V.row(row_num) << offset, (i*increment) - offset;
+        row_num++;
+    }
+
+    for(int i = 1; i <= subdivisions; i++)
+    {
+        V.row(row_num) << offset - (i*increment), offset;
+        row_num++;
+    }
+
+    for(int i = 1; i <= subdivisions; i++)
+    {
+        V.row(row_num) << -offset, offset - (i*increment);
+        row_num++;
+    }
+
+    for(int i = 0; i < (4*subdivisions)-1; i++)
+    {
+        F(i, 0) = i;
+        F(i, 1) = i+1;
+    }
+    F(((4*subdivisions)-1), 0) = 0;
+    F(((4*subdivisions)-1), 1) = (4*subdivisions)-1;
+    // Eigen::MatrixXd holes;
+    // Eigen::MatrixXd squareVerts;
+    // Eigen::MatrixXi squareElems;
+    // igl::triangle::triangulate(V, F, holes, "qY", squareVerts, squareElems);
+
+    // Eigen::Matrix3d x_rot_base;
+    // x_rot_base << 1, 0, 0,
+    //               0, 0, -1,
+    //               0, 1, 0;
+
+    // Eigen::Matrix3d y_rot_base;
+    // y_rot_base << 0, 0, -1,
+    //               0, 1, 0,
+    //               1, 0, 0;
+
+    // IGLToLibMesh(square, squareVerts, squareElems);
+    // square.write("squaretest1.e");
+    // squareVerts.conservativeResize(squareVerts.rows(), squareVerts.cols()+1);
+    // squareVerts.col(squareVerts.cols()-1) = Eigen::VectorXd::Zero(squareVerts.rows());
+    
+    // squareVerts = squareVerts * x_rot_base;
+    // std::cout << squareVerts << std::endl;
+    // IGLToLibMesh(square, squareVerts, squareElems);
+    // square.write("squaretest3.e");
+    // PROBLEM, INITAL MATRIX IS 2D, WE NEED TO ADD A Z COLUMN
 
 }
 
-
-void genRemainingBoundary()
+void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd& V2, Eigen::MatrixXi& F2)
 {
+    if(V1.cols() != V2.cols())
+    {
+        throw std::invalid_argument("combineIGLMeshes can only combined meshes of the same dimension");
+        abort;
+    }
+    // Store rows in V1 before we resize it
+    int initial_node_rows = V1.rows();
+    int initial_elem_rows = F1.rows();
+    // Resize V1 to store info from V2
+    V1.conservativeResize(V1.rows() + V2.rows(), V1.cols());
+    F1.conservativeResize(F1.rows() + F2.rows(), F1.cols());
+    
+    for(int i = 0; i < V2.rows(); i++)
+    {
+        V1.row(initial_node_rows + i) = V2.row(i);
+    }
 
+    for(int i = 0; i < F2.rows(); i++)
+    {
+        F1.row(initial_elem_rows + i) = F2.row(i) + Eigen::VectorXi::Constant(F1.cols(), initial_node_rows);
+    }
 }
+// void genRemainingBoundary(double length, int subdivisions, libmesh::Mesh& boundaryMesh)
+// {
+//     genSquare(boundaryMesh, length, subdivisions);
+
+//     std::vector<libMesh::Mesh> boundary_sides(4);    
+
+
+
+
+// }
 
 // void genSquare()
 // {

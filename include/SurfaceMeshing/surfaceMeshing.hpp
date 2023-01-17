@@ -20,9 +20,11 @@ void getSurface(libMesh::Mesh& mesh, libMesh::Mesh& surfaceMesh, std::vector<int
 
 int getNumSurfaceElems();
 
+void isElementSurface(libMesh::Elem* element, std::vector<int>& surfaceFaces);
+
+
 void isElementSurface(libMesh::Elem* element, std::vector<int>& elSet, std::vector<int>& surfaceFaces);
 
-void isElementSurface(libMesh::Elem* element, std::vector<int>& surfaceFaces);
 
 void groupElems(libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>>& groups);
 
