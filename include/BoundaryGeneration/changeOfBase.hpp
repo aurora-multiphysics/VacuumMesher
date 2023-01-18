@@ -29,3 +29,5 @@ void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, st
 void genSquare(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int subdivisions);
 
 void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd& V2, Eigen::MatrixXi& F2);
+
+void genRemainingBoundary(double length, int subdivisions, double tol, libMesh::Mesh& test);

@@ -72,9 +72,11 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     generateCoilFaceBound(V, F, holes, V_tri, F_tri);
     std::cout << "Outputting mesh" << std::endl;
     libMesh::Mesh square(newMesh.comm());
-    IGLToLibMesh(square, V_tri, F_tri);
-    square.write("plaseMrIGL.e");
-
+    // IGLToLibMesh(square, V_tri, F_tri);
+    const double tol = 1e-05;
+    genRemainingBoundary(200, 25, tol, square);
+    square.write("BoundaryRemTEst.e");
+    
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
@@ -82,7 +84,7 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
 
     // changeMeshBasis(newMesh, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
 
-    // const double tol = 1e-05;
+    
     // combineMeshes(tol, newMesh, mesh);
 
     
@@ -149,17 +151,28 @@ void changeMeshBasis(Eigen::MatrixXd& V, Eigen::Vector3d newOrigin, Eigen::Matri
     }
 }
 
+void translateMesh(Eigen::MatrixXd& V, Eigen::Vector3d translationVector)
+{
+    for(int i = 0; i<V.rows(); i++)
+    {
+        V.row(i) += translationVector;
+    }
+}
+
 bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
 {   
+    // Basis vectors X Y and Z
     Eigen::Vector3d X, Y, Z;
     
+    // Vectors between the 3 points that will define our plane
     Eigen::Vector3d AB = (plane_points.row(1) - plane_points.row(0));
     Eigen::Vector3d AC = (plane_points.row(2) - plane_points.row(0));
     
-    // These are correct
+    // Normalise basis vectors so that their magnitude is one, relative to original basis
     X = AB.normalized();
     Z = (AC.cross(AB)).normalized();
     Y = (X.cross(Z)).normalized();
+    // Add our basis vectors to 'basisMatrix' matrix
     basisMatrix.col(0) << X;
     basisMatrix.col(1) << Y;
     basisMatrix.col(2) << Z;
@@ -394,34 +407,55 @@ void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd&
         F1.row(initial_elem_rows + i) = F2.row(i) + Eigen::VectorXi::Constant(F1.cols(), initial_node_rows);
     }
 }
-// void genRemainingBoundary(double length, int subdivisions, libmesh::Mesh& boundaryMesh)
-// {
-//     genSquare(boundaryMesh, length, subdivisions);
 
-//     std::vector<libMesh::Mesh> boundary_sides(4);    
+void genRemainingBoundary(double length, int subdivisions, double tol, libMesh::Mesh& test)
+{
+    Eigen::MatrixXd V(4*subdivisions, 2); 
+    Eigen::MatrixXi F(4*subdivisions, 2);
+
+    Eigen::MatrixXd V_tri(4*subdivisions, 2); 
+    Eigen::MatrixXi F_tri(4*subdivisions, 3);
+
+    Eigen::MatrixXd seeds;
+
+    genSquare(V, F, length, subdivisions);
+
+    igl::triangle::triangulate(V, F, seeds, "qY", V_tri, F_tri);
+
+
+    Eigen::Matrix3d x_rot_base;
+    x_rot_base << 1, 0, 0,
+                  0, 0, -1,
+                  0, 1, 0;
+
+    Eigen::Matrix3d y_rot_base;
+    y_rot_base << 0, 0, -1,
+                  0, 1, 0,
+                  1, 0, 0;
+
+    // Resice V_tri to work in 3d, as it is currently a 2D mesh
+    //  this is done just by adding a column of zeroes
+  
+
+    V_tri.conservativeResize(V_tri.rows(), V_tri.cols()+1);
+    V_tri.col(V_tri.cols()-1) = Eigen::VectorXd::Zero(V_tri.rows());
+
+    F_tri.conservativeResize(F_tri.rows(), F_tri.cols()+1);
+    F_tri.col(F_tri.cols()-1) = Eigen::VectorXi::Zero(F_tri.rows());
+    Eigen::MatrixXi F_tri_2 = F_tri;
+
+
+    Eigen::MatrixXd V_tri_2 = V_tri;
+    V_tri_2 *= x_rot_base; 
+
+    combineMeshes(tol, V_tri, F_tri, V_tri_2, F_tri_2);
+
+    IGLToLibMesh(test, V_tri, F_tri);
+    // NOT TO SELF, CURRENTLY NOT WORKING
 
 
 
-
-// }
-
-// void genSquare()
-// {
     
-// }
 
-// void getVoidCoords()
-// {
-    
-// }
-// void doubleCheck(Eigen::Matrix3d& basisMatrix, Eigen::Vector3d& origin, Eigen::Vector3d& point, Eigen::Vector3d& initialPoint)
-// {
-//     std::cout << origin + (basisMatrix * point) << std::endl;
-//     if((origin + (basisMatrix * point)) != initialPoint)
-//     {
-//         std::cout << "NOT WORKING" << std::endl;
-//     }
-//     else{
-//         std::cout << "working" << std::endl;
-//     }
-// }
+
+}

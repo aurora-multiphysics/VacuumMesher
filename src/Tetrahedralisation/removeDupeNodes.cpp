@@ -1,5 +1,7 @@
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 
+
+
 // Global hits
 std::vector<int> hits;
 
@@ -10,7 +12,21 @@ bool callback(int id) {
 }
 
 void 
-createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& meshOne, const double& tol)
+createTree(nodeTree& rtree, Eigen::MatrixXd& V, const double& tol)
+{
+    // Add all existing verts to rTree
+    for(int node_id = 0; node_id<V.rows(); node_id++)
+    {
+        std::array node_coords = {(V.row(node_id))(0), (V.row(node_id))(1), (V.row(node_id)(2))};
+        Box node_box = Box(node_coords, tol, node_id);
+        insertNode(rtree, node_box);
+    }
+}
+
+
+
+void 
+createTree(nodeTree& rtree, libMesh::Mesh& meshOne, const double& tol)
 {
     // Add all existing verts to rTree
     for(auto& node: meshOne.local_node_ptr_range())
@@ -22,40 +38,44 @@ createTree(RTree<int, double, 3, float> &rtree, libMesh::Mesh& meshOne, const do
 }
 
 void 
-insertNode(RTree<int, double, 3, float> &rtree, Box& node_box)
+insertNode(nodeTree &rtree, Box& node_box)
 {
     // Check if node exists in rTree, if not, insert, if it does, make sure connectivity still works
     rtree.Insert(node_box.min.data(), node_box.max.data(), node_box.node_id);
 }
 
 bool
-searchTree(RTree<int, double, 3, float> &rtree, 
+searchTree(nodeTree &rtree, 
            const double& tol,
            std::map<unsigned int, unsigned int>& id_map,
-           libMesh::Mesh& meshOne,
-           libMesh::Node* node)
+           int node_indent,
+           Box& node_box)
 {
     // Empty global hits vector so it doesn't contain results of previous search
     hits.clear();
     // 
-    int node_indent = meshOne.n_nodes();
+    // int node_indent = meshOne.n_nodes();
     // 
-    std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
-    Box node_box = Box(node_coords, tol, node->id());
     
     
     // Search tree to see if thie node already exists 
     int nhits = rtree.Search(node_box.min.data(), node_box.max.data(), callback);
     if(!nhits)
     {
-        id_map[node->id()] = node_indent + 1;
+        id_map[node_box.node_id] = node_indent + 1;
+        insertNode(rtree, node_box);
         return true;
     }
     else if(nhits == 1)
     {   
-        id_map[node->id()] = hits[0];
+        id_map[node_box.node_id] = hits[0];
         return false;        
     }
+    else
+    {
+        std::cout << "Duplicate nodes may already exist in this mesh prior to combining!" << std::endl;
+    }
+
     return true;
 }
 
@@ -76,7 +96,7 @@ combineMeshes(const double& tol,
     
     // Instantiate an rTree. Using a rTree data structure significantly reduces the amount of
     // time taken to discover duplicate nodes.
-    RTree<int, double, 3, float> rtree;
+    nodeTree rtree;
 
     // Generate the initial tree, containing all the nodes of the vacuum mesh. We will 
     //  check the nodes of the part mesh against this tree to search for duplicate nodes
@@ -90,8 +110,14 @@ combineMeshes(const double& tol,
     // , if the node is a duplicate, it is  
     for(auto& node: meshTwo.local_node_ptr_range())
     {
+        // Create box representing the node to search rTree with
+        std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
+        Box node_box = Box(node_coords, tol, node->id());
+        // Get number of nodes currently in the mesh, so if we have to add a node
+        //  we know what id to give it (node_indent + 1)
+        int node_indent = meshOne.n_nodes();
         // If there are no matches in the vacuumMesh, then we add the point 
-        if(searchTree(rtree, tol, id_map, meshOne, node))
+        if(searchTree(rtree, tol, id_map, node_indent, node_box))
         {
             double pnt[3];
             pnt[0] = (*node)(0);
@@ -143,7 +169,7 @@ combineMeshes(const double& tol,
 {
     // Instantiate an rTree. Using a rTree data structure significantly reduces the amount of
     // time taken to discover duplicate nodes.
-    RTree<int, double, 3, float> rtree;
+    nodeTree rtree;
 
     // Generate the initial tree, containing all the nodes of the vacuum mesh. We will 
     //  check the nodes of the part mesh against this tree to search for duplicate nodes
@@ -157,8 +183,13 @@ combineMeshes(const double& tol,
     // , if the node is a duplicate, it is  
     for(auto& node: meshTwo.local_node_ptr_range())
     {
+        // Create box representing the node to search rTree with
+        std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
+        Box node_box = Box(node_coords, tol, node->id());
+        // 
+        int node_indent = meshOne.n_nodes();
         // If there are no matches in the vacuumMesh, then we add the point 
-        if(searchTree(rtree, tol, id_map, meshOne, node))
+        if(searchTree(rtree, tol, id_map, node_indent, node_box))
         {
             double pnt[3];
             pnt[0] = (*node)(0);
@@ -187,4 +218,66 @@ combineMeshes(const double& tol,
     // Prepare the mesh for use. This libmesh method does some id renumbering etc, generally a good idea
     // to call it after constructing a mesh
     meshOne.prepare_for_use();
+}
+
+void
+combineMeshes(const double& tol,
+                Eigen::MatrixXd& V1,
+                Eigen::MatrixXi& F1,
+                Eigen::MatrixXd& V2,
+                Eigen::MatrixXi& F2)
+{
+    // Instantiate an rTree. Using a rTree data structure significantly reduces the amount of
+    // time taken to discover duplicate nodes.
+    nodeTree rtree;
+
+    // This is a map which helps us keep track of the node id's of the duplicate nodes. For example,
+    // if Node 4 in the surface mesh and Node 6 in the vacuum mesh are the same, "id_map[4]" will return 6
+    std::map<unsigned int, unsigned int> id_map;
+    std::cout << V1.rows() << std::endl;
+    createTree(rtree, V1, tol);
+
+    int starting_elems = F1.rows();
+    int node_indent = V1.rows();
+    for(int node_id = 0; node_id < V1.rows(); node_id++)
+    {
+        Box node_box(V1.row(node_id), tol, node_id);
+        // If there are no matches in the vacuumMesh, then we add the point 
+        if(searchTree(rtree, tol, id_map, node_indent, node_box))
+        {
+            node_indent++;
+        }
+    }
+
+    V1.conservativeResize(node_indent, 3);
+
+    nodeTree::Iterator it;
+    for(rtree.GetFirst(it); !rtree.IsNull(it); rtree.GetNext(it))
+    {
+        double boundsMin[3] = {0., 0., 0.};
+	    double boundsMax[3] = {0., 0., 0.};
+        it.GetBounds(boundsMin, boundsMax);
+
+        double centre[3];
+        for(int i = 0; i<3; i++)
+        {
+            centre[0] = boundsMin[0] + ((boundsMax[0] - boundsMin[0])/2);
+            centre[1] = boundsMin[1] + ((boundsMax[1] - boundsMin[1])/2);
+            centre[2] = boundsMin[2] + ((boundsMax[2] - boundsMin[2])/2);
+        }
+
+        V1.row(*it)(0) = centre[0];
+        V1.row(*it)(1) = centre[1];
+        V1.row(*it)(2) = centre[2];
+    }
+    std::cout << V1.rows() << std::endl;
+    F1.conservativeResize(F1.rows() + F2.rows(), 3);
+
+    for(int elem_id = 0; elem_id < F2.rows(); elem_id++)
+    {
+        F1.row(elem_id + starting_elems)(0) = id_map[F2.row(elem_id)(0)];
+        F1.row(elem_id + starting_elems)(1) = id_map[F2.row(elem_id)(1)];
+        F1.row(elem_id + starting_elems)(2) = id_map[F2.row(elem_id)(2)];
+    }
+    
 }
