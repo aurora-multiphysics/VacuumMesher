@@ -33,7 +33,6 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
     libmeshMesh.clear();
 
-    std::cout << V.rows() << std::endl;
     for(int nodeID = 0; nodeID < V.rows(); nodeID++)
     {
         double pnt[V.cols()];
@@ -58,7 +57,6 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
         elem->set_id(elemID);
         libmeshMesh.add_elem(elem);
     }
-
     libmeshMesh.prepare_for_use();
 }
 
@@ -71,13 +69,10 @@ getElemType(Eigen::MatrixXi& F)
             return(libMesh::EDGE2);
         case(3):
             return(libMesh::TRI3);
-        
         case(4):
             return(libMesh::TET4);
-
         case(6):
             return(libMesh::TRI6);
-        
         case(10):
             return(libMesh::TET10);
     }

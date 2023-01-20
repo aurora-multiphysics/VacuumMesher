@@ -26,5 +26,8 @@ tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMes
 void 
 tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh);
 
+void 
+tetrahedraliseVacuumRegion(Eigen::MatrixXd& V, Eigen::MatrixXi& F, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints);
+
 Eigen::MatrixXd 
 getSeeds(libMesh::Mesh mesh, double tol=1e-10);

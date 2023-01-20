@@ -1,34 +1,26 @@
 #include "BoundaryGeneration/changeOfBase.hpp"
 
-void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh::Mesh& newMesh)
+void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen::MatrixXi& bound_elems, double length, int subdivisions, double max_el_size)
 {
+    
+    
+    if(max_el_size == 0.)
+    {
+        max_el_size = (std::pow((length/subdivisions), 2))/2;
+    }
+    // Libmesh mesh that stores only sideset data
+    libMesh::Mesh sidesetMesh(mesh.comm());
+    libMesh::Mesh sidesetMeshSkinned(mesh.comm());
+    genSidesetMesh(mesh, sidesetMesh);
+    getSurface(sidesetMesh, sidesetMeshSkinned);
+    sidesetMeshSkinned.write("NewSSTestSkin.e");
     // Eigen stuff
     Eigen::Matrix3d plane_points;
 
-    // Ptr to out sideset element
-    std::unique_ptr<libMesh::Elem> bd_side_ptr;
-
-    std::vector<libMesh::dof_id_type> element_id_list; 
-    std::vector<unsigned short int> side_list;
-    std::vector<libMesh::boundary_id_type>bc_id_list;
-    // Populate boundary info
-    mesh.get_boundary_info().build_side_list(element_id_list, side_list, bc_id_list);
-
-    libMesh::boundary_id_type coil_in_id = mesh.get_boundary_info().get_id_by_name("coil_in");
-
-    for(u_int i = 0; i < bc_id_list.size(); i++)
+    for(int row_id = 0; row_id<3; row_id++)
     {
-        if(bc_id_list[i] == coil_in_id)
-        {
-            bd_side_ptr = (mesh.elem_ptr(element_id_list[i])->side_ptr(side_list[i]));
-            break;
-        }
-    }
-
-    for(u_int node_id = 0; node_id < bd_side_ptr->n_nodes(); node_id++)
-    {
-        libMesh::Node node = bd_side_ptr->node_ref(node_id);
-        plane_points.row(node_id) << node(0), node(1), node(2);
+        auto& node = sidesetMesh.elem_ref(0).node_ref(row_id);
+        plane_points.row(row_id) << node(0), node(1), node(2);
     }    
     Eigen::Matrix3d basisMatrix;
 
@@ -38,16 +30,16 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     // Generate basis matrix based on 3 points that define a plane
     getBasisMatrix(basisMatrix, plane_points);
 
-    std::cout << "Basis Matrix retrieved" << std::endl;
-    libMesh::Mesh iglBase(newMesh.comm());
-    Eigen::MatrixXd V, V_tri;
-    Eigen::MatrixXi F, F_tri;
+    // Eigen::MatrixXd V, V_sideset_face, V_boundary;
+    // Eigen::MatrixXi F, F_sideset_face, F_boundary;
+    Eigen::MatrixXd V, V_boundary;
+    Eigen::MatrixXi F, F_boundary;
     
-    
-    libMeshToIGL(sidesetMesh, V, F);
-    std::cout << "Changing Mesh Basis" << std::endl;
+    // Convert the sideset mesh to
+    libMeshToIGL(sidesetMeshSkinned, V, F);
     
     changeMeshBasis(V, origin, basisMatrix);
+    std::cout << V << std::endl;
     // IGLToLibMesh(iglBase, V, F);
 
     // Define seed points matrix
@@ -57,34 +49,39 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh,libMesh:
     getCoplanarSeedPoints(mesh, seed_points);
 
     // Transform seed points into new coordinate system
-    for(u_int i = 0; i<seed_points.rows(); i++)
+    for(int i = 0; i<seed_points.rows(); i++)
     {
         Eigen::Vector3d point(seed_points.row(i));
         seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
     }
 
-    Eigen::MatrixXd holes = seed_points.block(0,0,2,2);
+    
     
     // libMesh::Mesh remainingBoundary(newMesh.comm());
     // remainingBoundary.read("remainingBoundary.e");
     
-    std::cout << "Generating coil face bound" << std::endl;
-    generateCoilFaceBound(V, F, holes, V_tri, F_tri);
-    std::cout << "Outputting mesh" << std::endl;
-    libMesh::Mesh square(newMesh.comm());
+   
+    generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, max_el_size);
+    bound_verts.conservativeResize(bound_verts.rows(), bound_verts.cols()+1);
+    bound_verts.col(bound_verts.cols()-1) = Eigen::VectorXd::Zero(bound_verts.rows());
+    
     // IGLToLibMesh(square, V_tri, F_tri);
     const double tol = 1e-05;
-    genRemainingBoundary(200, 25, tol, square);
-    square.write("BoundaryRemTEst.e");
+    genRemainingBoundary(V_boundary, F_boundary, length, subdivisions, max_el_size, tol);
+
+    combineMeshes(tol, bound_verts, bound_elems, V_boundary, F_boundary);
+
+    // IGLToLibMesh(new_mesh, V_sideset_face, F_sideset_face);
     
+
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
-
-    // changeMeshBasis(newMesh, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
-
     
+    changeMeshBasis(bound_verts, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
+
+
     // combineMeshes(tol, newMesh, mesh);
 
     
@@ -136,14 +133,14 @@ void changeMeshBasis(libMesh::Mesh& mesh, Eigen::Vector3d newOrigin, Eigen::Matr
 }
 
 // Change mesh basis for a libIGL (Eigen) mesh
-void changeMeshBasis(Eigen::MatrixXd& V, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis)
+void changeMeshBasis(Eigen::MatrixXd& V, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis, Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis)
 {
     // Inverse the new basis matrix 
     Eigen::Matrix3d newBasisInverse = newBasis.inverse();
     // We assume we are changing basis from bog standard cartesian coords.
     //  i.e. an origin of 0,0,0 and basis vectors of (1,0,0), (0,1,0), (0,0,1)
-    Eigen::Matrix3d oldBasis(Eigen::Matrix3d::Identity());
-    Eigen::Vector3d oldOrigin(Eigen::Vector3d::Zero());
+    // Eigen::Matrix3d oldBasis(Eigen::Matrix3d::Identity());
+    // Eigen::Vector3d oldOrigin(Eigen::Vector3d::Zero());
     // Do row wise operations on
     for(int i = 0; i < V.rows(); i++)
     {
@@ -180,12 +177,14 @@ bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
     return true;
 }
 
-void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F)
+void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, double max_elem_size)
 {
+    std::string tri_args = "qYa" + std::to_string(max_elem_size);
+    Eigen::MatrixXd vacencies = holes.block(0,0,2,2);
     Eigen::MatrixXd V_2d = V.block(0,0,V.rows(), 2);
     Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
-    genSidesetBounds(V_2d, F_2d, 200, 25);
-    igl::triangle::triangulate(V_2d, F_2d, holes, "qY", tri_V, tri_F);
+    genSidesetBounds(V_2d, F_2d, length, subdivisions);
+    igl::triangle::triangulate(V_2d, F_2d, holes, tri_args, tri_V, tri_F);
 }
 
 void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes)
@@ -198,6 +197,18 @@ void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMe
     igl::triangle::triangulate(verts, elems, holes, "qYa130.0", newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
     combineMeshes(1e-05, outputMesh, remainingBoundary);    
+}
+
+void genSidesetMesh(libMesh::Mesh& mesh, libMesh::Mesh& sidesetMesh, std::vector<std::string> ssNames)
+{
+    std::set<libMesh::boundary_id_type> ids;
+    // Insert the sideset id's that correspond to the given ssNames into a set
+    for(auto& ssName: ssNames)
+    {
+        ids.insert(mesh.get_boundary_info().get_id_by_name(ssName));
+    }
+    // Get sideset boundary
+    mesh.get_boundary_info().sync(ids, sidesetMesh);
 }
 
 void genSidesetBounds(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int subdivisions)
@@ -408,19 +419,21 @@ void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd&
     }
 }
 
-void genRemainingBoundary(double length, int subdivisions, double tol, libMesh::Mesh& test)
+void genRemainingBoundary(Eigen::MatrixXd& V_tri, Eigen::MatrixXi& F_tri, double length, int subdivisions, double max_elem_size, double tol)
 {
+    std::string tri_args = "qYa" + std::to_string(max_elem_size);
+
     Eigen::MatrixXd V(4*subdivisions, 2); 
     Eigen::MatrixXi F(4*subdivisions, 2);
 
-    Eigen::MatrixXd V_tri(4*subdivisions, 2); 
-    Eigen::MatrixXi F_tri(4*subdivisions, 3);
+    V_tri(4*subdivisions, 2); 
+    F_tri(4*subdivisions, 3);
 
     Eigen::MatrixXd seeds;
 
     genSquare(V, F, length, subdivisions);
 
-    igl::triangle::triangulate(V, F, seeds, "qY", V_tri, F_tri);
+    igl::triangle::triangulate(V, F, seeds, tri_args, V_tri, F_tri);
 
 
     Eigen::Matrix3d x_rot_base;
@@ -433,29 +446,34 @@ void genRemainingBoundary(double length, int subdivisions, double tol, libMesh::
                   0, 1, 0,
                   1, 0, 0;
 
-    // Resice V_tri to work in 3d, as it is currently a 2D mesh
+    // Resize V_tri to work in 3d, as it is currently a 2D mesh
     //  this is done just by adding a column of zeroes
-  
-
     V_tri.conservativeResize(V_tri.rows(), V_tri.cols()+1);
     V_tri.col(V_tri.cols()-1) = Eigen::VectorXd::Zero(V_tri.rows());
-
-    F_tri.conservativeResize(F_tri.rows(), F_tri.cols()+1);
-    F_tri.col(F_tri.cols()-1) = Eigen::VectorXi::Zero(F_tri.rows());
-    Eigen::MatrixXi F_tri_2 = F_tri;
-
-
-    Eigen::MatrixXd V_tri_2 = V_tri;
-    V_tri_2 *= x_rot_base; 
-
-    combineMeshes(tol, V_tri, F_tri, V_tri_2, F_tri_2);
-
-    IGLToLibMesh(test, V_tri, F_tri);
-    // NOT TO SELF, CURRENTLY NOT WORKING
-
-
-
     
 
+    std::vector<Eigen::Matrix3d> rot_matrices = {x_rot_base, y_rot_base};
+    std::vector<Eigen::MatrixXd> newFaces(4, V_tri);
 
+    V_tri.col(V_tri.cols()-1) = Eigen::VectorXd::Constant(V_tri.rows(), length);
+    // F_tri.conservativeResize(F_tri.rows(), F_tri.cols()+1);
+    // F_tri.col(F_tri.cols()-1) = Eigen::VectorXi::Zero(F_tri.rows());
+
+
+    for(int i = 0; i<4; i++)
+    {
+        newFaces[i] *= rot_matrices[(i%2)];
+    }
+
+    translateMesh(newFaces[0], {0, length/2, length/2});
+    translateMesh(newFaces[1], {length/2, 0, length/2});
+    translateMesh(newFaces[2], {0, -length/2, length/2});
+    translateMesh(newFaces[3], {-length/2, 0, length/2});
+
+    Eigen::MatrixXi F_tri_2 = F_tri;
+
+    for(int i = 0; i<4; i++)
+    {
+        combineMeshes(tol, V_tri, F_tri, newFaces[i], F_tri_2);
+    }
 }

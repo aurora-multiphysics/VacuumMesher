@@ -37,48 +37,44 @@ int main(int argc, char** argv)
     //Create mesh object to store vacuum mesh
     libMesh::Mesh vacuumMesh(init.comm());
 
-    auto start1 = std::chrono::steady_clock::now();
     mesh.read(filepath);
-
-    std::set<libMesh::boundary_id_type> ids;
-    ids.insert(1);
-    ids.insert(2);
-    mesh.get_boundary_info().sync(ids, sidesetMesh);
-
+    Eigen::MatrixXd surf_verts, bound_verts;
+    Eigen::MatrixXi surf_faces, bound_faces;
+    auto start1 = std::chrono::steady_clock::now();
     // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
-    
-    getSurface(sidesetMesh, sidesetBoundMesh);
+    const double tol = 1e-05;
 
     std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
-
-    long long int surfNodes = surfMesh.n_nodes() - sidesetMesh.n_nodes() + sidesetBoundMesh.n_nodes();
-    std::vector<int> badOnes = {1060, 1064, 1066, 1071, 1073, 1083, 1085, 1110, 1113, 1292};
+    getSurface(mesh, surfMesh, surfaceFaceMap);
+    libMeshToIGL(surfMesh, surf_verts, surf_faces);
+    // long long int surfNodes = surfMesh.n_nodes() - sidesetMesh.n_nodes() + sidesetBoundMesh.n_nodes();
     // Get seed points
     Eigen::MatrixXd seed_points = getSeeds(surfMesh, 1e-04);
     
+    // surfMesh.write("surfhuh.e");
     // Turn surfMesh into boundaryMEsh
-    getBasisChangeMesh(surfMesh, sidesetBoundMesh, boundMesh);
-    // boundMesh.read(boundFilepath);
-    boundMesh.write(boundFilepath);
-    // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(boundMesh, vacuumMesh, seed_points);
-    // // Set up rTree with specified tolerance
-    vacuumMesh.write("iscoilcorrect.e");
-
-    long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
+    getBasisChangeMesh(mesh, bound_verts, bound_faces, 300, 20, 0);
+    // boundMesh.write("boundhuh.e");
     
-    std::cout << surfNodes << std::endl;
-    const double tol = 1e-05;
+    combineMeshes(tol, bound_verts, bound_faces, surf_verts, surf_faces);
+    
+    // boundMesh.write("thisShouldWork.e");
+    // Tetrahedralise everything
+    tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points);
+    // // Set up rTree with specified tolerance
+    // vacuumMesh.write("iscoilcorrect.e");
+
+    // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
+    
     combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
-    // auto end1 = std::chrono::steady_clock::now();
-    // std::cout << "Elapsed time in milliseconds: "
-    // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    // << " ms" << std::endl;
+    auto end1 = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time in milliseconds: "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
+    << " ms" << std::endl;
     mesh.write(tetFilepath);
-    long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
-    std::cout << "Is this 0?: " << zero << std::endl;
-    std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;
+    // long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
+    // std::cout << "Is this 0?: " << zero << std::endl;
+    // std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;
 
     return 0;
 }

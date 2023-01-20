@@ -62,13 +62,12 @@ searchTree(nodeTree &rtree,
     int nhits = rtree.Search(node_box.min.data(), node_box.max.data(), callback);
     if(!nhits)
     {
-        id_map[node_box.node_id] = node_indent + 1;
+        // id_map[node_box.node_id] = node_indent; //+ 1;
         insertNode(rtree, node_box);
         return true;
     }
     else if(nhits == 1)
     {   
-        id_map[node_box.node_id] = hits[0];
         return false;        
     }
     else
@@ -115,17 +114,23 @@ combineMeshes(const double& tol,
         Box node_box = Box(node_coords, tol, node->id());
         // Get number of nodes currently in the mesh, so if we have to add a node
         //  we know what id to give it (node_indent + 1)
-        int node_indent = meshOne.n_nodes();
+        int node_offset = meshOne.n_nodes();
         // If there are no matches in the vacuumMesh, then we add the point 
-        if(searchTree(rtree, tol, id_map, node_indent, node_box))
+        if(!searchTree(rtree, tol, id_map, node_offset, node_box))
         {
-            double pnt[3];
-            pnt[0] = (*node)(0);
-            pnt[1] = (*node)(1);
-            pnt[2] = (*node)(2);
-            libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
-            meshOne.add_point(xyz, id_map[node->id()]);
+            // If there are no matches in the vacuumMesh, then we add the point 
+            id_map[node->id()] = hits[0];
+            continue;
         }
+        // 
+        id_map[node->id()] = node_offset;
+
+        double pnt[3];
+        pnt[0] = (*node)(0);
+        pnt[1] = (*node)(1);
+        pnt[2] = (*node)(2);
+        libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+        meshOne.add_point(xyz, id_map[node->id()]);
     }
     
     // Loop adds all elements from original geometry to vacuum mesh. The id_map is used to make sure the correct connectivity
@@ -186,18 +191,24 @@ combineMeshes(const double& tol,
         // Create box representing the node to search rTree with
         std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
         Box node_box = Box(node_coords, tol, node->id());
-        // 
-        int node_indent = meshOne.n_nodes();
-        // If there are no matches in the vacuumMesh, then we add the point 
-        if(searchTree(rtree, tol, id_map, node_indent, node_box))
+        // Update node count and henceforth the offset for numbering new nodes
+        int node_offset = meshOne.n_nodes();
+        
+        if(!searchTree(rtree, tol, id_map, node_offset, node_box))
         {
-            double pnt[3];
-            pnt[0] = (*node)(0);
-            pnt[1] = (*node)(1);
-            pnt[2] = (*node)(2);
-            libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
-            meshOne.add_point(xyz, id_map[node->id()]);
+            // If there are no matches in the vacuumMesh, then we add the point 
+            id_map[node->id()] = hits[0];
+            continue;
         }
+        // 
+        id_map[node->id()] = node_offset;
+
+        double pnt[3];
+        pnt[0] = (*node)(0);
+        pnt[1] = (*node)(1);
+        pnt[2] = (*node)(2);
+        libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+        meshOne.add_point(xyz, id_map[node->id()]);
     }
     
     // Loop adds all elements from original geometry to vacuum mesh. The id_map is used to make sure the correct connectivity
@@ -234,19 +245,24 @@ combineMeshes(const double& tol,
     // This is a map which helps us keep track of the node id's of the duplicate nodes. For example,
     // if Node 4 in the surface mesh and Node 6 in the vacuum mesh are the same, "id_map[4]" will return 6
     std::map<unsigned int, unsigned int> id_map;
-    std::cout << V1.rows() << std::endl;
+
     createTree(rtree, V1, tol);
 
     int starting_elems = F1.rows();
     int node_indent = V1.rows();
-    for(int node_id = 0; node_id < V1.rows(); node_id++)
+
+    for(int node_id = 0; node_id < V2.rows(); node_id++)
     {
-        Box node_box(V1.row(node_id), tol, node_id);
+        Box node_box(V2.row(node_id), tol, node_indent);
         // If there are no matches in the vacuumMesh, then we add the point 
-        if(searchTree(rtree, tol, id_map, node_indent, node_box))
+        if(!searchTree(rtree, tol, id_map, node_indent, node_box))
         {
-            node_indent++;
+           id_map[node_id] = hits[0];
+           continue;
         }
+     
+        id_map[node_id] = node_indent;
+        node_indent++;
     }
 
     V1.conservativeResize(node_indent, 3);
@@ -265,19 +281,17 @@ combineMeshes(const double& tol,
             centre[1] = boundsMin[1] + ((boundsMax[1] - boundsMin[1])/2);
             centre[2] = boundsMin[2] + ((boundsMax[2] - boundsMin[2])/2);
         }
-
         V1.row(*it)(0) = centre[0];
         V1.row(*it)(1) = centre[1];
         V1.row(*it)(2) = centre[2];
     }
-    std::cout << V1.rows() << std::endl;
-    F1.conservativeResize(F1.rows() + F2.rows(), 3);
 
+    F1.conservativeResize(F1.rows() + F2.rows(), 3);
+    
     for(int elem_id = 0; elem_id < F2.rows(); elem_id++)
     {
         F1.row(elem_id + starting_elems)(0) = id_map[F2.row(elem_id)(0)];
         F1.row(elem_id + starting_elems)(1) = id_map[F2.row(elem_id)(1)];
         F1.row(elem_id + starting_elems)(2) = id_map[F2.row(elem_id)(2)];
     }
-    
 }
