@@ -3,25 +3,31 @@
 void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen::MatrixXi& bound_elems, double length, int subdivisions, double max_el_size)
 {
     
-    
+    // If a maximum element size is not specified, then make the maximum element size the area of the equilateral triangle 
+    //  with side length "length"/"subdivisions"
     if(max_el_size == 0.)
     {
         max_el_size = (std::pow((length/subdivisions), 2))/2;
     }
     // Libmesh mesh that stores only sideset data
     libMesh::Mesh sidesetMesh(mesh.comm());
+    
     libMesh::Mesh sidesetMeshSkinned(mesh.comm());
     genSidesetMesh(mesh, sidesetMesh);
+    // Skin the sideset mesh to get the edge elements that represent the boundaries of the sidesets
     getSurface(sidesetMesh, sidesetMeshSkinned);
-    sidesetMeshSkinned.write("NewSSTestSkin.e");
-    // Eigen stuff
+
+    // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that will be used to 
+    //  define the plane that they sit on 
     Eigen::Matrix3d plane_points;
 
+    // Populate our plane points matrix with the nodes belonging to an element on the sidesets 
     for(int row_id = 0; row_id<3; row_id++)
     {
         auto& node = sidesetMesh.elem_ref(0).node_ref(row_id);
         plane_points.row(row_id) << node(0), node(1), node(2);
     }    
+    // Eigen 3x3 Matrix that will store the basis vectors of our transformed cartesian system
     Eigen::Matrix3d basisMatrix;
 
     // Define new origin as a point on the coil sideset(s), this will be fairly central
@@ -39,8 +45,6 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
     libMeshToIGL(sidesetMeshSkinned, V, F);
     
     changeMeshBasis(V, origin, basisMatrix);
-    std::cout << V << std::endl;
-    // IGLToLibMesh(iglBase, V, F);
 
     // Define seed points matrix
     Eigen::MatrixXd seed_points(2, 3);
@@ -55,15 +59,7 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
         seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
     }
 
-    
-    
-    // libMesh::Mesh remainingBoundary(newMesh.comm());
-    // remainingBoundary.read("remainingBoundary.e");
-    
-   
     generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, max_el_size);
-    bound_verts.conservativeResize(bound_verts.rows(), bound_verts.cols()+1);
-    bound_verts.col(bound_verts.cols()-1) = Eigen::VectorXd::Zero(bound_verts.rows());
     
     // IGLToLibMesh(square, V_tri, F_tri);
     const double tol = 1e-05;
@@ -71,21 +67,7 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
 
     combineMeshes(tol, bound_verts, bound_elems, V_boundary, F_boundary);
 
-    // IGLToLibMesh(new_mesh, V_sideset_face, F_sideset_face);
-    
-
-    auto end1 = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    << " ms" << std::endl;
-    
     changeMeshBasis(bound_verts, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin, basisMatrix);    
-
-
-    // combineMeshes(tol, newMesh, mesh);
-
-    
-    // genSquare(3, 4, square);
 }
 
 
@@ -185,11 +167,15 @@ void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::Matrix
     Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
     genSidesetBounds(V_2d, F_2d, length, subdivisions);
     igl::triangle::triangulate(V_2d, F_2d, holes, tri_args, tri_V, tri_F);
+
+    // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D)
+    //  , set all z coords to 0
+    tri_V.conservativeResize(tri_V.rows(), tri_V.cols()+1);
+    tri_V.col(tri_V.cols()-1) = Eigen::VectorXd::Zero(tri_V.rows());
 }
 
 void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes)
 {
-
     Eigen::MatrixXd verts, newVerts;
     Eigen::MatrixXi elems, newElems;
     genSidesetBounds(mesh, remainingBoundary);
@@ -215,11 +201,11 @@ void genSidesetBounds(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int
 {
     Eigen::MatrixXd V_square((4*subdivisions), 2);
     Eigen::MatrixXi F_square((4*subdivisions), 2);
-    std::cout << "generating square" << std::endl;
+    
     genSquare(V_square, F_square, length, subdivisions);
-    std::cout << "Combinging IGL meshes" << std::endl;
+    
     combineIGLMeshes(V, F, V_square, F_square);
-    std::cout << "Combinging IGL meshes" << std::endl;
+    
 
     // auto box = libMesh::MeshTools::create_bounding_box(sidesetMesh);
     // libMesh::Point centre = ((box.max() + box.min())/2);

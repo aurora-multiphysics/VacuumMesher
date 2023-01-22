@@ -56,22 +56,20 @@ int main(int argc, char** argv)
     getBasisChangeMesh(mesh, bound_verts, bound_faces, 300, 20, 0);
     // boundMesh.write("boundhuh.e");
     
+    // Combine the boundary with the surface mesh to create a closed manifold we can use for tetrahedrelisation
     combineMeshes(tol, bound_verts, bound_faces, surf_verts, surf_faces);
     
-    // boundMesh.write("thisShouldWork.e");
+    
     // Tetrahedralise everything
     tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points);
-    // // Set up rTree with specified tolerance
-    // vacuumMesh.write("iscoilcorrect.e");
 
-    // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
-    
+    // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();    
     combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
     << " ms" << std::endl;
-    mesh.write(tetFilepath);
+    mesh.write("hooray.e");
     // long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
     // std::cout << "Is this 0?: " << zero << std::endl;
     // std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;

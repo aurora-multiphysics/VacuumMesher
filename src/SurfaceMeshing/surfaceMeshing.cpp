@@ -124,6 +124,7 @@ void getSurface(libMesh::Mesh& mesh,
         newNodeIds[currentNodeIds[i]] = i;
     }
     
+    surfaceMesh.reserve_nodes(currentNodeIds.size());
     //Using the newNodeIds map, set all the node data needed for the new mesh 
     for(auto nodeId: currentNodeIds)
     {   
@@ -134,6 +135,7 @@ void getSurface(libMesh::Mesh& mesh,
         surfaceMesh.add_point(xyz, newNodeIds[nodeId]);
     }
     
+    surfaceMesh.reserve_elem(surface_elem_counter);
     //For all of the surface elements, create the representitive 2D libmesh element 
     //Connectivity is set and the element is added to the new mesh
     for(int i = 0; i < surface_elem_counter; i++)
@@ -152,10 +154,9 @@ void getSurface(libMesh::Mesh& mesh,
             surfaceMesh.boundary_info->sideset_name(id) = mesh.boundary_info->sideset_name(id);
         }
     }
-    //Set mesh dimensions 
+    //Prepare mesh for use
     surfaceMesh.prepare_for_use();
 
-    libMesh::BoundingBox box = libMesh::MeshTools::create_bounding_box(surfaceMesh);
     if(writeMesh)
     {
         surfaceMesh.write(outputFilename);
