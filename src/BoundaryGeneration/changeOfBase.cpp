@@ -166,7 +166,7 @@ void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::Matrix
     Eigen::MatrixXd V_2d = V.block(0,0,V.rows(), 2);
     Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
     genSidesetBounds(V_2d, F_2d, length, subdivisions);
-    igl::triangle::triangulate(V_2d, F_2d, holes, tri_args, tri_V, tri_F);
+    igl::triangle::triangulate(V_2d, F_2d, vacencies, tri_args, tri_V, tri_F);
 
     // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D)
     //  , set all z coords to 0
@@ -174,13 +174,14 @@ void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::Matrix
     tri_V.col(tri_V.cols()-1) = Eigen::VectorXd::Zero(tri_V.rows());
 }
 
-void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes)
+void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes, double max_elem_size)
 {
+    std::string tri_args = "qYa" + std::to_string(max_elem_size);
     Eigen::MatrixXd verts, newVerts;
     Eigen::MatrixXi elems, newElems;
     genSidesetBounds(mesh, remainingBoundary);
     libMeshToIGL(mesh, verts, elems, 2);
-    igl::triangle::triangulate(verts, elems, holes, "qYa130.0", newVerts, newElems);
+    igl::triangle::triangulate(verts, elems, holes, tri_args, newVerts, newElems);
     IGLToLibMesh(outputMesh, newVerts, newElems);
     combineMeshes(1e-05, outputMesh, remainingBoundary);    
 }
