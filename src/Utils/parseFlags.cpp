@@ -115,4 +115,6 @@ void inputFlags::setSwitches()
   {
     triSettings += "a" + std::to_string(max_tri_area.value());
   }
+
+  
 }
