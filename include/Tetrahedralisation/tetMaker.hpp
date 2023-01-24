@@ -21,13 +21,13 @@
 
 // Method used to generate the tetrehedra between the boundary mesh and the part mesh i.e. generates the vacuum mesh
 void 
-tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints);
+tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints, std::string tet_settings);
 
 void 
-tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh);
+tetrahedraliseVacuumRegion(libMesh::Mesh& boundaryMesh, libMesh::Mesh& vacuumMesh, std::string tet_settings);
 
 void 
-tetrahedraliseVacuumRegion(Eigen::MatrixXd& V, Eigen::MatrixXi& F, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints);
+tetrahedraliseVacuumRegion(Eigen::MatrixXd& V, Eigen::MatrixXi& F, libMesh::Mesh& vacuumMesh, Eigen::MatrixXd& seedPoints, std::string tet_settings);
 
 Eigen::MatrixXd 
 getSeeds(libMesh::Mesh mesh, double tol=1e-10);

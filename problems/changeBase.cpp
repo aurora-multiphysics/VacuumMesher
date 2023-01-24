@@ -1,4 +1,3 @@
-
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "BoundaryGeneration/changeOfBase.hpp"
 #include "Utils/parseFlags.hpp"
@@ -7,12 +6,13 @@
 int main(int argc, const char** argv)
 {
     inputFlags flags{parse_settings(argc, argv)};
+    flags.setSwitches();
     // Setup simple argv for use with libMesh init
     std::string appName(argv[0]);
     std::vector<char*> libmeshArgv = {(char*)appName.data()};
     std::string path, filepath, filenameNoExt, surfFilename, boundFilename, tetFilename; 
     std::string surfFilepath, boundFilepath, tetFilepath; 
-    
+    std::cout << flags.tetSettings << std::endl;
     // Set up appropriate file names
     path = "./Meshes/";
     filepath = path + flags.infile.value();
@@ -52,8 +52,6 @@ int main(int argc, const char** argv)
         // Use bounding points to determine a suitable boundary length
         flags.bound_len = 1.5*(box.max() - box.min()).norm();
     }
-
-
     // Eigen matrices to store mesh data for surface mesh and boundary mesh
     Eigen::MatrixXd surf_verts, bound_verts;
     Eigen::MatrixXi surf_faces, bound_faces;
@@ -68,7 +66,8 @@ int main(int argc, const char** argv)
     Eigen::MatrixXd seed_points = getSeeds(surfMesh, 1e-04);
     
     // Turn surfMesh into boundaryMesh
-    getBasisChangeMesh(mesh, bound_verts, bound_faces, 300, 20, 0);
+    getBasisChangeMesh(mesh, bound_verts, bound_faces, flags.bound_len.value(), flags.bound_subd.value(), flags.triSettings);
+
     // If verbose flag is set, output the boundaryMesh
     if(flags.verbose)
     {
@@ -81,7 +80,7 @@ int main(int argc, const char** argv)
     combineMeshes(tol, bound_verts, bound_faces, surf_verts, surf_faces);
     
     // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points);
+    tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points, flags.tetSettings);
 
     // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();    
     combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);

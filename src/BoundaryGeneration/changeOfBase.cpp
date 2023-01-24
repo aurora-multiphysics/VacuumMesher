@@ -1,18 +1,12 @@
 #include "BoundaryGeneration/changeOfBase.hpp"
 
-void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen::MatrixXi& bound_elems, double length, int subdivisions, double max_el_size)
+void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen::MatrixXi& bound_elems, double length, int subdivisions, std::string tri_settings)
 {
-    
-    // If a maximum element size is not specified, then make the maximum element size the area of the equilateral triangle 
-    //  with side length "length"/"subdivisions"
-    if(max_el_size == 0.)
-    {
-        max_el_size = (std::pow((length/subdivisions), 2))/2;
-    }
     // Libmesh mesh that stores only sideset data
     libMesh::Mesh sidesetMesh(mesh.comm());
     
     libMesh::Mesh sidesetMeshSkinned(mesh.comm());
+    // 
     genSidesetMesh(mesh, sidesetMesh);
     // Skin the sideset mesh to get the edge elements that represent the boundaries of the sidesets
     getSurface(sidesetMesh, sidesetMeshSkinned);
@@ -59,11 +53,12 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
         seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
     }
 
-    generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, max_el_size);
+    generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, tri_settings);
     
     // IGLToLibMesh(square, V_tri, F_tri);
     const double tol = 1e-05;
-    genRemainingBoundary(V_boundary, F_boundary, length, subdivisions, max_el_size, tol);
+    // 
+    genRemainingBoundary(V_boundary, F_boundary, length, subdivisions, tri_settings, tol);
 
     combineMeshes(tol, bound_verts, bound_elems, V_boundary, F_boundary);
 
@@ -159,14 +154,13 @@ bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
     return true;
 }
 
-void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, double max_elem_size)
+void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, std::string tri_settings)
 {
-    std::string tri_args = "qYa" + std::to_string(max_elem_size);
     Eigen::MatrixXd vacencies = holes.block(0,0,2,2);
     Eigen::MatrixXd V_2d = V.block(0,0,V.rows(), 2);
     Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
     genSidesetBounds(V_2d, F_2d, length, subdivisions);
-    igl::triangle::triangulate(V_2d, F_2d, vacencies, tri_args, tri_V, tri_F);
+    igl::triangle::triangulate(V_2d, F_2d, vacencies, tri_settings, tri_V, tri_F);
 
     // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D)
     //  , set all z coords to 0
@@ -406,10 +400,8 @@ void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd&
     }
 }
 
-void genRemainingBoundary(Eigen::MatrixXd& V_tri, Eigen::MatrixXi& F_tri, double length, int subdivisions, double max_elem_size, double tol)
+void genRemainingBoundary(Eigen::MatrixXd& V_tri, Eigen::MatrixXi& F_tri, double length, int subdivisions, std::string tri_settings, double tol)
 {
-    std::string tri_args = "qYa" + std::to_string(max_elem_size);
-
     Eigen::MatrixXd V(4*subdivisions, 2); 
     Eigen::MatrixXi F(4*subdivisions, 2);
 
@@ -420,9 +412,9 @@ void genRemainingBoundary(Eigen::MatrixXd& V_tri, Eigen::MatrixXi& F_tri, double
 
     genSquare(V, F, length, subdivisions);
 
-    igl::triangle::triangulate(V, F, seeds, tri_args, V_tri, F_tri);
+    igl::triangle::triangulate(V, F, seeds, tri_settings, V_tri, F_tri);
 
-
+    // Rotational matrices to rotate elements
     Eigen::Matrix3d x_rot_base;
     x_rot_base << 1, 0, 0,
                   0, 0, -1,

@@ -7,6 +7,8 @@ const std::unordered_map<std::string, NoArgHandle> NoArgs{
   {"--help", [](inputFlags& s) { s.help = true; }},
   {"-h", [](inputFlags& s) { s.help = true; }},
 
+  // Verbose mode, will save the mesh at each step and output more
+  //  info to console
   {"--verbose", [](inputFlags& s) { s.verbose = true; }},
   {"-v", [](inputFlags& s) { s.verbose = true; }},
 
@@ -14,17 +16,22 @@ const std::unordered_map<std::string, NoArgHandle> NoArgs{
 };
 
 const std::unordered_map<std::string, OneArgHandle> OneArgs {
-  // Writing out the whole lambda
-  {"-o", [](inputFlags& s, const std::string& arg) {s.infile = arg;}},
-  {"--output", [](inputFlags& s, const std::string& arg) {s.infile = arg;}},
+  {"-o", [](inputFlags& s, const std::string& arg) {s.outfile = arg;}},
+  {"--output", [](inputFlags& s, const std::string& arg) {s.outfile = arg;}},
 
   {"-i", [](inputFlags& s, const std::string& arg) {s.infile = arg;}},
   {"--input", [](inputFlags& s, const std::string& arg) {s.infile = arg;}},
 
   {"-p", [](inputFlags& s, const std::string& arg) {s.order = std::stoi(arg);}},
+  {"--order", [](inputFlags& s, const std::string& arg) {s.order = std::stoi(arg);}},
+
+  {"--max_tri", [](inputFlags& s, const std::string& arg) {s.max_tri_area = std::stod(arg);}},
+
+  {"--max_tet", [](inputFlags& s, const std::string& arg) {s.max_tet_vol = std::stod(arg);}},
 };
 
 inputFlags parse_settings(int argc, const char* argv[]) {
+  // inputFlags object we will return
   inputFlags settings;
 
   // Start at one because arg 0 is the program name 
@@ -38,7 +45,7 @@ inputFlags parse_settings(int argc, const char* argv[]) {
     }
       
 
-    // No, how about a OneArg?
+    // Is this a OneArg?
     else if(auto k {OneArgs.find(opt)}; k != OneArgs.end())
     {
       // Yes, do we have a parameter?
@@ -73,23 +80,39 @@ inputFlags parse_settings(int argc, const char* argv[]) {
   return settings;
 }
 
-generationSettings::readFlags(inputFlags& flags)
+void inputFlags::setSwitches()
 {
 
-  if(flags.order == 2)
+  if(order == 2)
   {
-    this->tetSettings += "o2";
-    this->triSettings += "o2";
+    tetSettings += "o2";
+    triSettings += "o2";
+  }
+  else if(order > 2)
+  {
+    throw std::runtime_error {"Please set order to 1 or 2 (if left blank\
+    first order is used by default)"};
   }
 
-  if(flags.verbose)
+  // If verbose 
+  if(verbose)
   {
-    this->tetSettings += "V";
-    this->triSettings += "V";
+    tetSettings += "V";
+    triSettings += "V";
   }
   else
   {
-    this->tetSettings += "Q";
-    this->triSettings += "Q";
+    tetSettings += "Q";
+    triSettings += "Q";
+  }
+
+  if(max_tet_vol.has_value())
+  {
+    tetSettings += "a" + std::to_string(max_tet_vol.value());
+  }
+
+  if(max_tri_area.has_value())
+  {
+    triSettings += "a" + std::to_string(max_tri_area.value());
   }
 }

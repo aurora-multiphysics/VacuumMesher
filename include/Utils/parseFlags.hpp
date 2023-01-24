@@ -24,15 +24,15 @@ struct inputFlags {
     // Maximum volume of tet elements generated
     std::optional<double> max_tet_vol;
 
-};
-
-struct generationSettings {
-
+    // Command line switches used by the triangle library
     std::string triSettings {"qYa"};
+    // Command line switches used by the tetgen library
     std::string tetSettings {"pqCYY"};
 
-    void readFlags(inputFlags& flags);
+    // Small method to 
+    void setSwitches();
 };
+
 
 // Function that will return an inputFlags struct from which we can access CLI flags
 inputFlags parse_settings(int argc, const char* argv[]);
