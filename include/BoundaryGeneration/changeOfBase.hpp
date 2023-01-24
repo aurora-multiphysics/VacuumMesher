@@ -14,7 +14,7 @@ Eigen::Vector3d calculateLocalCoords(Eigen::Vector3d& point, Eigen::Vector3d new
 void doubleCheck(Eigen::Matrix3d& basisMatrix, Eigen::Vector3d& origin, Eigen::Vector3d& point, Eigen::Vector3d& initialPoint);
 
 // 
-void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, std::string tri_settings);
+void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, std::string tri_settings, libMesh::Mesh& test);
 
 // 
 void generateCoilFaceBound(libMesh::Mesh& mesh, libMesh::Mesh& outputMesh, libMesh::Mesh& remainingBoundary, Eigen::MatrixXd& holes);

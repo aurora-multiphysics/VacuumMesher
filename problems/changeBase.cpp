@@ -72,24 +72,25 @@ int main(int argc, const char** argv)
     if(flags.verbose)
     {
         IGLToLibMesh(boundMesh, bound_verts, bound_faces);
+        boundMesh.write(boundFilepath);
     }
     
     // Tolerance for rTree combining of meshes
-    const double tol = 1e-05;
-    // Combine the boundary with the surface mesh to create a closed manifold we can use for tetrahedrelisation
-    combineMeshes(tol, bound_verts, bound_faces, surf_verts, surf_faces);
+    // const double tol = 1e-05;
+    // // Combine the boundary with the surface mesh to create a closed manifold we can use for tetrahedrelisation
+    // combineMeshes(tol, bound_verts, bound_faces, surf_verts, surf_faces);
     
-    // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points, flags.tetSettings);
+    // // Tetrahedralise everything
+    // tetrahedraliseVacuumRegion(bound_verts, bound_faces, vacuumMesh, seed_points, flags.tetSettings);
 
-    // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();    
-    combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
+    // // long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();    
+    // combineMeshes(tol, mesh, vacuumMesh, surfaceFaceMap);
 
-    // Write the mesh to either the value provided in the input flags, or a default filepath
-    mesh.write(flags.outfile.value_or(tetFilepath));
-    // long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
-    // std::cout << "Is this 0?: " << zero << std::endl;
-    // std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;
+    // // Write the mesh to either the value provided in the input flags, or a default filepath
+    // mesh.write(flags.outfile.value_or(tetFilepath));
+    // // long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
+    // // std::cout << "Is this 0?: " << zero << std::endl;
+    // // std::cout << mesh.n_elem() << " " << mesh.n_nodes() << std::endl;
 
     return 0;
 }

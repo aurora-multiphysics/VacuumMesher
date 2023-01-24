@@ -44,8 +44,6 @@ void getSurface(libMesh::Mesh& mesh,
                 bool writeMesh,
                 std::string outputFilename)
 {   
-    std::cout << "Beginning skinning mesh" << std::endl;
-    
     //Variables to store element information so it is easily accessible later
     //This implementation does assume only one element type is used
     libMesh::ElemType elem_type, face_type; 
@@ -57,7 +55,6 @@ void getSurface(libMesh::Mesh& mesh,
         
     //Counter to store the number of surface elements
     int surface_elem_counter = 0;
-
     // Sideset info
     // std::vector<unsigned int> boundary_nodes;
     // std::vector<libMesh::boundary_id_type> boundary_id;
@@ -95,15 +92,19 @@ void getSurface(libMesh::Mesh& mesh,
                 boundary_data[surface_elem_counter] = boundary_ids;
             }
 
-            surfaceFaceMap.insert(std::make_pair(elem->id(), surfaceFaces[i]));
-
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
-            for(auto localNodeId: elem->nodes_on_side(surfaceFaces[i]))
+            // for(auto localNodeId: elem->nodes_on_side(surfaceFaces[i]))
+            int count = 0;
+            for(auto& side_node: elem->build_side_ptr(surfaceFaces[i])->node_ref_range())
             {
-                int globalNodeId = elem->node_id(localNodeId);
-                connectivity.push_back(globalNodeId);
-                currentNodeIds.push_back(globalNodeId);
+                // std::cout << count++ << std::endl;
+                int global_node_id = side_node.id();
+                connectivity.push_back(global_node_id);
+                currentNodeIds.push_back(global_node_id);
             }
+
+            // 
+            surfaceFaceMap.insert(std::make_pair(elem->id(), surfaceFaces[i]));
             // Counter 
             surface_elem_counter++;
         }
@@ -143,6 +144,7 @@ void getSurface(libMesh::Mesh& mesh,
         libMesh::Elem* elem = libMesh::Elem::build(face_type).release();
         for(int j = 0; j < num_face_nodes; j++)
         {
+            // std::cout << j << std::endl;
             elem->set_node(j) = surfaceMesh.node_ptr(newNodeIds[connectivity[(i*num_face_nodes)+j]]);
         }
         elem->set_id(i);
@@ -161,7 +163,6 @@ void getSurface(libMesh::Mesh& mesh,
     {
         surfaceMesh.write(outputFilename);
     }
-    std::cout << "Created skinned mesh" << std::endl;
 }
 
 void getSurface(libMesh::Mesh& mesh, 
@@ -169,7 +170,6 @@ void getSurface(libMesh::Mesh& mesh,
                 bool writeMesh,
                 std::string outputFilename)
 {   
-    std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
     
@@ -223,11 +223,11 @@ void getSurface(libMesh::Mesh& mesh,
             }
 
             // Loop over all the nodes on side 'surfaceFaces[i]' of element 'element', add necessary information to containers
-            for(auto localNodeId: elem->nodes_on_side(surfaceFaces[i]))
+            for(auto& side_node: elem->build_side_ptr(surfaceFaces[i])->node_ref_range())
             {
-                int globalNodeId = elem->node_id(localNodeId);
-                connectivity.push_back(globalNodeId);
-                currentNodeIds.push_back(globalNodeId);
+                int global_node_id = side_node.id();
+                connectivity.push_back(global_node_id);
+                currentNodeIds.push_back(global_node_id);
             }
             // Counter 
             surface_elem_counter++;
@@ -288,7 +288,6 @@ void getSurface(libMesh::Mesh& mesh,
     {
         surfaceMesh.write(outputFilename);
     }
-    std::cout << "Created skinned mesh" << std::endl;
 }
 
 // Get surface for when the user DOES want only a subset of the mesh skinned
@@ -298,7 +297,6 @@ void getSurface(libMesh::Mesh& mesh,
                 bool writeMesh, 
                 std::string outputFilename)
 {   
-    std::cout << "Beginning skinning mesh" << std::endl;
     //LibMesh method that has to be run in order to access neighbor info
     mesh.find_neighbors();
 
@@ -342,11 +340,11 @@ void getSurface(libMesh::Mesh& mesh,
         {
             std::vector<unsigned int> nodes_on_side = element.nodes_on_side(surfaceFaces[i]);
 
-            for(auto localNodeId: nodes_on_side)
+            for(auto& side_node: elem->build_side_ptr(surfaceFaces[i])->node_ref_range())
             {
-                int globalNodeId = element.node_id(localNodeId);
-                connectivity.push_back(globalNodeId);
-                currentNodeIds.push_back(globalNodeId);
+                int global_node_id = side_node.id();
+                connectivity.push_back(global_node_id);
+                currentNodeIds.push_back(global_node_id);
             }
             surface_elem_counter++;
         }
@@ -459,9 +457,7 @@ void groupElems(libMesh::Mesh mesh,
             // Found all the new neighbors, done with current set.
             neighbors = new_neighbors;
         }
-        
         groups.push_back(groupElems);
-
     }
 }
 

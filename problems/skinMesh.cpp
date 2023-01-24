@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     mesh.read(filepath);
     std::cout << "Mesh read successfully" << std::endl;
     auto start1 = std::chrono::steady_clock::now();
-    getSurface(mesh, surfaceMesh, surfaceFaceMap, false, surfFilepath);
+    getSurface(mesh, surfaceMesh, surfaceFaceMap, true, surfFilepath);
 
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "

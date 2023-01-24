@@ -8,9 +8,10 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
     libMesh::Mesh sidesetMeshSkinned(mesh.comm());
     // 
     genSidesetMesh(mesh, sidesetMesh);
+    
     // Skin the sideset mesh to get the edge elements that represent the boundaries of the sidesets
     getSurface(sidesetMesh, sidesetMeshSkinned);
-
+    // sidesetMeshSkinned.write("AreYouSecondOrder.e");
     // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that will be used to 
     //  define the plane that they sit on 
     Eigen::Matrix3d plane_points;
@@ -37,6 +38,13 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
     
     // Convert the sideset mesh to
     libMeshToIGL(sidesetMeshSkinned, V, F);
+    std::cout << "F has " << F.cols() << " cols" << std::endl;
+    // igl::opengl::glfw::Viewer viewer;
+    // viewer.data().set_mesh(V, F);
+    // viewer.launch();
+    libMesh::Mesh test(mesh.comm());
+    // IGLToLibMesh(test, V, F);
+    // test.write("IGltranstestSO.e");
     
     changeMeshBasis(V, origin, basisMatrix);
 
@@ -53,9 +61,11 @@ void getBasisChangeMesh(libMesh::Mesh& mesh, Eigen::MatrixXd& bound_verts, Eigen
         seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
     }
 
-    generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, tri_settings);
-    
-    // IGLToLibMesh(square, V_tri, F_tri);
+    generateCoilFaceBound(V, F, seed_points, bound_verts, bound_elems, length, subdivisions, tri_settings, test);
+
+    // IGLToLibMesh(test, bound_verts, bound_elems);
+    // test.write("TopSurfSO.e");
+
     const double tol = 1e-05;
     // 
     genRemainingBoundary(V_boundary, F_boundary, length, subdivisions, tri_settings, tol);
@@ -154,16 +164,23 @@ bool getBasisMatrix(Eigen::Matrix3d& basisMatrix, Eigen::Matrix3d& plane_points)
     return true;
 }
 
-void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, std::string tri_settings)
+void generateCoilFaceBound(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& holes, Eigen::MatrixXd& tri_V, Eigen::MatrixXi& tri_F, double length, int subdivisions, std::string tri_settings, libMesh::Mesh& test)
 {
     Eigen::MatrixXd vacencies = holes.block(0,0,2,2);
     Eigen::MatrixXd V_2d = V.block(0,0,V.rows(), 2);
-    Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
+    Eigen::MatrixXi F_2d = F;
+    
+    // Eigen::MatrixXi F_2d = F.block(0,0,F.rows(), 2);
     genSidesetBounds(V_2d, F_2d, length, subdivisions);
+
+    IGLToLibMesh(test, V_2d, F_2d);
+
+    std::cout << "writing" << std::endl;
+    test.write("IGltranstestSO.e");
+
     igl::triangle::triangulate(V_2d, F_2d, vacencies, tri_settings, tri_V, tri_F);
 
-    // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D)
-    //  , set all z coords to 0
+    // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D), set all z coords to 0
     tri_V.conservativeResize(tri_V.rows(), tri_V.cols()+1);
     tri_V.col(tri_V.cols()-1) = Eigen::VectorXd::Zero(tri_V.rows());
 }
@@ -296,9 +313,7 @@ void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, st
     auto box2 = libMesh::MeshTools::create_bounding_box(ss2);
 
     centre1 = (box1.max() + box1.min())/2;
-    std::cout << centre1 << std::endl;
     centre2 = (box2.max() + box2.min())/2;
-    std::cout << centre2 << std::endl;
     //
     for(u_int i = 0; i<3; i++)
     {
@@ -310,6 +325,7 @@ void getCoplanarSeedPoints(libMesh::Mesh& mesh, Eigen::MatrixXd& seed_points, st
 
 void genSquare(Eigen::MatrixXd& V, Eigen::MatrixXi& F, double length, int subdivisions)
 {
+    // Add second order capability!
     // Eigen::MatrixXd V((4*subdivisions), 2);
     // Eigen::MatrixXi F((4*subdivisions), 2);
     double increment  = (double)(length/subdivisions);
@@ -382,6 +398,11 @@ void combineIGLMeshes(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1, Eigen::MatrixXd&
         throw std::invalid_argument("combineIGLMeshes can only combined meshes of the same dimension");
         abort;
     }
+    // if(F1.cols() != F2.cols())
+    // {
+    //     throw std::invalid_argument("can only combine meshes of the same order");
+    //     abort;
+    // }
     // Store rows in V1 before we resize it
     int initial_node_rows = V1.rows();
     int initial_elem_rows = F1.rows();
