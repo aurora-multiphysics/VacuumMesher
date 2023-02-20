@@ -38,3 +38,7 @@ target_link_libraries(changeBase PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw i
 add_executable(coilPoc poc.cpp ${projectSrc})
 target_include_directories(coilPoc PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(coilPoc PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+
+add_executable(skinMe skinMeshTwo.cpp ${projectSrc})
+target_include_directories(skinMe PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(skinMe PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)

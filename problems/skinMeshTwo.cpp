@@ -28,6 +28,9 @@ int main(int argc, char** argv)
     std::vector<char*> libmeshArgv = {(char*)appName.data()};
     std::string filename(argv[1]);
     
+    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
+    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
+
     //Initialise libmesh functions and mpi    
     LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     // Mesh container object, that has ownership of the mesh, surfaceMesh, Vacuum Mesh
@@ -35,10 +38,7 @@ int main(int argc, char** argv)
 
     //Read volume mesh
     auto start1 = std::chrono::steady_clock::now();
-    getSurface(meshes.userMesh().libmeshMesh(), 
-               meshes.skinnedMesh().libmeshMesh(), 
-               meshes.surfaceFaceMap(), true, 
-               meshes.skinFilename_);
+    getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), surfaceFaceMap, true, meshes.skinFilename_);
 
     auto end1 = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "
