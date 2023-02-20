@@ -1,4 +1,4 @@
-#include "Utils/MeshContainer.hpp"
+#include "MeshContainer.hpp"
 
 // Default constructor
 MeshContainer::MeshContainer()

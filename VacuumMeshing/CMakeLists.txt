@@ -1,7 +1,3 @@
-
-
-
-
 #libigl
 option(LIBIGL_INSTALL            "Enable installation of libigl targets" ON)
 
@@ -20,4 +16,12 @@ option(LIBIGL_COPYLEFT_CORK       "Build target igl_copyleft::cork"       ON)
 option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 
+add_subdirectory(libigl)
 
+FILE(GLOB_RECURSE libSrc  ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
+
+add_library(VacuumMeshing SHARED 
+            ${libSrc})
+
+target_link_libraries(VacuumMeshing PRIVATE MPI::MPI_CXX ${libmesh_LIBS} PUBLIC igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+target_include_directories(VacuumMeshing PRIVATE ${libmesh_INCLUDE} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

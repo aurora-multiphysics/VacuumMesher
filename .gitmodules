@@ -1,0 +1,3 @@
+[submodule "VacuumMeshing/libigl"]
+	path = VacuumMeshing/libigl
+	url = https://github.com/libigl/libigl.git

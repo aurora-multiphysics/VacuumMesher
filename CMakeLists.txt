@@ -32,5 +32,6 @@ string(STRIP "${libmesh_INCLUDE}" libmesh_INCLUDE)
 FILE(GLOB_RECURSE projectSrc ./src/*)
 FILE(GLOB_RECURSE testSrc ./test/src/*)
 
+add_subdirectory(VacuumMeshing)
 add_subdirectory(./problems)
 add_subdirectory(./test)
