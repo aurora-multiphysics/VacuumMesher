@@ -1,5 +1,10 @@
-#pragma once
+/** \file 
+ * As part of the process of vacuum mesh generation, the original part must be "skinned".
+ * Methods pertaining to mesh skinning are found here, along with a few other potentially
+ * useful methods.
+ */
 
+#pragma once
 #include "libmesh/elem.h"
 #include "libmesh/mesh.h"
 #include "libmesh/libmesh.h"

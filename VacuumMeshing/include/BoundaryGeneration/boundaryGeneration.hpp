@@ -1,5 +1,10 @@
+/** \file 
+ * Generating the correct boundary around the original mesh part is necessary 
+ * for generating the desired vacuum mesh. This file contains methods pertaining 
+ * to doing exactly that. 
+ */
+
 #pragma once
-#include "BoundaryGeneration/boundaryGeneration.hpp"
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "igl/triangle/triangulate.h"
 
@@ -35,21 +40,29 @@ calculateLocalCoords(Eigen::Vector3d &point, Eigen::Vector3d newOrigin,
 void doubleCheck(Eigen::Matrix3d &basisMatrix, Eigen::Vector3d &origin,
                  Eigen::Vector3d &point, Eigen::Vector3d &initialPoint);
 
-//
+/** Method for generating the face of the cubic boundary that is coplanar with the coil
+   sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh,
+   which is probably composed of 2D edge elements. holes is a matric which contains any seeding
+   points used for the triangulation of the closed space described by V and F. triV and triF are 
+   the data structures where the data for the output tri mesh will be stored.*/
 void generateCoilFaceBound(Eigen::MatrixXd &V, Eigen::MatrixXi &F,
                            Eigen::MatrixXd &holes, Eigen::MatrixXd &triV,
                            Eigen::MatrixXi &triF, double length,
                            int subdivisions, std::string tri_settings,
                            libMesh::Mesh &test);
 
-//
+/** Method for generating the face of the cubic boundary that is coplanar with the coil
+   sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh,
+   which is probably composed of 2D edge elements. holes is a matric which contains any seeding
+   points used for the triangulation of the closed space described by V and F. triV and triF are 
+   the data structures where the data for the output tri mesh will be stored.*/
 void generateCoilFaceBound(libMesh::Mesh &mesh, libMesh::Mesh &outputMesh,
                            libMesh::Mesh &remainingBoundary,
                            Eigen::MatrixXd &holes);
-//
+/***/
 void genSidesetMesh(libMesh::Mesh &mesh, libMesh::Mesh &sidesetMesh,
                     std::vector<std::string> ssNames = {"coil_in", "coil_out"});
-//
+/***/
 void genSidesetBounds(Eigen::MatrixXd &V, Eigen::MatrixXi &F, double length,
                       int subdivisions);
 

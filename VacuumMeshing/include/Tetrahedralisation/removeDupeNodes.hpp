@@ -1,3 +1,8 @@
+/** \file 
+ * When you have your mesh of your original part, and your vacuum mesh,
+ * you may need to combine these meshes into one mesh. There is a problem 
+ */
+
 #pragma once
 
 #include "libmesh/elem.h"
