@@ -10,9 +10,9 @@ struct inputFlags {
     // be verbose when calling libIGL options, print out all    
     bool verbose {false};
     // Length of the cubic boundary   
-    std::optional<double> bound_len;
+    std::optional<double> boundLen;
     //  The number of subdivisions  (triangular elements) along the side of the mesh boundary 
-    std::optional<double> bound_subd {20};
+    std::optional<int> boundSubd {20};
     // The mesh file to be read in
     std::optional<std::string> infile;
     // The name of the file to be output
@@ -20,9 +20,9 @@ struct inputFlags {
     // Order of the mesh
     int order {1};
     // Maximum area of tri elements on bound
-    std::optional<double> max_tri_area;
+    std::optional<double> maxTriArea;
     // Maximum volume of tet elements generated
-    std::optional<double> max_tet_vol;
+    std::optional<double> maxTetVol;
 
     // Command line switches used by the triangle library
     std::string triSettings {"qYa"};

@@ -25,9 +25,13 @@ const std::unordered_map<std::string, OneArgHandle> OneArgs {
   {"-p", [](inputFlags& s, const std::string& arg) {s.order = std::stoi(arg);}},
   {"--order", [](inputFlags& s, const std::string& arg) {s.order = std::stoi(arg);}},
 
-  {"--max_tri", [](inputFlags& s, const std::string& arg) {s.max_tri_area = std::stod(arg);}},
+  {"--max_tri", [](inputFlags& s, const std::string& arg) {s.maxTriArea = std::stod(arg);}},
 
-  {"--max_tet", [](inputFlags& s, const std::string& arg) {s.max_tet_vol = std::stod(arg);}},
+  {"--max_tet", [](inputFlags& s, const std::string& arg) {s.maxTetVol = std::stod(arg);}},
+
+  {"--bound_subdiv", [](inputFlags& s, const std::string& arg) {s.boundSubd = std::stoi(arg);}},
+
+  {"--bound_len", [](inputFlags& s, const std::string& arg) {s.boundLen = std::stod(arg);}},
 };
 
 inputFlags parse_settings(int argc, const char* argv[]) {
@@ -106,12 +110,12 @@ void inputFlags::setSwitches()
     triSettings += "Q";
   }
 
-  if(max_tet_vol.has_value())
+  if(maxTetVol.has_value())
   {
     tetSettings += "a" + std::to_string(max_tet_vol.value());
   }
 
-  if(max_tri_area.has_value())
+  if(maxTriArea.has_value())
   {
     triSettings += "a" + std::to_string(max_tri_area.value());
   }
