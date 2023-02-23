@@ -1,3 +1,5 @@
+# cmakelists to build lib
+
 #libigl
 option(LIBIGL_INSTALL            "Enable installation of libigl targets" ON)
 
