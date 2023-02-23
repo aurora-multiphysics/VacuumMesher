@@ -11,8 +11,8 @@
 /** Method to generate the boundary for a coil. A method exists specifically for
   coils, as often the boundary needs to be coplanar with some coil "in" and
   "out" sidesets. This method will generate the correct boundary for a problem
-  of this nature. The method takes in your starting mesh "mesh", two Eigen
-  objects "boundVerts" and "boundElems" that represent the output boundary
+  of this nature. The method takes in your starting \c mesh, two Eigen
+  objects \c boundVerts and \c boundElems that represent the output boundary
   vertices and faces (vertice connectivity data)*/
 void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
                           Eigen::MatrixXi &boundElems, double length,
@@ -27,8 +27,10 @@ void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
  system, organised by column (x basis = column 1 etc.)*/
 bool getBasisMatrix(Eigen::Matrix3d &basisMatrix, Eigen::Matrix3d &planePoints);
 
-/** Method that calculates the coordinates of a set of coordinates in a new
- basis. The default arguments assume that you are moving your point from the
+/** Method that calculates the coordinate positions in a set of new
+ basis vectors \c newBasis. \c NewBasis contains the new basis vectors with
+ each column representing the X Y and Z basis' respectively.
+ The default arguments assume that you are moving your point from the
  "standard" cartesian space (origin = 0,0,0  x_basis = 1, 0, 0 etc.)*/
 Eigen::Vector3d
 calculateLocalCoords(Eigen::Vector3d &point, Eigen::Vector3d newOrigin,
@@ -41,14 +43,14 @@ void doubleCheck(Eigen::Matrix3d &basisMatrix, Eigen::Vector3d &origin,
                  Eigen::Vector3d &point, Eigen::Vector3d &initialPoint);
 
 /** Method for generating the face of the cubic boundary that is coplanar with the coil
-   sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh,
-   which is probably composed of 2D edge elements. holes is a matric which contains any seeding
-   points used for the triangulation of the closed space described by V and F. triV and triF are 
+   sidesets. Here \c verts and  \c elems are the vertices and faces(connectivity data) for the input mesh,
+   which is probably composed of 2D edge elements. \c holes is a matric which contains any seeding
+   points used for the triangulation of the closed space described by \c V and \c F. \c triV and \c triF are 
    the data structures where the data for the output tri mesh will be stored.*/
-void generateCoilFaceBound(Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                           Eigen::MatrixXd &holes, Eigen::MatrixXd &triV,
-                           Eigen::MatrixXi &triF, double length,
-                           int subdivisions, std::string tri_settings,
+void generateCoilFaceBound(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems,
+                           Eigen::MatrixXd &holes, Eigen::MatrixXd &triVerts,
+                           Eigen::MatrixXi &triElems, double length,
+                           int subdivisions, std::string triSettings,
                            libMesh::Mesh &test);
 
 /** Method for generating the face of the cubic boundary that is coplanar with the coil
@@ -63,14 +65,14 @@ void generateCoilFaceBound(libMesh::Mesh &mesh, libMesh::Mesh &outputMesh,
 void genSidesetMesh(libMesh::Mesh &mesh, libMesh::Mesh &sidesetMesh,
                     std::vector<std::string> ssNames = {"coil_in", "coil_out"});
 /***/
-void genSidesetBounds(Eigen::MatrixXd &V, Eigen::MatrixXi &F, double length,
+void genSidesetBounds(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems, double length,
                       int subdivisions);
 
 void genSidesetBounds(libMesh::Mesh &sidesetMesh,
                       libMesh::Mesh &remainingBoundary);
 
-/** Rotate/translate a mesh according to a set of new basis vectors, and a new
- * origin.*/
+/** Rotate/translate a \c mesh according to a set of new basis vectors \c newBasis, and a new
+ * origin \c newOrigin. */
 void changeMeshBasis(libMesh::Mesh &mesh, Eigen::Vector3d newOrigin,
                      Eigen::Matrix3d newBasis,
                      Eigen::Vector3d oldOrigin = {0, 0, 0},
@@ -89,24 +91,24 @@ void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seedPoints,
                            std::string ss1Name = "coil_in",
                            std::string ss2Name = "coil_out");
 
-/** Method generates a square boundary comprised of just edge elements. The
- verts argument will be populated with the vertex data, elems will be populated
- with the element connectivity data and length and subdivisions allow the user
+/** Method generates a square boundary comprised of just edge elements.
+ \c verts  will be populated with the vertex data, \c elems will be populated
+ with the element connectivity data. \c length and \c subdivisions allow the user
  to change the length of the edges of the square, as well as how many elements
- there should be per "edge"*/
+ there should be per edge*/
 void genSquare(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems, double length,
                int subdivisions);
 
-/** Method for combining two libigl meshes that you are SURE do NOT intersect/
- have duplicate nodes. There is a combine meshes method in removeDupeNodes.cpp
+/** Method for combining two libigl meshes that you are SURE do NOT intersect and DO
+ NOT have duplicate nodes. There is a combine meshes method in removeDupeNodes.cpp
  that can combine meshes with duplicate nodes using an rTree data structure, so
- if you need that, use that. Here V1 and F1 are the vertice and element data
- structures for the first mesh, and V2 and F2 represent the second mesh. The
+ if you need that, use that. \p vertsOne and \p elemsOne are the vertice and element data
+ structures for the first mesh, and \p vertsOne and \p elemsTwo represent the second mesh. The
  meshes will be merged into the first mesh (V1, F1)*/
-void combineIGLMeshes(Eigen::MatrixXd &V1, Eigen::MatrixXi &F1,
-                      Eigen::MatrixXd &V2, Eigen::MatrixXi &F2);
+void combineIGLMeshes(Eigen::MatrixXd &vertsOne, Eigen::MatrixXi &elemsOne,
+                      Eigen::MatrixXd &vertsTwo, Eigen::MatrixXi &elemsTwo);
 
 /** Generates the 5 remaining faces of a cubic boundary*/
-void genRemainingBoundary(Eigen::MatrixXd &vTri, Eigen::MatrixXi &fTri,
+void genRemainingBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,
                           double length, int subdivisions,
                           std::string triSettings, double tol);
