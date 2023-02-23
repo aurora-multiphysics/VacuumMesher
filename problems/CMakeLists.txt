@@ -23,16 +23,17 @@ target_link_libraries(skinner PUBLIC ${libmesh_LIBS} MPI::MPI_CXX VacuumMeshing)
 # add_executable(fullCoil coilRun.cpp ${projectSrc})
 # target_include_directories(fullCoil PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 # target_link_libraries(fullCoil PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
-
+ 
 # #Full Run
 # add_executable(boundTesting boundaryTester.cpp ${projectSrc})
 # target_include_directories(boundTesting PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 # target_link_libraries(boundTesting PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 
 # #Change base
-# add_executable(changeBase changeBase.cpp ${projectSrc})
-# target_include_directories(changeBase PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
-# target_link_libraries(changeBase PUBLIC ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+#Skinning
+add_executable(changeBase changeBase.cpp ${projectSrc})
+target_include_directories(changeBase PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include )
+target_link_libraries(changeBase PUBLIC ${libmesh_LIBS} MPI::MPI_CXX VacuumMeshing) 
 
 # #coil poc
 # add_executable(coilPoc poc.cpp ${projectSrc})
