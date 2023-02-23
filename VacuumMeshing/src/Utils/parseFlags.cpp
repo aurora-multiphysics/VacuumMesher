@@ -112,12 +112,12 @@ void inputFlags::setSwitches()
 
   if(maxTetVol.has_value())
   {
-    tetSettings += "a" + std::to_string(max_tet_vol.value());
+    tetSettings += "a" + std::to_string(maxTetVol.value());
   }
 
   if(maxTriArea.has_value())
   {
-    triSettings += "a" + std::to_string(max_tri_area.value());
+    triSettings += "a" + std::to_string(maxTriArea.value());
   }
 
   
