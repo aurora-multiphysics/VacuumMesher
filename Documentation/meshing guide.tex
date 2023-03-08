@@ -56,7 +56,7 @@ The skinning algorithm is fairly straight forward. A loop is done over all the e
 	are the edge elements who had no neighbors.}
 	\label{2DSkinExample}
 \end{figure}
-
+The skinning algorithm is implemented in the function \codeword{getSurfaceMesh()}, the source of which can be found in \codeword{surfaceMeshing.cpp}. Multiple overloads of this function exist that offer slight variations in functionality depending on the user requirements. These are documented on the Doxygen existing for this code[]. 
 
 
 \subsection{Vacuum Generation}
@@ -92,7 +92,32 @@ To define a vacuum region in which tetrahedra can be generated, a boundary surro
 
 Now that this face exists in 3D, it can be rotated and translated in 3D space. Rotation of a face is can be done by multiplying a selected rotation matrix by the nodal coordinates of all the nodes on that face. The connectivity data for the 2D elements will stay exactly the same, only the location of the nodes must be altered. Translation is once again a simple cased of adding/subtracting an offset to one of the 3 coordinates. Once the faces have been rotated/translated, they can be combined into one mesh, representing the boundary mesh. More information on how the meshes are combined can be found in Section ***. For now it should be made clear that this combination is particularly clean. As all of the faces are copies of one original face, and the edge elements they are generated from can be specified by the user, there are guaranteed to be no hanging nodes.
 
-The generation of a boundary around a coil is a case which has recieved some special attention in this tool. In some FE problems it is necessary for some of the faces of the coil to be coplanar with the vacuum boundary. In this case it is not sufficient to just produce a cubic boundary, as combining the cubic boundary with the coil geometry will results in overlapping nodes and elements at the parts of the coil which need to be co-planar with the boundary. To solve this problem, one of the faces of the cubic boundary has to be produced with cutouts where the coplanar parts of the coil are. The elements and nodes on this boundary must also conform to those already existing on the coil. The other 5 faces of the cubic boundary are created as described prior, and then combined with the remaining one.
+The generation of a boundary around a coil is a case which has recieved some special attention in this tool. In some FE problems it is necessary for some of the faces of the coil to be coplanar with the vacuum boundary, as show in Figure ---. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.5\linewidth]{coplanarCoil.png}
+\end{center}
+\caption{Example of how sometimes faces of the coil will be coplanar with boundary.}
+\label{coplanarCoilFig}
+\end{figure}
+
+In this case it is not sufficient to just produce a cubic boundary, as combining the cubic boundary with the coil geometry will results in overlapping nodes and elements at the parts of the coil which need to be co-planar with the boundary. To solve this problem, one of the faces of the cubic boundary has to be produced with cutouts where the coplanar parts of the coil are. The elements and nodes on this boundary must also conform to those already existing on the coil. The other 5 faces of the cubic boundary are created as described prior, and then combined with the remaining one.
+
+\begin{figure}
+	\begin{subfigure}{0.48\textwidth}
+		\includegraphics[width=\linewidth]{coplanarOverlap.png}
+		\caption{Result when using standard boundary generation with coil faces being coplanar with boundary. Unusable mesh with overlapping elements}
+	\end{subfigure}
+	\hspace*{\fill}	
+	\begin{subfigure}{0.48\textwidth}
+		\includegraphics[width=\linewidth]{coplanarFixed.png}
+		\caption{Correctly generated coil boundary, with the boundary elements conforming to those already existing on the coil.}
+	\end{subfigure}	
+	\caption{}
+	\label{coilBoundaryFix}
+\end{figure}
+
 
 \subsubsection{Tetrahedralisation}
 Tetrahedralisation refers to the process of generating tetrahedral mesh elements in the space described by the skinned mesh and the boundary mesh. The tool used to generate tetrahedra in this code is Tetgen. This is the tetrahedral analogue to the aforementioned Triangle library. Tetgen allows users to produce Delaunay tetrahedralizations of closed spaces. Tetgen includes many built it options that can be used to manipulate its behavoir. One of these options forces Tetgen to conform to the boundaries (skinned mesh and boundary mesh) input by the user. This makes it perfect for generating the vacuum mesh, as we can ensure the vacuum mesh conforms to the elements in the original mesh. 
@@ -142,7 +167,11 @@ to skin a mesh called myMesh. This should successfully save a mesh called MyMesh
 The second example included in the repo is generateVacuum. Firstly the mesh is skinned, and then a cubic boundary is generated around it. The size of this boundary can be determined by CL flags documented in Section \ref{CLFlags}. If the user chooses not to provide a boundary size then a suitable size will be chosen by creating a bounding box around the input geometry. The largest dimension of this box is multiplied by a scaling factor to determine the size of the boundary. From here a list of seeding points is generated, and then the tetrahedralisation methods are called. Following successful tetrahedralisation, the mesh of the original part and the vacuum mesh are combined using the r-tree methods described in Section \ref{rTree}.
 
 \subsection{generateCoilVacuum}
-The third example program exists to help generate the vacuum mesh around a coil. This example specifically pertains to a coil which needs to have sidesets coincident with the vacuum mesh boundary. The example begins like the others, by skinning the coil mesh. To generate the boundary for the coil, the \codeword{generateCoilBoundary} method is called. This method is described in Section \ref{}. Once the 
+The third example program exists to help generate the vacuum mesh around a coil. This example specifically pertains to a coil which needs to have sidesets coincident with the vacuum mesh boundary. The example begins like the others, by skinning the coil mesh. To generate the boundary for the coil, the \codeword{generateCoilBoundary} method is called. This method is described in Section \ref{BoundaryGeneration}. Once the coil boundary is generated, the seeding points can be calculated and tetrahedralisation of the vacuum region can take place. 
+
+For the process in \ref{BoundaryGeneration} to be successful, the \codeword{generateCoilBoundary} method needs to know which coil sidesets are coplanar with the vacuum boundary. By default, the function looks for sidesets called "coil\_in" and "coil\_out"
+
+There is one notable restriction with this example. The coil sidesets that are coplanar with the boundary MUST exist on the same plane. Figure --- helps exemplify this limitation. Apologies, this functionality is not in yet.
 
 
 \subsection{Command Line Options} \label{CLFlags}
