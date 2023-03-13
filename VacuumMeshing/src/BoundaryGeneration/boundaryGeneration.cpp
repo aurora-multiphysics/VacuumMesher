@@ -2,28 +2,25 @@
 
 #include "BoundaryGeneration/boundaryGeneration.hpp"
 
-void addBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
-                 Eigen::MatrixXi &boundElems, double length,
-                 int subdivisions, std::string triSettings)
+void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
+                 double length, int subdivisions, std::string triSettings)
 {
   // Data structures to store boundary mesh
   Eigen::MatrixXd tempVerts;
   Eigen::MatrixXi tempElems;
   // Generate boundary mesh
   genBoundary(tempVerts, tempElems, length, subdivisions, triSettings, 1e-04);
+  // Turn IGL mesh into libmesh Mesh
+  IGLToLibMesh(boundaryMesh, tempVerts, tempElems);
   // Combine IGL mesh with boundary
-  combineIGLMeshes(boundVerts, boundElems, tempVerts, tempElems);
+  combineMeshes(1e-06, boundaryMesh, skinnedMesh);
 }
 
-
-
-void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
-                          Eigen::MatrixXi &boundElems, double length,
+void generateCoilBoundary(libMesh::Mesh &mesh, libMesh::Mesh &boundaryMesh, double length,
                           int subdivisions, std::string triSettings) {
+
   // Libmesh mesh that stores only sideset data
   libMesh::Mesh sidesetMesh(mesh.comm());
-
-  // Mesh to store the skin of the sideset mesh
   libMesh::Mesh sidesetMeshSkinned(mesh.comm());
 
   //Generate sideset mesh (uses default argument for sideset names)
@@ -56,27 +53,18 @@ void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
   getBasisMatrix(basisMatrix, planePoints);
 
   // Eigen objects to store 
-  Eigen::MatrixXd verts, cubeVerts;
-  Eigen::MatrixXi elems, cubeElems;
+  Eigen::MatrixXd ssVerts, cubeVerts;
+  Eigen::MatrixXi ssElems, cubeElems;
 
   // Convert the sideset mesh to
-  libMeshToIGL(sidesetMeshSkinned, verts, elems);
+  libMeshToIGL(sidesetMeshSkinned, ssVerts, ssElems);
   Eigen::MatrixXd normTest;
 
   // igl::per_face_normals(verts, elems, normTest);
-
-  libMesh::Mesh test(mesh.comm());
-
-  changeMeshBasis(verts, origin, basisMatrix);
+  changeMeshBasis(ssVerts, origin, basisMatrix);
 
   // Define seed points matrix
   Eigen::MatrixXd seed_points(2, 3);
-
-  igl::opengl::glfw::Viewer viewer;
-  Eigen::Vector3d co;
-  co << 0, 244, 244;
-  // viewer.data().add_points(seed_points, co);
-
 
   // Get the seed points of the coplanar coil boundaries
   getCoplanarSeedPoints(mesh, seed_points);
@@ -88,23 +76,21 @@ void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
   }
 
   // Generates the face of the boundary that is coplanar with the coil sidesets (the special boundary face)
-  generateCoilFaceBound(verts, elems, seed_points, cubeVerts, cubeElems, length,
-                        subdivisions, triSettings, test);
+  generateCoilFaceBound(ssVerts, ssElems, seed_points, cubeVerts, cubeElems, length,
+                        subdivisions, triSettings);
 
-  viewer.data().set_mesh(cubeVerts, cubeElems);
-  viewer.launch();
-  const double tol = 1e-05;
+
+  const double tol = 1e-08;
 
   // Generates the 5 other faces of the cubic boundary
   genRemainingBoundary(cubeVerts, cubeElems, length, subdivisions, triSettings,
                        tol);
 
-  // Combines the special boundary face with the 5 others to form the full boundary
-  // combineMeshes(tol, boundVerts, boundElems, cubeVerts, cubeElems);
-
   // Change back to original basis
-  changeMeshBasis(boundVerts, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin,
+  changeMeshBasis(cubeVerts, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin,
                   basisMatrix);
+
+  IGLToLibMesh(boundaryMesh, cubeVerts, cubeElems);
 }
 
 Eigen::Vector3d calculateLocalCoords(Eigen::Vector3d &point,
@@ -204,8 +190,7 @@ bool getBasisMatrix(Eigen::Matrix3d &basisMatrix,
 void generateCoilFaceBound(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems,
                            Eigen::MatrixXd &holes, Eigen::MatrixXd &triVerts,
                            Eigen::MatrixXi &triElems, double length,
-                           int subdivisions, std::string triSettings,
-                           libMesh::Mesh &test) {
+                           int subdivisions, std::string triSettings) {
   // 
   Eigen::MatrixXd holes2D = holes.block(0, 0, 2, 2);
   Eigen::MatrixXd verts2D = verts.block(0, 0, verts.rows(), 2);
@@ -356,7 +341,8 @@ void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seedPoints,
   mesh.boundary_info->sync(ss1_id, ss1);
   mesh.boundary_info->sync(ss2_id, ss2);
 
-  // Pick coordinates from a node belonging to a non-boundary element to be seeding point
+  // As soon as an element not on the boundary is found, use one of its nodes 
+  //  as a seeding point
   for(auto& elem: ss1.active_element_ptr_range())
   {
     if(elem->on_boundary()){continue;}
@@ -367,10 +353,11 @@ void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seedPoints,
 
   }
 
+  // As soon as an element not on the boundary is found, use one of its nodes 
+  //  as a seeding point
   for(auto& elem: ss2.active_element_ptr_range())
   {
-    if(elem->on_boundary()){std::cout << "LOL" << std::endl; continue;}
-    std::cout << elem->id() << std::endl;
+    if(elem->on_boundary()){continue;}
     for (u_int i = 0; i < 3; i++) {
       seedPoints.row(1)(i) = elem->node_ref(0)(i);
     }
@@ -459,8 +446,6 @@ void combineIGLMeshes(Eigen::MatrixXd &vertsOne, Eigen::MatrixXi &elemsOne,
     elemsOne.row(initial_elem_rows + i) =
         elemsTwo.row(i) + Eigen::VectorXi::Constant(elemsOne.cols(), initial_node_rows);
   }
-    std::cout << "bleg" << std::endl;
-
 }
 
 void genBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,

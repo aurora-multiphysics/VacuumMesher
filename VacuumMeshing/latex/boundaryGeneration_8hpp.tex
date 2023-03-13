@@ -1,0 +1,503 @@
+\hypertarget{boundaryGeneration_8hpp}{}\doxysection{include/\+Boundary\+Generation/boundary\+Generation.hpp File Reference}
+\label{boundaryGeneration_8hpp}\index{include/BoundaryGeneration/boundaryGeneration.hpp@{include/BoundaryGeneration/boundaryGeneration.hpp}}
+{\ttfamily \#include \char`\"{}Tetrahedralisation/remove\+Dupe\+Nodes.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}igl/triangle/triangulate.\+h\char`\"{}}\newline
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=235pt]{boundaryGeneration_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_afb075efa4d0d8c61ac7e8148bc9c4e82}{generate\+Coil\+Boundary}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Matrix\+Xd \&bound\+Verts, Eigen\+::\+Matrix\+Xi \&bound\+Elems, double length, int subdivisions, std\+::string tri\+Settings)
+\item 
+bool \mbox{\hyperlink{boundaryGeneration_8hpp_ada5d781a36fa38b5a4cd85340f73be6d}{get\+Basis\+Matrix}} (Eigen\+::\+Matrix3d \&basis\+Matrix, Eigen\+::\+Matrix3d \&plane\+Points)
+\item 
+Eigen\+::\+Vector3d \mbox{\hyperlink{boundaryGeneration_8hpp_a3f8476c0e15c4bfc296ccfd925968211}{calculate\+Local\+Coords}} (Eigen\+::\+Vector3d \&point, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin=\{0, 0, 0\}, Eigen\+::\+Matrix3d old\+Basis=Eigen\+::\+Matrix3d\+::\+Identity())
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8hpp_ab90259d175c0c8a60329fc1b3f037f23}\label{boundaryGeneration_8hpp_ab90259d175c0c8a60329fc1b3f037f23}} 
+void {\bfseries double\+Check} (Eigen\+::\+Matrix3d \&basis\+Matrix, Eigen\+::\+Vector3d \&origin, Eigen\+::\+Vector3d \&point, Eigen\+::\+Vector3d \&initial\+Point)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_a3de2029d5312e2d2c8af63af24094c3e}{generate\+Coil\+Face\+Bound}} (Eigen\+::\+Matrix\+Xd \&verts, Eigen\+::\+Matrix\+Xi \&elems, Eigen\+::\+Matrix\+Xd \&holes, Eigen\+::\+Matrix\+Xd \&tri\+Verts, Eigen\+::\+Matrix\+Xi \&tri\+Elems, double length, int subdivisions, std\+::string tri\+Settings, lib\+Mesh\+::\+Mesh \&test)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_a9328e28c5c70baf503f4d13b90a48c54}{generate\+Coil\+Face\+Bound}} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&output\+Mesh, lib\+Mesh\+::\+Mesh \&remaining\+Boundary, Eigen\+::\+Matrix\+Xd \&holes)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a205db8c70d26a0319350bc5607c5a997}\label{boundaryGeneration_8hpp_a205db8c70d26a0319350bc5607c5a997}} 
+void {\bfseries gen\+Sideset\+Mesh} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&sideset\+Mesh, std\+::vector$<$ std\+::string $>$ ss\+Names=\{\char`\"{}coil\+\_\+in\char`\"{}, \char`\"{}coil\+\_\+out\char`\"{}\})
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8hpp_aa989ec57e32cd6918cbde82b093b32a7}\label{boundaryGeneration_8hpp_aa989ec57e32cd6918cbde82b093b32a7}} 
+void {\bfseries gen\+Sideset\+Bounds} (Eigen\+::\+Matrix\+Xd \&verts, Eigen\+::\+Matrix\+Xi \&elems, double length, int subdivisions)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8hpp_ae39157ee0bc87a1082b798aa83827bb2}\label{boundaryGeneration_8hpp_ae39157ee0bc87a1082b798aa83827bb2}} 
+void {\bfseries gen\+Sideset\+Bounds} (lib\+Mesh\+::\+Mesh \&sideset\+Mesh, lib\+Mesh\+::\+Mesh \&remaining\+Boundary)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_a0ca07bb1e4d7fa6e2aebf40287cb310b}{change\+Mesh\+Basis}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin=\{0, 0, 0\}, Eigen\+::\+Matrix3d old\+Basis=Eigen\+::\+Matrix3d\+::\+Identity())
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_ad3fb510734b49626d457f4f0f94967dc}{change\+Mesh\+Basis}} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin=\{0, 0, 0\}, Eigen\+::\+Matrix3d old\+Basis=Eigen\+::\+Matrix3d\+::\+Identity())
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_a103c10f78f54430cc4f4905d3259cccf}{get\+Coplanar\+Seed\+Points}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Matrix\+Xd \&seed\+Points, std\+::string ss1\+Name=\char`\"{}coil\+\_\+in\char`\"{}, std\+::string ss2\+Name=\char`\"{}coil\+\_\+out\char`\"{})
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_aa00b269c0b58b689f40bed7cdbb3ab2e}{gen\+Square}} (Eigen\+::\+Matrix\+Xd \&verts, Eigen\+::\+Matrix\+Xi \&elems, double length, int subdivisions)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_ab0070398eacc2ac02e984e214803176e}{combine\+IGLMeshes}} (Eigen\+::\+Matrix\+Xd \&verts\+One, Eigen\+::\+Matrix\+Xi \&elems\+One, Eigen\+::\+Matrix\+Xd \&verts\+Two, Eigen\+::\+Matrix\+Xi \&elems\+Two)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8hpp_aed319648381addcfdd617e6d0612f347}{gen\+Remaining\+Boundary}} (Eigen\+::\+Matrix\+Xd \&tri\+Verts, Eigen\+::\+Matrix\+Xi \&tri\+Elems, double length, int subdivisions, std\+::string tri\+Settings, double tol)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Generating the correct boundary around the original mesh part is necessary for generating the desired vacuum mesh. This file contains methods pertaining to doing exactly that. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a3f8476c0e15c4bfc296ccfd925968211}\label{boundaryGeneration_8hpp_a3f8476c0e15c4bfc296ccfd925968211}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!calculateLocalCoords@{calculateLocalCoords}}
+\index{calculateLocalCoords@{calculateLocalCoords}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{calculateLocalCoords()}{calculateLocalCoords()}}
+{\footnotesize\ttfamily Eigen\+::\+Vector3d calculate\+Local\+Coords (\begin{DoxyParamCaption}\item[{Eigen\+::\+Vector3d \&}]{point,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Method that calculates the coordinate positions in a set of new basis vectors {\ttfamily new\+Basis}. {\ttfamily New\+Basis} contains the new basis vectors with each column representing the X Y and Z basis\textquotesingle{} respectively. The default arguments assume that you are moving your point from the \char`\"{}standard\char`\"{} cartesian space (origin = 0,0,0 x\+\_\+basis = 1, 0, 0 etc.) 
+
+Definition at line 81 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{85                                                              \{}
+\DoxyCodeLine{86   Eigen::Vector3d localCoords =}
+\DoxyCodeLine{87       newBasis.inverse() * (oldOrigin -\/ newOrigin + (oldBasis * point));}
+\DoxyCodeLine{88   \textcolor{keywordflow}{return} localCoords;}
+\DoxyCodeLine{89 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_ad3fb510734b49626d457f4f0f94967dc}\label{boundaryGeneration_8hpp_ad3fb510734b49626d457f4f0f94967dc}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!changeMeshBasis@{changeMeshBasis}}
+\index{changeMeshBasis@{changeMeshBasis}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{changeMeshBasis()}{changeMeshBasis()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void change\+Mesh\+Basis (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{V,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Rotate/translate a mesh according to a set of new basis vectors, and a new origin. Function overload for use with lib\+IGL (Eigen) meshes 
+
+Definition at line 131 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{133                                              \{}
+\DoxyCodeLine{134   \textcolor{comment}{// Inverse the new basis matrix}}
+\DoxyCodeLine{135   Eigen::Matrix3d newBasisInverse = newBasis.inverse();}
+\DoxyCodeLine{136   \textcolor{comment}{// We assume we are changing basis from bog standard cartesian coords.}}
+\DoxyCodeLine{137   \textcolor{comment}{//  i.e. an origin of 0,0,0 and basis vectors of (1,0,0), (0,1,0), (0,0,1)}}
+\DoxyCodeLine{138   \textcolor{comment}{// Eigen::Matrix3d oldBasis(Eigen::Matrix3d::Identity());}}
+\DoxyCodeLine{139   \textcolor{comment}{// Eigen::Vector3d oldOrigin(Eigen::Vector3d::Zero());}}
+\DoxyCodeLine{140   \textcolor{comment}{// Do row wise operations on}}
+\DoxyCodeLine{141   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < verts.rows(); i++) \{}
+\DoxyCodeLine{142     verts.row(i) = newBasisInverse *}
+\DoxyCodeLine{143                (oldOrigin -\/ newOrigin + (oldBasis * verts.row(i).transpose()));}
+\DoxyCodeLine{144   \}}
+\DoxyCodeLine{145 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a0ca07bb1e4d7fa6e2aebf40287cb310b}\label{boundaryGeneration_8hpp_a0ca07bb1e4d7fa6e2aebf40287cb310b}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!changeMeshBasis@{changeMeshBasis}}
+\index{changeMeshBasis@{changeMeshBasis}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{changeMeshBasis()}{changeMeshBasis()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void change\+Mesh\+Basis (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Rotate/translate a {\ttfamily mesh} according to a set of new basis vectors {\ttfamily new\+Basis}, and a new origin {\ttfamily new\+Origin}. 
+
+Definition at line 91 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{93                                              \{}
+\DoxyCodeLine{94   libMesh::Mesh meshCopy(mesh);}
+\DoxyCodeLine{95   mesh.clear();}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&node : meshCopy.node\_ptr\_range()) \{}
+\DoxyCodeLine{98     \textcolor{comment}{// Eigen::Vector to store node coords}}
+\DoxyCodeLine{99     Eigen::Vector3d point, newPoint;}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101     \textcolor{keywordflow}{for} (u\_int i = 0; i < 3; i++) \{}
+\DoxyCodeLine{102       point(i) = (*node)(i);}
+\DoxyCodeLine{103     \}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105     newPoint =}
+\DoxyCodeLine{106         \mbox{\hyperlink{boundaryGeneration_8hpp_a3f8476c0e15c4bfc296ccfd925968211}{calculateLocalCoords}}(point, newOrigin, newBasis, oldOrigin, oldBasis);}
+\DoxyCodeLine{107     \textcolor{comment}{// newPoint = calculateLocalCoords(basisMatrix, origin, origin);}}
+\DoxyCodeLine{108     \textcolor{comment}{// std::cout << newPoint.transpose() << std::endl;}}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{111     \textcolor{keywordflow}{for} (u\_int i = 0; i < 3; i++) \{}
+\DoxyCodeLine{112       pnt[i] = newPoint(i);}
+\DoxyCodeLine{113     \}}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{116     \textcolor{comment}{// std::cout << pnt[0] << "{} "{} << pnt[1] << "{} "{} << pnt[2] << std::endl;}}
+\DoxyCodeLine{117     mesh.add\_point(xyz, node-\/>id());}
+\DoxyCodeLine{118   \}}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elem : meshCopy.element\_ptr\_range()) \{}
+\DoxyCodeLine{121     libMesh::Elem *new\_elem = libMesh::Elem::build(elem-\/>type()).release();}
+\DoxyCodeLine{122     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < elem-\/>n\_nodes(); j++) \{}
+\DoxyCodeLine{123       new\_elem-\/>set\_node(j) = mesh.node\_ptr(elem-\/>node\_ref(j).id());}
+\DoxyCodeLine{124     \}}
+\DoxyCodeLine{125     mesh.add\_elem(new\_elem);}
+\DoxyCodeLine{126   \}}
+\DoxyCodeLine{127   mesh.prepare\_for\_use();}
+\DoxyCodeLine{128 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_ab0070398eacc2ac02e984e214803176e}\label{boundaryGeneration_8hpp_ab0070398eacc2ac02e984e214803176e}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!combineIGLMeshes@{combineIGLMeshes}}
+\index{combineIGLMeshes@{combineIGLMeshes}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{combineIGLMeshes()}{combineIGLMeshes()}}
+{\footnotesize\ttfamily void combine\+IGLMeshes (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{verts\+One,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{elems\+One,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{verts\+Two,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{elems\+Two }\end{DoxyParamCaption})}
+
+Method for combining two libigl meshes that you are SURE do NOT intersect and DO NOT have duplicate nodes. There is a combine meshes method in \mbox{\hyperlink{removeDupeNodes_8cpp_source}{remove\+Dupe\+Nodes.\+cpp}} that can combine meshes with duplicate nodes using an r\+Tree data structure, so if you need that, use that. {\ttfamily verts\+One} and {\ttfamily elems\+One} are the vertice and element data structures for the first mesh, and {\ttfamily verts\+One} and {\ttfamily elems\+Two} represent the second mesh. The meshes will be merged into the first mesh (V1, F1) 
+
+Definition at line 334 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{335                                                                         \{}
+\DoxyCodeLine{336   \textcolor{keywordflow}{if} (vertsOne.cols() != vertsTwo.cols()) \{}
+\DoxyCodeLine{337     \textcolor{keywordflow}{throw} std::invalid\_argument(}
+\DoxyCodeLine{338         \textcolor{stringliteral}{"{}combineIGLMeshes can only combined meshes of the same dimension"{}});}
+\DoxyCodeLine{339     abort;}
+\DoxyCodeLine{340   \}}
+\DoxyCodeLine{341   \textcolor{comment}{// if(elemsOne.cols() != elemsTwo.cols())}}
+\DoxyCodeLine{342   \textcolor{comment}{// \{}}
+\DoxyCodeLine{343   \textcolor{comment}{//     throw std::invalid\_argument("{}can only combine meshes of the same}}
+\DoxyCodeLine{344   \textcolor{comment}{//     order"{}); abort;}}
+\DoxyCodeLine{345   \textcolor{comment}{// \}}}
+\DoxyCodeLine{346   \textcolor{comment}{// Store rows in vertsOne before we resize it}}
+\DoxyCodeLine{347   \textcolor{keywordtype}{int} initial\_node\_rows = vertsOne.rows();}
+\DoxyCodeLine{348   \textcolor{keywordtype}{int} initial\_elem\_rows = elemsOne.rows();}
+\DoxyCodeLine{349   \textcolor{comment}{// Resize vertsOne to store info from vertsTwo}}
+\DoxyCodeLine{350   vertsOne.conservativeResize(vertsOne.rows() + vertsTwo.rows(), vertsOne.cols());}
+\DoxyCodeLine{351   elemsOne.conservativeResize(elemsOne.rows() + elemsTwo.rows(), elemsOne.cols());}
+\DoxyCodeLine{352 }
+\DoxyCodeLine{353   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < vertsTwo.rows(); i++) \{}
+\DoxyCodeLine{354     vertsOne.row(initial\_node\_rows + i) = vertsTwo.row(i);}
+\DoxyCodeLine{355   \}}
+\DoxyCodeLine{356 }
+\DoxyCodeLine{357   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < elemsTwo.rows(); i++) \{}
+\DoxyCodeLine{358     elemsOne.row(initial\_elem\_rows + i) =}
+\DoxyCodeLine{359         elemsTwo.row(i) + Eigen::VectorXi::Constant(elemsOne.cols(), initial\_node\_rows);}
+\DoxyCodeLine{360   \}}
+\DoxyCodeLine{361 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_afb075efa4d0d8c61ac7e8148bc9c4e82}\label{boundaryGeneration_8hpp_afb075efa4d0d8c61ac7e8148bc9c4e82}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!generateCoilBoundary@{generateCoilBoundary}}
+\index{generateCoilBoundary@{generateCoilBoundary}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{generateCoilBoundary()}{generateCoilBoundary()}}
+{\footnotesize\ttfamily void generate\+Coil\+Boundary (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{bound\+Verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{bound\+Elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+Settings }\end{DoxyParamCaption})}
+
+Method to generate the boundary for a coil. A method exists specifically for coils, as often the boundary needs to be coplanar with some coil \char`\"{}in\char`\"{} and \char`\"{}out\char`\"{} sidesets. This method will generate the correct boundary for a problem of this nature. The method takes in your starting {\ttfamily mesh}, two Eigen objects {\ttfamily bound\+Verts} and {\ttfamily bound\+Elems} that represent the output boundary vertices and faces (vertice connectivity data) 
+
+Definition at line 5 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{7                                                                    \{}
+\DoxyCodeLine{8   \textcolor{comment}{// Libmesh mesh that stores only sideset data}}
+\DoxyCodeLine{9   libMesh::Mesh sidesetMesh(mesh.comm());}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11   libMesh::Mesh sidesetMeshSkinned(mesh.comm());}
+\DoxyCodeLine{12   \textcolor{comment}{//}}
+\DoxyCodeLine{13   genSidesetMesh(mesh, sidesetMesh);}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15   \textcolor{comment}{// Skin the sideset mesh to get the edge elements that represent the}}
+\DoxyCodeLine{16   \textcolor{comment}{// boundaries of the sidesets}}
+\DoxyCodeLine{17   \mbox{\hyperlink{surfaceMeshing_8hpp_aedb378c4a8fe83ad2294f5d38ecf9e76}{getSurface}}(sidesetMesh, sidesetMeshSkinned);}
+\DoxyCodeLine{18   \textcolor{comment}{// sidesetMeshSkinned.write("{}AreYouSecondOrder.e"{});}}
+\DoxyCodeLine{19   \textcolor{comment}{// Create Eigen 3x3 matrix to store 3 points from the co-\/planar sidesets, that}}
+\DoxyCodeLine{20   \textcolor{comment}{// will be used to}}
+\DoxyCodeLine{21   \textcolor{comment}{//  define the plane that they sit on}}
+\DoxyCodeLine{22   Eigen::Matrix3d planePoints;}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24   \textcolor{comment}{// Populate our plane points matrix with the nodes belonging to an element on}}
+\DoxyCodeLine{25   \textcolor{comment}{// the sidesets}}
+\DoxyCodeLine{26   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} row\_id = 0; row\_id < 3; row\_id++) \{}
+\DoxyCodeLine{27     \textcolor{keyword}{auto} \&node = sidesetMesh.elem\_ref(0).node\_ref(row\_id);}
+\DoxyCodeLine{28     planePoints.row(row\_id) << node(0), node(1), node(2);}
+\DoxyCodeLine{29   \}}
+\DoxyCodeLine{30   \textcolor{comment}{// Eigen 3x3 Matrix that will store the basis vectors of our transformed}}
+\DoxyCodeLine{31   \textcolor{comment}{// cartesian system}}
+\DoxyCodeLine{32   Eigen::Matrix3d basisMatrix;}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34   \textcolor{comment}{// Define new origin as a point on the coil sideset(s), this will be fairly}}
+\DoxyCodeLine{35   \textcolor{comment}{// central}}
+\DoxyCodeLine{36   Eigen::Vector3d origin = planePoints.row(0);}
+\DoxyCodeLine{37   \textcolor{keyword}{auto} start1 = std::chrono::steady\_clock::now();}
+\DoxyCodeLine{38   \textcolor{comment}{// Generate basis matrix based on 3 points that define a plane}}
+\DoxyCodeLine{39   \mbox{\hyperlink{boundaryGeneration_8hpp_ada5d781a36fa38b5a4cd85340f73be6d}{getBasisMatrix}}(basisMatrix, planePoints);}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41   Eigen::MatrixXd verts, vBoundary;}
+\DoxyCodeLine{42   Eigen::MatrixXi F, fBoundary;}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44   \textcolor{comment}{// Convert the sideset mesh to}}
+\DoxyCodeLine{45   libMeshToIGL(sidesetMeshSkinned, verts, F);}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{47   libMesh::Mesh test(mesh.comm());}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{49   \mbox{\hyperlink{boundaryGeneration_8hpp_a0ca07bb1e4d7fa6e2aebf40287cb310b}{changeMeshBasis}}(verts, origin, basisMatrix);}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51   \textcolor{comment}{// Define seed points matrix}}
+\DoxyCodeLine{52   Eigen::MatrixXd seed\_points(2, 3);}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54   \textcolor{comment}{// Get the seed points of the coplanar coil boundaries}}
+\DoxyCodeLine{55   \mbox{\hyperlink{boundaryGeneration_8hpp_a103c10f78f54430cc4f4905d3259cccf}{getCoplanarSeedPoints}}(mesh, seed\_points);}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57   \textcolor{comment}{// Transform seed points into new coordinate system}}
+\DoxyCodeLine{58   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < seed\_points.rows(); i++) \{}
+\DoxyCodeLine{59     Eigen::Vector3d point(seed\_points.row(i));}
+\DoxyCodeLine{60     seed\_points.row(i) = \mbox{\hyperlink{boundaryGeneration_8hpp_a3f8476c0e15c4bfc296ccfd925968211}{calculateLocalCoords}}(point, origin, basisMatrix);}
+\DoxyCodeLine{61   \}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63   \mbox{\hyperlink{boundaryGeneration_8hpp_a3de2029d5312e2d2c8af63af24094c3e}{generateCoilFaceBound}}(verts, F, seed\_points, boundVerts, boundElems, length,}
+\DoxyCodeLine{64                         subdivisions, triSettings, test);}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66   \textcolor{comment}{// IGLToLibMesh(test, bound\_verts, bound\_elems);}}
+\DoxyCodeLine{67   \textcolor{comment}{// test.write("{}TopSurfSO.e"{});}}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69   \textcolor{keyword}{const} \textcolor{keywordtype}{double} tol = 1e-\/05;}
+\DoxyCodeLine{70   \textcolor{comment}{//}}
+\DoxyCodeLine{71   \mbox{\hyperlink{boundaryGeneration_8hpp_aed319648381addcfdd617e6d0612f347}{genRemainingBoundary}}(vBoundary, fBoundary, length, subdivisions, triSettings,}
+\DoxyCodeLine{72                        tol);}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74   \mbox{\hyperlink{removeDupeNodes_8hpp_a4a2f2eacffbc045e3788df5988436250}{combineMeshes}}(tol, boundVerts, boundElems, vBoundary, fBoundary);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76   \textcolor{comment}{// Change back to original basis}}
+\DoxyCodeLine{77   \mbox{\hyperlink{boundaryGeneration_8hpp_a0ca07bb1e4d7fa6e2aebf40287cb310b}{changeMeshBasis}}(boundVerts, \{0, 0, 0\}, Eigen::Matrix3d::Identity(), origin,}
+\DoxyCodeLine{78                   basisMatrix);}
+\DoxyCodeLine{79 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a3de2029d5312e2d2c8af63af24094c3e}\label{boundaryGeneration_8hpp_a3de2029d5312e2d2c8af63af24094c3e}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!generateCoilFaceBound@{generateCoilFaceBound}}
+\index{generateCoilFaceBound@{generateCoilFaceBound}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{generateCoilFaceBound()}{generateCoilFaceBound()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void generate\+Coil\+Face\+Bound (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{elems,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{holes,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{tri\+Verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{tri\+Elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+Settings,  }\item[{lib\+Mesh\+::\+Mesh \&}]{test }\end{DoxyParamCaption})}
+
+Method for generating the face of the cubic boundary that is coplanar with the coil sidesets. Here {\ttfamily verts} and {\ttfamily elems} are the vertices and faces(connectivity data) for the input mesh, which is probably composed of 2D edge elements. {\ttfamily holes} is a matric which contains any seeding points used for the triangulation of the closed space described by {\ttfamily verts} and {\ttfamily elems}. {\ttfamily tri\+Verts} and {\ttfamily tri\+Faces} are the data structures where the data for the output tri mesh will be stored. 
+
+Definition at line 175 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{179                                               \{}
+\DoxyCodeLine{180   Eigen::MatrixXd vacencies = holes.block(0, 0, 2, 2);}
+\DoxyCodeLine{181   Eigen::MatrixXd verts2D = verts.block(0, 0, verts.rows(), 2);}
+\DoxyCodeLine{182   Eigen::MatrixXi elems2D = elems;}
+\DoxyCodeLine{183 }
+\DoxyCodeLine{184   \textcolor{comment}{// Eigen::MatrixXi elems2D = elems.block(0,0,elems.rows(), 2);}}
+\DoxyCodeLine{185   genSidesetBounds(verts2D, elems2D, length, subdivisions);}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{187   \textcolor{comment}{// IGLToLibMesh(test, verts2D, elems2D);}}
+\DoxyCodeLine{188 }
+\DoxyCodeLine{189   \textcolor{comment}{// std::cout << "{}writing"{} << std::endl;}}
+\DoxyCodeLine{190   \textcolor{comment}{// test.write("{}IGltranstestSO.e"{});}}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{192   igl::triangle::triangulate(verts2D, elems2D, vacencies, triSettings, triVerts, triElems);}
+\DoxyCodeLine{193 }
+\DoxyCodeLine{194   \textcolor{comment}{// Resize triangle vertices matrix to have 3 cols instead of 2 (2D -\/> 3D), set}}
+\DoxyCodeLine{195   \textcolor{comment}{// all z coords to 0}}
+\DoxyCodeLine{196   triVerts.conservativeResize(triVerts.rows(), triVerts.cols() + 1);}
+\DoxyCodeLine{197   triVerts.col(triVerts.cols() -\/ 1) = Eigen::VectorXd::Zero(triVerts.rows());}
+\DoxyCodeLine{198 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a9328e28c5c70baf503f4d13b90a48c54}\label{boundaryGeneration_8hpp_a9328e28c5c70baf503f4d13b90a48c54}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!generateCoilFaceBound@{generateCoilFaceBound}}
+\index{generateCoilFaceBound@{generateCoilFaceBound}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{generateCoilFaceBound()}{generateCoilFaceBound()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void generate\+Coil\+Face\+Bound (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{lib\+Mesh\+::\+Mesh \&}]{output\+Mesh,  }\item[{lib\+Mesh\+::\+Mesh \&}]{remaining\+Boundary,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{holes }\end{DoxyParamCaption})}
+
+Method for generating the face of the cubic boundary that is coplanar with the coil sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh, which is probably composed of 2D edge elements. holes is a matric which contains any seeding points used for the triangulation of the closed space described by V and F. triV and triF are the data structures where the data for the output tri mesh will be stored. \mbox{\Hypertarget{boundaryGeneration_8hpp_aed319648381addcfdd617e6d0612f347}\label{boundaryGeneration_8hpp_aed319648381addcfdd617e6d0612f347}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!genRemainingBoundary@{genRemainingBoundary}}
+\index{genRemainingBoundary@{genRemainingBoundary}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{genRemainingBoundary()}{genRemainingBoundary()}}
+{\footnotesize\ttfamily void gen\+Remaining\+Boundary (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{tri\+Verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{tri\+Elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+Settings,  }\item[{double}]{tol }\end{DoxyParamCaption})}
+
+Generates the 5 remaining faces of a cubic boundary 
+
+Definition at line 363 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{365                                                              \{}
+\DoxyCodeLine{366   Eigen::MatrixXd verts(4 * subdivisions, 2);}
+\DoxyCodeLine{367   Eigen::MatrixXi F(4 * subdivisions, 2);}
+\DoxyCodeLine{368 }
+\DoxyCodeLine{369   triVerts(4 * subdivisions, 2);}
+\DoxyCodeLine{370   triElems(4 * subdivisions, 3);}
+\DoxyCodeLine{371 }
+\DoxyCodeLine{372   Eigen::MatrixXd seeds;}
+\DoxyCodeLine{373 }
+\DoxyCodeLine{374   \mbox{\hyperlink{boundaryGeneration_8hpp_aa00b269c0b58b689f40bed7cdbb3ab2e}{genSquare}}(verts, F, length, subdivisions);}
+\DoxyCodeLine{375 }
+\DoxyCodeLine{376   igl::triangle::triangulate(verts, F, seeds, triSettings, triVerts, triElems);}
+\DoxyCodeLine{377 }
+\DoxyCodeLine{378   \textcolor{comment}{// Rotational matrices to rotate elements}}
+\DoxyCodeLine{379   Eigen::Matrix3d x\_rot\_base;}
+\DoxyCodeLine{380   x\_rot\_base << 1, 0, 0, 0, 0, -\/1, 0, 1, 0;}
+\DoxyCodeLine{381 }
+\DoxyCodeLine{382   Eigen::Matrix3d y\_rot\_base;}
+\DoxyCodeLine{383   y\_rot\_base << 0, 0, -\/1, 0, 1, 0, 1, 0, 0;}
+\DoxyCodeLine{384 }
+\DoxyCodeLine{385   \textcolor{comment}{// Resize triVerts to work in 3d, as it is currently a 2D mesh,}}
+\DoxyCodeLine{386   \textcolor{comment}{//  this is done just by adding a column of zeroes as our "{}z"{} coord}}
+\DoxyCodeLine{387   triVerts.conservativeResize(triVerts.rows(), triVerts.cols() + 1);}
+\DoxyCodeLine{388   triVerts.col(triVerts.cols() -\/ 1) = Eigen::VectorXd::Zero(triVerts.rows());}
+\DoxyCodeLine{389 }
+\DoxyCodeLine{390   \textcolor{comment}{// Define our rotation matrices}}
+\DoxyCodeLine{391   std::vector<Eigen::Matrix3d> rot\_matrices = \{x\_rot\_base, y\_rot\_base\};}
+\DoxyCodeLine{392   std::vector<Eigen::MatrixXd> newFaces(4, triVerts);}
+\DoxyCodeLine{393 }
+\DoxyCodeLine{394   triVerts.col(triVerts.cols() -\/ 1) = Eigen::VectorXd::Constant(triVerts.rows(), length);}
+\DoxyCodeLine{395   \textcolor{comment}{// triElems.conservativeResize(triElems.rows(), triElems.cols()+1);}}
+\DoxyCodeLine{396   \textcolor{comment}{// triElems.col(triElems.cols()-\/1) = Eigen::VectorXi::Zero(triElems.rows());}}
+\DoxyCodeLine{397 }
+\DoxyCodeLine{398   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 4; i++) \{}
+\DoxyCodeLine{399     newFaces[i] *= rot\_matrices[(i \% 2)];}
+\DoxyCodeLine{400   \}}
+\DoxyCodeLine{401 }
+\DoxyCodeLine{402   translateMesh(newFaces[0], \{0, length / 2, length / 2\});}
+\DoxyCodeLine{403   translateMesh(newFaces[1], \{length / 2, 0, length / 2\});}
+\DoxyCodeLine{404   translateMesh(newFaces[2], \{0, -\/length / 2, length / 2\});}
+\DoxyCodeLine{405   translateMesh(newFaces[3], \{-\/length / 2, 0, length / 2\});}
+\DoxyCodeLine{406 }
+\DoxyCodeLine{407   Eigen::MatrixXi triElems\_2 = triElems;}
+\DoxyCodeLine{408 }
+\DoxyCodeLine{409   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 4; i++) \{}
+\DoxyCodeLine{410     \mbox{\hyperlink{removeDupeNodes_8hpp_a4a2f2eacffbc045e3788df5988436250}{combineMeshes}}(tol, triVerts, triElems, newFaces[i], triElems\_2);}
+\DoxyCodeLine{411   \}}
+\DoxyCodeLine{412 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_aa00b269c0b58b689f40bed7cdbb3ab2e}\label{boundaryGeneration_8hpp_aa00b269c0b58b689f40bed7cdbb3ab2e}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!genSquare@{genSquare}}
+\index{genSquare@{genSquare}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{genSquare()}{genSquare()}}
+{\footnotesize\ttfamily void gen\+Square (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions }\end{DoxyParamCaption})}
+
+Method generates a square boundary comprised of just edge elements. {\ttfamily verts} will be populated with the vertex data, {\ttfamily elems} will be populated with the element connectivity data. {\ttfamily length} and {\ttfamily subdivisions} allow the user to change the length of the edges of the square, as well as how many elements there should be per edge 
+
+Definition at line 296 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{297                                  \{}
+\DoxyCodeLine{298   \textcolor{comment}{// Add second order capability!}}
+\DoxyCodeLine{299 }
+\DoxyCodeLine{300   \textcolor{comment}{//}}
+\DoxyCodeLine{301   \textcolor{keywordtype}{double} increment = (double)(length / subdivisions);}
+\DoxyCodeLine{302   \textcolor{comment}{// Offset so that the square mesh is symmetric about the x and y axes}}
+\DoxyCodeLine{303   \textcolor{keywordtype}{double} offset = length / 2;}
+\DoxyCodeLine{304 }
+\DoxyCodeLine{305   \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} row\_num = 0;}
+\DoxyCodeLine{306   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i <= subdivisions; i++) \{}
+\DoxyCodeLine{307     verts.row(row\_num) << -\/offset + (i * increment), -\/offset;}
+\DoxyCodeLine{308     row\_num++;}
+\DoxyCodeLine{309   \}}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{311   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 1; i <= subdivisions; i++) \{}
+\DoxyCodeLine{312     verts.row(row\_num) << offset, (i * increment) -\/ offset;}
+\DoxyCodeLine{313     row\_num++;}
+\DoxyCodeLine{314   \}}
+\DoxyCodeLine{315 }
+\DoxyCodeLine{316   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 1; i <= subdivisions; i++) \{}
+\DoxyCodeLine{317     verts.row(row\_num) << offset -\/ (i * increment), offset;}
+\DoxyCodeLine{318     row\_num++;}
+\DoxyCodeLine{319   \}}
+\DoxyCodeLine{320 }
+\DoxyCodeLine{321   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 1; i <= subdivisions; i++) \{}
+\DoxyCodeLine{322     verts.row(row\_num) << -\/offset, offset -\/ (i * increment);}
+\DoxyCodeLine{323     row\_num++;}
+\DoxyCodeLine{324   \}}
+\DoxyCodeLine{325 }
+\DoxyCodeLine{326   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < (4 * subdivisions) -\/ 1; i++) \{}
+\DoxyCodeLine{327     elems(i, 0) = i;}
+\DoxyCodeLine{328     elems(i, 1) = i + 1;}
+\DoxyCodeLine{329   \}}
+\DoxyCodeLine{330   elems(((4 * subdivisions) -\/ 1), 0) = 0;}
+\DoxyCodeLine{331   elems(((4 * subdivisions) -\/ 1), 1) = (4 * subdivisions) -\/ 1;}
+\DoxyCodeLine{332 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_ada5d781a36fa38b5a4cd85340f73be6d}\label{boundaryGeneration_8hpp_ada5d781a36fa38b5a4cd85340f73be6d}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!getBasisMatrix@{getBasisMatrix}}
+\index{getBasisMatrix@{getBasisMatrix}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{getBasisMatrix()}{getBasisMatrix()}}
+{\footnotesize\ttfamily bool get\+Basis\+Matrix (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix3d \&}]{basis\+Matrix,  }\item[{Eigen\+::\+Matrix3d \&}]{plane\+Points }\end{DoxyParamCaption})}
+
+Method takes in an {\ttfamily basis\+Matrix} by reference. This matrix will be populated with the basis vectors for a cartesian coordinate system. The new systems \char`\"{}\+XY\char`\"{} plane is defined by 3 points contained within {\ttfamily plane\+Points}. I need to add a check in that makes sure these 3 points are not on the same line, and hence properly define a plane. This makes this new plane the Z=0 point of the new system. {\ttfamily basis\+Matrix} is population with the basis vectors for the new system, organised by column (x basis = column 1 etc.) 
+
+Definition at line 153 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{154                                                 \{}
+\DoxyCodeLine{155   \textcolor{comment}{// Basis vectors X Y and Z}}
+\DoxyCodeLine{156   Eigen::Vector3d X, Y, Z;}
+\DoxyCodeLine{157 }
+\DoxyCodeLine{158   \textcolor{comment}{// Vectors between the 3 points that will define our plane}}
+\DoxyCodeLine{159   Eigen::Vector3d AB = (planePoints.row(1) -\/ planePoints.row(0));}
+\DoxyCodeLine{160   Eigen::Vector3d AC = (planePoints.row(2) -\/ planePoints.row(0));}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{162   \textcolor{comment}{// Normalise basis vectors so that their magnitude is one, relative to}}
+\DoxyCodeLine{163   \textcolor{comment}{// original basis}}
+\DoxyCodeLine{164   X = AB.normalized();}
+\DoxyCodeLine{165   Z = (AC.cross(AB)).normalized();}
+\DoxyCodeLine{166   Y = (X.cross(Z)).normalized();}
+\DoxyCodeLine{167   \textcolor{comment}{// Add our basis vectors to 'basisMatrix' matrix}}
+\DoxyCodeLine{168   basisMatrix.col(0) << X;}
+\DoxyCodeLine{169   basisMatrix.col(1) << Y;}
+\DoxyCodeLine{170   basisMatrix.col(2) << Z;}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{172   \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{173 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{boundaryGeneration_8hpp_a103c10f78f54430cc4f4905d3259cccf}\label{boundaryGeneration_8hpp_a103c10f78f54430cc4f4905d3259cccf}} 
+\index{boundaryGeneration.hpp@{boundaryGeneration.hpp}!getCoplanarSeedPoints@{getCoplanarSeedPoints}}
+\index{getCoplanarSeedPoints@{getCoplanarSeedPoints}!boundaryGeneration.hpp@{boundaryGeneration.hpp}}
+\doxysubsubsection{\texorpdfstring{getCoplanarSeedPoints()}{getCoplanarSeedPoints()}}
+{\footnotesize\ttfamily void get\+Coplanar\+Seed\+Points (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{seed\+Points,  }\item[{std\+::string}]{ss1\+Name = {\ttfamily \char`\"{}coil\+\_\+in\char`\"{}},  }\item[{std\+::string}]{ss2\+Name = {\ttfamily \char`\"{}coil\+\_\+out\char`\"{}} }\end{DoxyParamCaption})}
+
+For our coil problem, to generate the part of the boundary that is coplanar with the coil sidesets correctly 
+
+Definition at line 269 of file boundary\+Generation.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{270                                                                  \{}
+\DoxyCodeLine{271   \textcolor{comment}{// generate separate meshes for two coil sidesets}}
+\DoxyCodeLine{272   std::set<libMesh::boundary\_id\_type> ss1\_id, ss2\_id;}
+\DoxyCodeLine{273   ss1\_id.insert(mesh.boundary\_info-\/>get\_id\_by\_name(ss1Name));}
+\DoxyCodeLine{274   ss2\_id.insert(mesh.boundary\_info-\/>get\_id\_by\_name(ss2Name));}
+\DoxyCodeLine{275   libMesh::Mesh ss1(mesh.comm());}
+\DoxyCodeLine{276   libMesh::Mesh ss2(mesh.comm());}
+\DoxyCodeLine{277   mesh.boundary\_info-\/>sync(ss1\_id, ss1);}
+\DoxyCodeLine{278   mesh.boundary\_info-\/>sync(ss2\_id, ss2);}
+\DoxyCodeLine{279 }
+\DoxyCodeLine{280   libMesh::Point centre1, centre2;}
+\DoxyCodeLine{281 }
+\DoxyCodeLine{282   \textcolor{comment}{// Create a bounding box around these 2D sidesets to figure out where a}}
+\DoxyCodeLine{283   \textcolor{comment}{// seeding point should be placed}}
+\DoxyCodeLine{284   \textcolor{keyword}{auto} box1 = libMesh::MeshTools::create\_bounding\_box(ss1);}
+\DoxyCodeLine{285   \textcolor{keyword}{auto} box2 = libMesh::MeshTools::create\_bounding\_box(ss2);}
+\DoxyCodeLine{286 }
+\DoxyCodeLine{287   centre1 = (box1.max() + box1.min()) / 2;}
+\DoxyCodeLine{288   centre2 = (box2.max() + box2.min()) / 2;}
+\DoxyCodeLine{289   \textcolor{comment}{//}}
+\DoxyCodeLine{290   \textcolor{keywordflow}{for} (u\_int i = 0; i < 3; i++) \{}
+\DoxyCodeLine{291     seedPoints.row(0)(i) = centre1(i);}
+\DoxyCodeLine{292     seedPoints.row(1)(i) = centre2(i);}
+\DoxyCodeLine{293   \}}
+\DoxyCodeLine{294 \}}
+
+\end{DoxyCode}

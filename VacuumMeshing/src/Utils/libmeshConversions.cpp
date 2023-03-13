@@ -35,10 +35,11 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 
     for(int nodeID = 0; nodeID < V.rows(); nodeID++)
     {
-        double pnt[V.cols()];
+        double pnt[3] = {0, 0, 0};
         for(int i = 0; i<V.cols(); i++)
         {
             pnt[i] = V(nodeID, i);
+        
         }
 
         libMesh::Point xyz(pnt[0], pnt[1], pnt [2]);
@@ -47,6 +48,7 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 
 
 
+    // Create libmesh elems from IGL connectivity array
     for(int elemID = 0; elemID < F.rows(); elemID++)
     {
         libMesh::Elem* elem = libMesh::Elem::build(getElemType(F)).release();
@@ -58,6 +60,7 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
         libmeshMesh.add_elem(elem);
     }
     libmeshMesh.prepare_for_use();
+    
 }
 
 libMesh::ElemType

@@ -1,0 +1,113 @@
+\hypertarget{boundaryGeneration_8cpp}{}\doxysection{src/\+Boundary\+Generation/boundary\+Generation.cpp File Reference}
+\label{boundaryGeneration_8cpp}\index{src/BoundaryGeneration/boundaryGeneration.cpp@{src/BoundaryGeneration/boundaryGeneration.cpp}}
+{\ttfamily \#include \char`\"{}Boundary\+Generation/boundary\+Generation.\+hpp\char`\"{}}\newline
+Include dependency graph for boundary\+Generation.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{boundaryGeneration_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_afb075efa4d0d8c61ac7e8148bc9c4e82}{generate\+Coil\+Boundary}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Matrix\+Xd \&bound\+Verts, Eigen\+::\+Matrix\+Xi \&bound\+Elems, double length, int subdivisions, std\+::string tri\+Settings)
+\item 
+Eigen\+::\+Vector3d \mbox{\hyperlink{boundaryGeneration_8cpp_a387f1e15b0edd58aa1d3a9f5181c4272}{calculate\+Local\+Coords}} (Eigen\+::\+Vector3d \&point, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin, Eigen\+::\+Matrix3d old\+Basis)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_a0232e0bb76e764b5aa7c2faff8fa8553}{change\+Mesh\+Basis}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin, Eigen\+::\+Matrix3d old\+Basis)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_a0a055d2db855f4634845b9e468a26ff9}{change\+Mesh\+Basis}} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Vector3d new\+Origin, Eigen\+::\+Matrix3d new\+Basis, Eigen\+::\+Vector3d old\+Origin, Eigen\+::\+Matrix3d old\+Basis)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8cpp_a2f0586d301ee40a2779037221965e9a1}\label{boundaryGeneration_8cpp_a2f0586d301ee40a2779037221965e9a1}} 
+void {\bfseries translate\+Mesh} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Vector3d translation\+Vector)
+\item 
+bool \mbox{\hyperlink{boundaryGeneration_8cpp_ada5d781a36fa38b5a4cd85340f73be6d}{get\+Basis\+Matrix}} (Eigen\+::\+Matrix3d \&basis\+Matrix, Eigen\+::\+Matrix3d \&plane\+Points)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_ae9c7abb9d38f68793ff2e0d21c4dd955}{generate\+Coil\+Face\+Bound}} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Matrix\+Xi \&F, Eigen\+::\+Matrix\+Xd \&holes, Eigen\+::\+Matrix\+Xd \&triV, Eigen\+::\+Matrix\+Xi \&triF, double length, int subdivisions, std\+::string tri\+Settings, lib\+Mesh\+::\+Mesh \&test)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8cpp_a54c0eab78d5a68122dcdf3380fde2882}\label{boundaryGeneration_8cpp_a54c0eab78d5a68122dcdf3380fde2882}} 
+void {\bfseries generate\+Coil\+Face\+Bound} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&output\+Mesh, lib\+Mesh\+::\+Mesh \&remaining\+Boundary, Eigen\+::\+Matrix\+Xd \&holes, double max\+Elem\+Size)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8cpp_adc3f80a6b39971c62e50b5a14df38f81}\label{boundaryGeneration_8cpp_adc3f80a6b39971c62e50b5a14df38f81}} 
+void {\bfseries gen\+Sideset\+Mesh} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&sideset\+Mesh, std\+::vector$<$ std\+::string $>$ ss\+Names)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8cpp_a23a839f90da5eda4f06dcc9e1bbb2ef7}\label{boundaryGeneration_8cpp_a23a839f90da5eda4f06dcc9e1bbb2ef7}} 
+void {\bfseries gen\+Sideset\+Bounds} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Matrix\+Xi \&F, double length, int subdivisions)
+\item 
+\mbox{\Hypertarget{boundaryGeneration_8cpp_ae39157ee0bc87a1082b798aa83827bb2}\label{boundaryGeneration_8cpp_ae39157ee0bc87a1082b798aa83827bb2}} 
+void {\bfseries gen\+Sideset\+Bounds} (lib\+Mesh\+::\+Mesh \&sideset\+Mesh, lib\+Mesh\+::\+Mesh \&remaining\+Boundary)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_aa3de388dd5efaebd4595f98be272bbcb}{get\+Coplanar\+Seed\+Points}} (lib\+Mesh\+::\+Mesh \&mesh, Eigen\+::\+Matrix\+Xd \&seed\+Points, std\+::string ss1\+Name, std\+::string ss2\+Name)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_a606a8b9633873f5d3573210829bdc579}{gen\+Square}} (Eigen\+::\+Matrix\+Xd \&V, Eigen\+::\+Matrix\+Xi \&F, double length, int subdivisions)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_a7991d360423f4992ead1aa1c93740c8e}{combine\+IGLMeshes}} (Eigen\+::\+Matrix\+Xd \&V1, Eigen\+::\+Matrix\+Xi \&F1, Eigen\+::\+Matrix\+Xd \&V2, Eigen\+::\+Matrix\+Xi \&F2)
+\item 
+void \mbox{\hyperlink{boundaryGeneration_8cpp_a00ea05803893ed967b568927ae369c37}{gen\+Remaining\+Boundary}} (Eigen\+::\+Matrix\+Xd \&v\+Tri, Eigen\+::\+Matrix\+Xi \&f\+Tri, double length, int subdivisions, std\+::string tri\+Settings, double tol)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{boundaryGeneration_8cpp_a387f1e15b0edd58aa1d3a9f5181c4272}\label{boundaryGeneration_8cpp_a387f1e15b0edd58aa1d3a9f5181c4272}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!calculateLocalCoords@{calculateLocalCoords}}
+\index{calculateLocalCoords@{calculateLocalCoords}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{calculateLocalCoords()}{calculateLocalCoords()}}
+{\footnotesize\ttfamily Eigen\+::\+Vector3d calculate\+Local\+Coords (\begin{DoxyParamCaption}\item[{Eigen\+::\+Vector3d \&}]{point,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Method that calculates the coordinates of a set of coordinates in a new basis. The default arguments assume that you are moving your point from the \char`\"{}standard\char`\"{} cartesian space (origin = 0,0,0 x\+\_\+basis = 1, 0, 0 etc.) \mbox{\Hypertarget{boundaryGeneration_8cpp_a0a055d2db855f4634845b9e468a26ff9}\label{boundaryGeneration_8cpp_a0a055d2db855f4634845b9e468a26ff9}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!changeMeshBasis@{changeMeshBasis}}
+\index{changeMeshBasis@{changeMeshBasis}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{changeMeshBasis()}{changeMeshBasis()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void change\+Mesh\+Basis (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{V,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Rotate/translate a mesh according to a set of new basis vectors, and a new origin. Function overload for use with lib\+IGL (Eigen) meshes \mbox{\Hypertarget{boundaryGeneration_8cpp_a0232e0bb76e764b5aa7c2faff8fa8553}\label{boundaryGeneration_8cpp_a0232e0bb76e764b5aa7c2faff8fa8553}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!changeMeshBasis@{changeMeshBasis}}
+\index{changeMeshBasis@{changeMeshBasis}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{changeMeshBasis()}{changeMeshBasis()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void change\+Mesh\+Basis (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Vector3d}]{new\+Origin,  }\item[{Eigen\+::\+Matrix3d}]{new\+Basis,  }\item[{Eigen\+::\+Vector3d}]{old\+Origin = {\ttfamily \{0,~0,~0\}},  }\item[{Eigen\+::\+Matrix3d}]{old\+Basis = {\ttfamily Eigen\+:\+:Matrix3d\+:\+:Identity()} }\end{DoxyParamCaption})}
+
+Rotate/translate a mesh according to a set of new basis vectors, and a new origin. \mbox{\Hypertarget{boundaryGeneration_8cpp_a7991d360423f4992ead1aa1c93740c8e}\label{boundaryGeneration_8cpp_a7991d360423f4992ead1aa1c93740c8e}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!combineIGLMeshes@{combineIGLMeshes}}
+\index{combineIGLMeshes@{combineIGLMeshes}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{combineIGLMeshes()}{combineIGLMeshes()}}
+{\footnotesize\ttfamily void combine\+IGLMeshes (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{V1,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{F1,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{V2,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{F2 }\end{DoxyParamCaption})}
+
+Method for combining two libigl meshes that you are SURE do NOT intersect/ have duplicate nodes. There is a combine meshes method in remove\+Dupe\+Nodes.\+cpp that can combine meshes with duplicate nodes using an r\+Tree data structure, so if you need that, use that. Here V1 and F1 are the vertice and element data structures for the first mesh, and V2 and F2 represent the second mesh. The meshes will be merged into the first mesh (V1, F1) \mbox{\Hypertarget{boundaryGeneration_8cpp_afb075efa4d0d8c61ac7e8148bc9c4e82}\label{boundaryGeneration_8cpp_afb075efa4d0d8c61ac7e8148bc9c4e82}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!generateCoilBoundary@{generateCoilBoundary}}
+\index{generateCoilBoundary@{generateCoilBoundary}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{generateCoilBoundary()}{generateCoilBoundary()}}
+{\footnotesize\ttfamily void generate\+Coil\+Boundary (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{bound\+Verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{bound\+Elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+Settings }\end{DoxyParamCaption})}
+
+Method to generate the boundary for a coil. A method exists specifically for coils, as often the boundary needs to be coplanar with some coil \char`\"{}in\char`\"{} and \char`\"{}out\char`\"{} sidesets. This method will generate the correct boundary for a problem of this nature. The method takes in your starting mesh \char`\"{}mesh\char`\"{}, two Eigen objects \char`\"{}bound\+Verts\char`\"{} and \char`\"{}bound\+Elems\char`\"{} that represent the output boundary vertices and faces (vertice connectivity data) \mbox{\Hypertarget{boundaryGeneration_8cpp_ae9c7abb9d38f68793ff2e0d21c4dd955}\label{boundaryGeneration_8cpp_ae9c7abb9d38f68793ff2e0d21c4dd955}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!generateCoilFaceBound@{generateCoilFaceBound}}
+\index{generateCoilFaceBound@{generateCoilFaceBound}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{generateCoilFaceBound()}{generateCoilFaceBound()}}
+{\footnotesize\ttfamily void generate\+Coil\+Face\+Bound (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{V,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{F,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{holes,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{triV,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{triF,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+\_\+settings,  }\item[{lib\+Mesh\+::\+Mesh \&}]{test }\end{DoxyParamCaption})}
+
+Method for generating the face of the cubic boundary that is coplanar with the coil sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh, which is probably composed of 2D edge elements. holes is a matric which contains any seeding points used for the triangulation of the closed space described by V and F. triV and triF are the data structures where the data for the output tri mesh will be stored. \mbox{\Hypertarget{boundaryGeneration_8cpp_a00ea05803893ed967b568927ae369c37}\label{boundaryGeneration_8cpp_a00ea05803893ed967b568927ae369c37}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!genRemainingBoundary@{genRemainingBoundary}}
+\index{genRemainingBoundary@{genRemainingBoundary}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{genRemainingBoundary()}{genRemainingBoundary()}}
+{\footnotesize\ttfamily void gen\+Remaining\+Boundary (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{v\+Tri,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{f\+Tri,  }\item[{double}]{length,  }\item[{int}]{subdivisions,  }\item[{std\+::string}]{tri\+Settings,  }\item[{double}]{tol }\end{DoxyParamCaption})}
+
+Generates the 5 remaining faces of a cubic boundary \mbox{\Hypertarget{boundaryGeneration_8cpp_a606a8b9633873f5d3573210829bdc579}\label{boundaryGeneration_8cpp_a606a8b9633873f5d3573210829bdc579}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!genSquare@{genSquare}}
+\index{genSquare@{genSquare}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{genSquare()}{genSquare()}}
+{\footnotesize\ttfamily void gen\+Square (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd \&}]{verts,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{elems,  }\item[{double}]{length,  }\item[{int}]{subdivisions }\end{DoxyParamCaption})}
+
+Method generates a square boundary comprised of just edge elements. The verts argument will be populated with the vertex data, elems will be populated with the element connectivity data and length and subdivisions allow the user to change the length of the edges of the square, as well as how many elements there should be per \char`\"{}edge\char`\"{} \mbox{\Hypertarget{boundaryGeneration_8cpp_ada5d781a36fa38b5a4cd85340f73be6d}\label{boundaryGeneration_8cpp_ada5d781a36fa38b5a4cd85340f73be6d}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!getBasisMatrix@{getBasisMatrix}}
+\index{getBasisMatrix@{getBasisMatrix}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{getBasisMatrix()}{getBasisMatrix()}}
+{\footnotesize\ttfamily bool get\+Basis\+Matrix (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix3d \&}]{basis\+Matrix,  }\item[{Eigen\+::\+Matrix3d \&}]{plane\+Points }\end{DoxyParamCaption})}
+
+Method takes in an Eigen\+::\+Matrix \char`\"{}basis\+Matrix\char`\"{} by reference. This matrix will be populated with the basis vectors for a cartesian coordinate system. The new systems \char`\"{}\+XY\char`\"{} plane is defined by 3 points contained within \char`\"{}plane\+Points\char`\"{}. I need to add a check in that makes sure these 3 points are not on the same line, and hence properly define a plane. This makes this new plane the Z=0 point of the new system. \char`\"{}basis\+Matrix\char`\"{} is population with the basis vectors for the new system, organised by column (x basis = column 1 etc.) \mbox{\Hypertarget{boundaryGeneration_8cpp_aa3de388dd5efaebd4595f98be272bbcb}\label{boundaryGeneration_8cpp_aa3de388dd5efaebd4595f98be272bbcb}} 
+\index{boundaryGeneration.cpp@{boundaryGeneration.cpp}!getCoplanarSeedPoints@{getCoplanarSeedPoints}}
+\index{getCoplanarSeedPoints@{getCoplanarSeedPoints}!boundaryGeneration.cpp@{boundaryGeneration.cpp}}
+\doxysubsubsection{\texorpdfstring{getCoplanarSeedPoints()}{getCoplanarSeedPoints()}}
+{\footnotesize\ttfamily void get\+Coplanar\+Seed\+Points (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{seed\+Points,  }\item[{std\+::string}]{ss1\+Name = {\ttfamily \char`\"{}coil\+\_\+in\char`\"{}},  }\item[{std\+::string}]{ss2\+Name = {\ttfamily \char`\"{}coil\+\_\+out\char`\"{}} }\end{DoxyParamCaption})}
+
+For our coil problem, to generate the part of the boundary that is coplanar with the coil sidesets correctly 

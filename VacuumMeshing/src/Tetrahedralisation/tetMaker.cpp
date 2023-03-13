@@ -77,7 +77,7 @@ Eigen::MatrixXd getSeeds(libMesh::Mesh mesh, double tol)
     Eigen::MatrixXd N_faces;
 
     Eigen::MatrixXd seed_points(F.rows(), 3);
-
+    
     igl::per_face_normals(V,F,N_faces);
 
     for(int i; i < N_faces.rows(); i++)

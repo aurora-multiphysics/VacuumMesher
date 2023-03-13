@@ -25,5 +25,5 @@ FILE(GLOB_RECURSE libSrc  ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
 add_library(VacuumMeshing SHARED 
             ${libSrc})
 
-target_link_libraries(VacuumMeshing PRIVATE MPI::MPI_CXX ${libmesh_LIBS} PUBLIC igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
+target_link_libraries(VacuumMeshing PRIVATE MPI::MPI_CXX mesh_opt PUBLIC timpi_opt igl::glfw igl::embree igl_copyleft::cgal igl_copyleft::tetgen igl_restricted::triangle igl::predicates)
 target_include_directories(VacuumMeshing PRIVATE ${libmesh_INCLUDE} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

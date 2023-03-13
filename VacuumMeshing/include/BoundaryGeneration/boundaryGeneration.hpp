@@ -8,15 +8,20 @@
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "igl/triangle/triangulate.h"
 
+/** Adds a boundary to the \c skinnedMesh. This new mesh with the boundary added
+  is stored in the \c boundaryMesh. The \c length and number of mesh \c subdivisions are 
+  required inputs, as well as the \c triSettings that are input to the triangle lib calls */
+void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
+                 double length, int subdivisions, std::string triSettings);
+
 /** Method to generate the boundary for a coil. A method exists specifically for
   coils, as often the boundary needs to be coplanar with some coil "in" and
   "out" sidesets. This method will generate the correct boundary for a problem
   of this nature. The method takes in your starting \c mesh, two Eigen
   objects \c boundVerts and \c boundElems that represent the output boundary
   vertices and faces (vertice connectivity data)*/
-void generateCoilBoundary(libMesh::Mesh &mesh, Eigen::MatrixXd &boundVerts,
-                          Eigen::MatrixXi &boundElems, double length,
-                          int subdivisions, std::string triSettings);
+void generateCoilBoundary(libMesh::Mesh &mesh, libMesh::Mesh &boundaryMesh,
+                          double length, int subdivisions, std::string triSettings);
 
 /** Method takes in an Eigen::Matrix "basisMatrix" by reference. This matrix
  will be populated with the basis vectors for a cartesian coordinate system. The
@@ -50,8 +55,7 @@ void doubleCheck(Eigen::Matrix3d &basisMatrix, Eigen::Vector3d &origin,
 void generateCoilFaceBound(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems,
                            Eigen::MatrixXd &holes, Eigen::MatrixXd &triVerts,
                            Eigen::MatrixXi &triElems, double length,
-                           int subdivisions, std::string triSettings,
-                           libMesh::Mesh &test);
+                           int subdivisions, std::string triSettings);
 
 /** Method for generating the face of the cubic boundary that is coplanar with the coil
    sidesets. Here V and F are the vertices and faces(connectivity data) for the input mesh,
@@ -107,6 +111,11 @@ void genSquare(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems, double length,
  meshes will be merged into the first mesh (V1, F1)*/
 void combineIGLMeshes(Eigen::MatrixXd &vertsOne, Eigen::MatrixXi &elemsOne,
                       Eigen::MatrixXd &vertsTwo, Eigen::MatrixXi &elemsTwo);
+
+// Generates a cubic boundary used to define a vacuum region for tetrahedralisation
+void genBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,
+                 double length, int subdivisions,
+                 std::string triSettings, double tol);
 
 /** Generates the 5 remaining faces of a cubic boundary*/
 void genRemainingBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,

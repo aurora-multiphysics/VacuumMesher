@@ -11,8 +11,8 @@ int main(int argc, const char **argv) {
   std::string appName(argv[0]);
   std::vector<char *> libmeshArgv = {(char *)appName.data()};
   std::cout << flags.tetSettings << std::endl;
-  // Set up appropriate file names
 
+  // 
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
   // Create mesh object to store original model mesh
   MeshContainer meshes(init, flags.infile.value());
@@ -31,7 +31,7 @@ int main(int argc, const char **argv) {
   // which sides have the null neighbor)
   getSurface(meshes.userMesh().libmeshMesh(),
              meshes.skinnedMesh().libmeshMesh(), meshes.surfaceFaceMap(),
-             flags.verbose);
+             true);
 
   // Convert surface mesh to libIGL compatible data structures
   meshes.skinnedMesh().createIglAnalogue();
@@ -42,10 +42,12 @@ int main(int argc, const char **argv) {
 
   // Turn surfMesh into boundaryMesh
   generateCoilBoundary(meshes.userMesh().libmeshMesh(),
-                       meshes.boundaryMesh().iglVerts(),
-                       meshes.boundaryMesh().iglElems(), flags.boundLen.value(),
+                       meshes.boundaryMesh().libmeshMesh(),
+                       flags.boundLen.value(),
                        flags.boundSubd.value(), flags.triSettings);
 
+  // We got the boundary mesh as a libmesh mesh, but we need its IGL version as well
+  meshes.boundaryMesh().createIglAnalogue();
   // If verbose flag is set, output the boundaryMesh
   if (flags.verbose) {
     meshes.boundaryMesh().createLibmeshAnalogue();

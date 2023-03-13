@@ -1,8 +1,8 @@
 
 #Skinning
 add_executable(skinner skinMesh.cpp ${projectSrc})
-target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include )
-target_link_libraries(skinner PUBLIC ${libmesh_LIBS} MPI::MPI_CXX VacuumMeshing) 
+target_include_directories(skinner PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(skinner PUBLIC MPI::MPI_CXX VacuumMeshing mesh_opt) 
 
 #The whole shabang
 # add_executable(makeVac genVacFromSurf.cpp ${projectSrc})
@@ -33,7 +33,12 @@ target_link_libraries(skinner PUBLIC ${libmesh_LIBS} MPI::MPI_CXX VacuumMeshing)
 #Skinning
 add_executable(changeBase changeBase.cpp ${projectSrc})
 target_include_directories(changeBase PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include )
-target_link_libraries(changeBase PUBLIC ${libmesh_LIBS} MPI::MPI_CXX VacuumMeshing) 
+target_link_libraries(changeBase PUBLIC MPI::MPI_CXX VacuumMeshing mesh_opt) 
+
+#Example
+add_executable(exampleTet texExample.cpp ${projectSrc})
+target_include_directories(exampleTet PUBLIC ${CMAKE_SOURCE_DIR}/include ${libmesh_INCLUDE})
+target_link_libraries(exampleTet PUBLIC MPI::MPI_CXX mesh_opt VacuumMeshing) 
 
 # #coil poc
 # add_executable(coilPoc poc.cpp ${projectSrc})
