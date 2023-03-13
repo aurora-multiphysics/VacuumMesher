@@ -14,14 +14,13 @@ protected:
 
     virtual void SetUp() override
     {
-        getFilePaths();
         setMesh();
     }
 
     virtual void setMesh() 
     {   
         mesh = std::make_shared<libMesh::Mesh>(init->comm());
-        mesh->read(meshfile);
+        mesh->read(filename);
     }
 
     //Libmesh Mesh object
