@@ -1,0 +1,341 @@
+\hypertarget{removeDupeNodes_8hpp}{}\doxysection{include/\+Tetrahedralisation/remove\+Dupe\+Nodes.hpp File Reference}
+\label{removeDupeNodes_8hpp}\index{include/Tetrahedralisation/removeDupeNodes.hpp@{include/Tetrahedralisation/removeDupeNodes.hpp}}
+{\ttfamily \#include \char`\"{}libmesh/elem.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/mesh.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/libmesh.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/mesh\+\_\+tools.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/enum\+\_\+io\+\_\+package.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/enum\+\_\+elem\+\_\+type.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/boundary\+\_\+info.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Surface\+Meshing/surface\+Meshing.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Tetrahedralisation/tet\+Maker.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/\+RTree.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}utility\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Utils/box.\+hpp\char`\"{}}\newline
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{removeDupeNodes_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{removeDupeNodes_8hpp_a706c4868708a6dc8604c48512067ca49}\label{removeDupeNodes_8hpp_a706c4868708a6dc8604c48512067ca49}} 
+typedef \mbox{\hyperlink{classRTree}{RTree}}$<$ int, double, 3, float $>$ {\bfseries node\+Tree}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{removeDupeNodes_8hpp_acc6e5d9fbc0a8abd45d74dcb5f008c75}{insert\+Node}} (\mbox{\hyperlink{classRTree}{node\+Tree}} \&rtree, \mbox{\hyperlink{structBox}{Box}} \&node\+\_\+box)
+\item 
+void \mbox{\hyperlink{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}{create\+Tree}} (\mbox{\hyperlink{classRTree}{node\+Tree}} \&rtree, lib\+Mesh\+::\+Mesh \&mesh, const double \&tol)
+\item 
+bool \mbox{\hyperlink{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}{search\+Tree}} (\mbox{\hyperlink{classRTree}{node\+Tree}} \&rtree, const double \&tol, std\+::map$<$ unsigned int, unsigned int $>$ \&id\+\_\+map, lib\+Mesh\+::\+Mesh \&mesh\+One, lib\+Mesh\+::\+Node \&node)
+\item 
+void \mbox{\hyperlink{removeDupeNodes_8hpp_a4a2f2eacffbc045e3788df5988436250}{combine\+Meshes}} (const double \&tol, lib\+Mesh\+::\+Mesh \&mesh\+Two, lib\+Mesh\+::\+Mesh \&mesh\+One, std\+::multimap$<$ unsigned int, unsigned int $>$ surface\+Face\+Map)
+\item 
+void \mbox{\hyperlink{removeDupeNodes_8hpp_ad52156b9ecf649c3c20f879f68094d97}{combine\+Meshes}} (const double \&tol, lib\+Mesh\+::\+Mesh \&mesh\+One, lib\+Mesh\+::\+Mesh \&mesh\+Two)
+\item 
+void \mbox{\hyperlink{removeDupeNodes_8hpp_ada1f2fb742dd9362c9d0e3dd86b4c8bc}{combine\+Meshes}} (const double \&tol, Eigen\+::\+Matrix\+Xd \&V1, Eigen\+::\+Matrix\+Xi \&F1, Eigen\+::\+Matrix\+Xd \&V2, Eigen\+::\+Matrix\+Xi \&F2)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+When you have your mesh of your original part, and your vacuum mesh, you may need to combine these meshes into one mesh. There is a problem 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_ada1f2fb742dd9362c9d0e3dd86b4c8bc}\label{removeDupeNodes_8hpp_ada1f2fb742dd9362c9d0e3dd86b4c8bc}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!combineMeshes@{combineMeshes}}
+\index{combineMeshes@{combineMeshes}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{combineMeshes()}{combineMeshes()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void combine\+Meshes (\begin{DoxyParamCaption}\item[{const double \&}]{tol,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{V1,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{F1,  }\item[{Eigen\+::\+Matrix\+Xd \&}]{V2,  }\item[{Eigen\+::\+Matrix\+Xi \&}]{F2 }\end{DoxyParamCaption})}
+
+Function that uses the r\+Tree data structure to combine two meshes. This version operates on Eigen vectors and matrices, to combine libigl compatible meshes 
+
+Definition at line 219 of file remove\+Dupe\+Nodes.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{220                                                          \{}
+\DoxyCodeLine{221   \textcolor{comment}{// Instantiate an rTree. Using a rTree data structure significantly reduces}}
+\DoxyCodeLine{222   \textcolor{comment}{// the amount of time taken to discover duplicate nodes.}}
+\DoxyCodeLine{223   \mbox{\hyperlink{classRTree}{nodeTree}} rtree;}
+\DoxyCodeLine{224 }
+\DoxyCodeLine{225   \textcolor{comment}{// This is a map which helps us keep track of the node id's of the duplicate}}
+\DoxyCodeLine{226   \textcolor{comment}{// nodes. For example, if Node 4 in the surface mesh and Node 6 in the vacuum}}
+\DoxyCodeLine{227   \textcolor{comment}{// mesh are the same, "{}id\_map[4]"{} will return 6}}
+\DoxyCodeLine{228   std::map<unsigned int, unsigned int> id\_map;}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230   \mbox{\hyperlink{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}{createTree}}(rtree, V1, tol);}
+\DoxyCodeLine{231 }
+\DoxyCodeLine{232   \textcolor{keywordtype}{int} starting\_elems = F1.rows();}
+\DoxyCodeLine{233   \textcolor{keywordtype}{int} node\_indent = V1.rows();}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} node\_id = 0; node\_id < V2.rows(); node\_id++) \{}
+\DoxyCodeLine{236     \mbox{\hyperlink{structBox}{Box}} node\_box(V2.row(node\_id), tol, node\_indent);}
+\DoxyCodeLine{237     \textcolor{comment}{// If there are no matches in the vacuumMesh, then we add the point}}
+\DoxyCodeLine{238     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}{searchTree}}(rtree, tol, id\_map, node\_indent, node\_box)) \{}
+\DoxyCodeLine{239       id\_map[node\_id] = hits[0];}
+\DoxyCodeLine{240       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{241     \}}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243     id\_map[node\_id] = node\_indent;}
+\DoxyCodeLine{244     node\_indent++;}
+\DoxyCodeLine{245   \}}
+\DoxyCodeLine{246 }
+\DoxyCodeLine{247   V1.conservativeResize(node\_indent, 3);}
+\DoxyCodeLine{248 }
+\DoxyCodeLine{249   \mbox{\hyperlink{classRTree_1_1Iterator}{nodeTree::Iterator}} it;}
+\DoxyCodeLine{250   \textcolor{keywordflow}{for} (rtree.\mbox{\hyperlink{classRTree_acbcbd987b4f6549cd53e373e01b74efa}{GetFirst}}(it); !rtree.\mbox{\hyperlink{classRTree_a8b8c51698e5b8df1e715650a43aad7f4}{IsNull}}(it); rtree.\mbox{\hyperlink{classRTree_a41da97d27b44e7d7e852150ced23a610}{GetNext}}(it)) \{}
+\DoxyCodeLine{251     \textcolor{keywordtype}{double} boundsMin[3] = \{0., 0., 0.\};}
+\DoxyCodeLine{252     \textcolor{keywordtype}{double} boundsMax[3] = \{0., 0., 0.\};}
+\DoxyCodeLine{253     it.\mbox{\hyperlink{classRTree_1_1Iterator_a65121f5016c2b1bf4696797748092709}{GetBounds}}(boundsMin, boundsMax);}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{255     \textcolor{keywordtype}{double} centre[3];}
+\DoxyCodeLine{256     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 3; i++) \{}
+\DoxyCodeLine{257       centre[0] = boundsMin[0] + ((boundsMax[0] -\/ boundsMin[0]) / 2);}
+\DoxyCodeLine{258       centre[1] = boundsMin[1] + ((boundsMax[1] -\/ boundsMin[1]) / 2);}
+\DoxyCodeLine{259       centre[2] = boundsMin[2] + ((boundsMax[2] -\/ boundsMin[2]) / 2);}
+\DoxyCodeLine{260     \}}
+\DoxyCodeLine{261     V1.row (*it)(0) = centre[0];}
+\DoxyCodeLine{262     V1.row (*it)(1) = centre[1];}
+\DoxyCodeLine{263     V1.row (*it)(2) = centre[2];}
+\DoxyCodeLine{264   \}}
+\DoxyCodeLine{265 }
+\DoxyCodeLine{266   F1.conservativeResize(F1.rows() + F2.rows(), 3);}
+\DoxyCodeLine{267 }
+\DoxyCodeLine{268   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} elem\_id = 0; elem\_id < F2.rows(); elem\_id++) \{}
+\DoxyCodeLine{269     F1.row(elem\_id + starting\_elems)(0) = id\_map[F2.row(elem\_id)(0)];}
+\DoxyCodeLine{270     F1.row(elem\_id + starting\_elems)(1) = id\_map[F2.row(elem\_id)(1)];}
+\DoxyCodeLine{271     F1.row(elem\_id + starting\_elems)(2) = id\_map[F2.row(elem\_id)(2)];}
+\DoxyCodeLine{272   \}}
+\DoxyCodeLine{273 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_ad52156b9ecf649c3c20f879f68094d97}\label{removeDupeNodes_8hpp_ad52156b9ecf649c3c20f879f68094d97}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!combineMeshes@{combineMeshes}}
+\index{combineMeshes@{combineMeshes}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{combineMeshes()}{combineMeshes()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void combine\+Meshes (\begin{DoxyParamCaption}\item[{const double \&}]{tol,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+One,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+Two }\end{DoxyParamCaption})}
+
+Function that uses the r\+Tree data structure to combine two meshes. This version has no fancy extras, just combines some meshes, old fashioned style. 
+
+Definition at line 156 of file remove\+Dupe\+Nodes.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{157                                          \{}
+\DoxyCodeLine{158   \textcolor{comment}{// Instantiate an rTree. Using a rTree data structure significantly reduces}}
+\DoxyCodeLine{159   \textcolor{comment}{// the amount of time taken to discover duplicate nodes.}}
+\DoxyCodeLine{160   \mbox{\hyperlink{classRTree}{nodeTree}} rtree;}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{162   \textcolor{comment}{// Generate the initial tree, containing all the nodes of the vacuum mesh. We}}
+\DoxyCodeLine{163   \textcolor{comment}{// will}}
+\DoxyCodeLine{164   \textcolor{comment}{//  check the nodes of the part mesh against this tree to search for duplicate}}
+\DoxyCodeLine{165   \textcolor{comment}{//  nodes}}
+\DoxyCodeLine{166   \mbox{\hyperlink{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}{createTree}}(rtree, meshOne, tol);}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168   \textcolor{comment}{// This is a map which helps us keep track of the node id's of the duplicate}}
+\DoxyCodeLine{169   \textcolor{comment}{// nodes. For example, if Node 4 in the surface mesh and Node 6 in the vacuum}}
+\DoxyCodeLine{170   \textcolor{comment}{// mesh are the same, "{}id\_map[4]"{} will return 6}}
+\DoxyCodeLine{171   std::map<unsigned int, unsigned int> id\_map;}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173   \textcolor{comment}{// Loop over all the nodes in the original geometry. If the node is not a}}
+\DoxyCodeLine{174   \textcolor{comment}{// duplicate, add it to the mesh , if the node is a duplicate, it is}}
+\DoxyCodeLine{175   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&node : meshTwo.local\_node\_ptr\_range()) \{}
+\DoxyCodeLine{176     \textcolor{comment}{// Create box representing the node to search rTree with}}
+\DoxyCodeLine{177     std::array node\_coords = \{(*node)(0), (*node)(1), (*node)(2)\};}
+\DoxyCodeLine{178     \mbox{\hyperlink{structBox}{Box}} node\_box = \mbox{\hyperlink{structBox}{Box}}(node\_coords, tol, node-\/>id());}
+\DoxyCodeLine{179     \textcolor{comment}{// Update node count and henceforth the offset for numbering new nodes}}
+\DoxyCodeLine{180     \textcolor{keywordtype}{int} node\_offset = meshOne.n\_nodes();}
+\DoxyCodeLine{181 }
+\DoxyCodeLine{182     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}{searchTree}}(rtree, tol, id\_map, node\_offset, node\_box)) \{}
+\DoxyCodeLine{183       \textcolor{comment}{// If there are no matches in the vacuumMesh, then we add the point}}
+\DoxyCodeLine{184       id\_map[node-\/>id()] = hits[0];}
+\DoxyCodeLine{185       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{186     \}}
+\DoxyCodeLine{187     \textcolor{comment}{//}}
+\DoxyCodeLine{188     id\_map[node-\/>id()] = node\_offset;}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{190     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{191     pnt[0] = (*node)(0);}
+\DoxyCodeLine{192     pnt[1] = (*node)(1);}
+\DoxyCodeLine{193     pnt[2] = (*node)(2);}
+\DoxyCodeLine{194     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{195     meshOne.add\_point(xyz, id\_map[node-\/>id()]);}
+\DoxyCodeLine{196   \}}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198   \textcolor{comment}{// Loop adds all elements from original geometry to vacuum mesh. The id\_map is}}
+\DoxyCodeLine{199   \textcolor{comment}{// used to make sure the correct connectivity is used where there are}}
+\DoxyCodeLine{200   \textcolor{comment}{// duplicate nodes}}
+\DoxyCodeLine{201   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elem : libMesh::as\_range(meshTwo.local\_elements\_begin(),}
+\DoxyCodeLine{202                                       meshTwo.local\_elements\_end())) \{}
+\DoxyCodeLine{203     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} el\_id = 1 + meshOne.n\_elem();}
+\DoxyCodeLine{204     \textcolor{comment}{// Element type being build must be consistent between meshes}}
+\DoxyCodeLine{205     libMesh::Elem *new\_elem =}
+\DoxyCodeLine{206         libMesh::Elem::build(meshOne.elem\_ptr(0)-\/>type()).release();}
+\DoxyCodeLine{207     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < new\_elem-\/>n\_nodes(); j++) \{}
+\DoxyCodeLine{208       new\_elem-\/>set\_node(j) = meshOne.node\_ptr(id\_map[elem-\/>node\_ptr(j)-\/>id()]);}
+\DoxyCodeLine{209     \}}
+\DoxyCodeLine{210     new\_elem-\/>set\_id(el\_id);}
+\DoxyCodeLine{211     \textcolor{comment}{// new\_elem-\/>subdomain\_id() = 2;}}
+\DoxyCodeLine{212     meshOne.add\_elem(new\_elem);}
+\DoxyCodeLine{213   \}}
+\DoxyCodeLine{214   \textcolor{comment}{// Prepare the mesh for use. This libmesh method does some id renumbering etc,}}
+\DoxyCodeLine{215   \textcolor{comment}{// generally a good idea to call it after constructing a mesh}}
+\DoxyCodeLine{216   meshOne.prepare\_for\_use();}
+\DoxyCodeLine{217 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_a4a2f2eacffbc045e3788df5988436250}\label{removeDupeNodes_8hpp_a4a2f2eacffbc045e3788df5988436250}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!combineMeshes@{combineMeshes}}
+\index{combineMeshes@{combineMeshes}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{combineMeshes()}{combineMeshes()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void combine\+Meshes (\begin{DoxyParamCaption}\item[{const double \&}]{tol,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+Two,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+One,  }\item[{std\+::multimap$<$ unsigned int, unsigned int $>$}]{surface\+Face\+Map }\end{DoxyParamCaption})}
+
+Function that uses the r\+Tree data structure to combine two meshes. This version of the function also takes in a \char`\"{}surface\+Face\+Map\char`\"{}, which is just a multi-\/map that maps from element ID\textquotesingle{}s, the the face id\textquotesingle{}s of that element that are present on the boundary. This information can be captured from the \char`\"{}get\+Surface()\char`\"{} method that will construct the map for you. The map is used in this context to define a sideset that represents the part boundary with the vacuum. This may be useful in a simulation if you want to set up a radiative boundary condition for example 
+
+Definition at line 63 of file remove\+Dupe\+Nodes.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{65                                                                            \{}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67   \textcolor{comment}{//}}
+\DoxyCodeLine{68   std::set<libMesh::subdomain\_id\_type> sub\_ids;}
+\DoxyCodeLine{69   meshOne.subdomain\_ids(sub\_ids);}
+\DoxyCodeLine{70   libMesh::subdomain\_id\_type vacId = 2;}
+\DoxyCodeLine{71   \textcolor{keywordflow}{if} (!sub\_ids.empty()) \{}
+\DoxyCodeLine{72     vacId = 1 + (*(sub\_ids.rbegin()));}
+\DoxyCodeLine{73   \}}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75   \textcolor{comment}{// Instantiate an rTree. Using a rTree data structure significantly reduces}}
+\DoxyCodeLine{76   \textcolor{comment}{// the amount of time taken to discover duplicate nodes.}}
+\DoxyCodeLine{77   \mbox{\hyperlink{classRTree}{nodeTree}} rtree;}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79   \textcolor{comment}{// Generate the initial tree, containing all the nodes of the vacuum mesh. We}}
+\DoxyCodeLine{80   \textcolor{comment}{// will}}
+\DoxyCodeLine{81   \textcolor{comment}{//  check the nodes of the part mesh against this tree to search for duplicate}}
+\DoxyCodeLine{82   \textcolor{comment}{//  nodes}}
+\DoxyCodeLine{83   \mbox{\hyperlink{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}{createTree}}(rtree, meshOne, tol);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85   \textcolor{comment}{// This is a map which helps us keep track of the node id's of the duplicate}}
+\DoxyCodeLine{86   \textcolor{comment}{// nodes. For example, if Node 4 in the surface mesh and Node 6 in the vacuum}}
+\DoxyCodeLine{87   \textcolor{comment}{// mesh are the same, "{}id\_map[4]"{} will return 6}}
+\DoxyCodeLine{88   std::map<unsigned int, unsigned int> id\_map;}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90   \textcolor{comment}{// Loop over all the nodes in the original geometry. If the node is not a}}
+\DoxyCodeLine{91   \textcolor{comment}{// duplicate, add it to the mesh , if the node is a duplicate, it is}}
+\DoxyCodeLine{92   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&node : meshTwo.local\_node\_ptr\_range()) \{}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94     \textcolor{comment}{// Create box representing the node to search rTree with}}
+\DoxyCodeLine{95     std::array node\_coords = \{(*node)(0), (*node)(1), (*node)(2)\};}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97     \mbox{\hyperlink{structBox}{Box}} node\_box = \mbox{\hyperlink{structBox}{Box}}(node\_coords, tol, node-\/>id());}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99     \textcolor{comment}{// Get number of nodes currently in the mesh, so if we have to add a node}}
+\DoxyCodeLine{100     \textcolor{comment}{//  we know what id to give it (node\_indent + 1)}}
+\DoxyCodeLine{101     \textcolor{keywordtype}{int} node\_offset = meshOne.n\_nodes();}
+\DoxyCodeLine{102     \textcolor{comment}{// If there are no matches in the vacuumMesh, then we add the point}}
+\DoxyCodeLine{103     \textcolor{keywordflow}{if} (!\mbox{\hyperlink{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}{searchTree}}(rtree, tol, id\_map, node\_offset, node\_box)) \{}
+\DoxyCodeLine{104       \textcolor{comment}{// If there are no matches in the vacuumMesh, then we add the point}}
+\DoxyCodeLine{105       id\_map[node-\/>id()] = hits[0];}
+\DoxyCodeLine{106       \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{107     \}}
+\DoxyCodeLine{108     \textcolor{comment}{//}}
+\DoxyCodeLine{109     id\_map[node-\/>id()] = node\_offset;}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{112     pnt[0] = (*node)(0);}
+\DoxyCodeLine{113     pnt[1] = (*node)(1);}
+\DoxyCodeLine{114     pnt[2] = (*node)(2);}
+\DoxyCodeLine{115     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{116     meshOne.add\_point(xyz, id\_map[node-\/>id()]);}
+\DoxyCodeLine{117   \}}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{119   \textcolor{comment}{// Loop adds all elements from original geometry to vacuum mesh. The id\_map is}}
+\DoxyCodeLine{120   \textcolor{comment}{// used to make sure the correct connectivity is used where there are}}
+\DoxyCodeLine{121   \textcolor{comment}{// duplicate nodes}}
+\DoxyCodeLine{122   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elem : libMesh::as\_range(meshTwo.local\_elements\_begin(),}
+\DoxyCodeLine{123                                       meshTwo.local\_elements\_end())) \{}
+\DoxyCodeLine{124     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} el\_id = 1 + meshOne.n\_elem();}
+\DoxyCodeLine{125     \textcolor{comment}{// Element type being build must be consistent between meshes}}
+\DoxyCodeLine{126     libMesh::Elem *new\_elem =}
+\DoxyCodeLine{127         libMesh::Elem::build(meshOne.elem\_ptr(0)-\/>type()).release();}
+\DoxyCodeLine{128     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < new\_elem-\/>n\_nodes(); j++) \{}
+\DoxyCodeLine{129       new\_elem-\/>set\_node(j) = meshOne.node\_ptr(id\_map[elem-\/>node\_ptr(j)-\/>id()]);}
+\DoxyCodeLine{130     \}}
+\DoxyCodeLine{131     new\_elem-\/>set\_id(el\_id);}
+\DoxyCodeLine{132     new\_elem-\/>subdomain\_id() = vacId;}
+\DoxyCodeLine{133     meshOne.add\_elem(new\_elem);}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135     \textcolor{comment}{// Makes the boundary between the original geometry and the vacuum mesh a}}
+\DoxyCodeLine{136     \textcolor{comment}{// sideset in the mesh, and names it "{}vacuum\_boundary"{}}}
+\DoxyCodeLine{137 }
+\DoxyCodeLine{138     \textcolor{comment}{// Set boundary name!}}
+\DoxyCodeLine{139   \}}
+\DoxyCodeLine{140 }
+\DoxyCodeLine{141   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} boundSide = surfaceFaceMap.begin();}
+\DoxyCodeLine{142        boundSide != surfaceFaceMap.end(); boundSide++) \{}
+\DoxyCodeLine{143     \textcolor{comment}{// std::cout << boundSide-\/>first << std::endl;}}
+\DoxyCodeLine{144     meshOne.get\_boundary\_info().add\_side(boundSide-\/>first, boundSide-\/>second,}
+\DoxyCodeLine{145                                          5);}
+\DoxyCodeLine{146   \}}
+\DoxyCodeLine{147   meshOne.boundary\_info-\/>set\_sideset\_name\_map()[5] = \textcolor{stringliteral}{"{}part\_boundary"{}};}
+\DoxyCodeLine{148   meshOne.subdomain\_name(vacId) = \textcolor{stringliteral}{"{}vacuum\_region"{}};}
+\DoxyCodeLine{149   \textcolor{comment}{// Prepare the mesh for use. This libmesh method does some id renumbering etc,}}
+\DoxyCodeLine{150   \textcolor{comment}{// generally a good idea to call it after constructing a mesh}}
+\DoxyCodeLine{151   meshOne.prepare\_for\_use();}
+\DoxyCodeLine{152 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}\label{removeDupeNodes_8hpp_a3638a0106a28481e410a6d0151752f1d}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!createTree@{createTree}}
+\index{createTree@{createTree}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{createTree()}{createTree()}}
+{\footnotesize\ttfamily void create\+Tree (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classRTree}{node\+Tree}} \&}]{rtree,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{const double \&}]{tol }\end{DoxyParamCaption})}
+
+Function for creating the initial tree. This method adds all the nodes from a libmesh mesh into the r\+Tree. Then, when adding more nodes to this mesh, we can check the r\+Tree to see if they already exist 
+
+Definition at line 22 of file remove\+Dupe\+Nodes.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{22                                                                           \{}
+\DoxyCodeLine{23   \textcolor{comment}{// Add all existing verts to rTree}}
+\DoxyCodeLine{24   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&node : meshOne.local\_node\_ptr\_range()) \{}
+\DoxyCodeLine{25     std::array node\_coords = \{(*node)(0), (*node)(1), (*node)(2)\};}
+\DoxyCodeLine{26     \mbox{\hyperlink{structBox}{Box}} node\_box = \mbox{\hyperlink{structBox}{Box}}(node\_coords, tol, node-\/>id());}
+\DoxyCodeLine{27     \mbox{\hyperlink{removeDupeNodes_8hpp_acc6e5d9fbc0a8abd45d74dcb5f008c75}{insertNode}}(rtree, node\_box);}
+\DoxyCodeLine{28   \}}
+\DoxyCodeLine{29 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_acc6e5d9fbc0a8abd45d74dcb5f008c75}\label{removeDupeNodes_8hpp_acc6e5d9fbc0a8abd45d74dcb5f008c75}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!insertNode@{insertNode}}
+\index{insertNode@{insertNode}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{insertNode()}{insertNode()}}
+{\footnotesize\ttfamily void insert\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classRTree}{node\+Tree}} \&}]{rtree,  }\item[{\mbox{\hyperlink{structBox}{Box}} \&}]{node\+\_\+box }\end{DoxyParamCaption})}
+
+Method for inserting individual nodes into r\+Tree. Instantiates their \mbox{\hyperlink{structBox}{Box}}, and then uses the r\+Tree insert methods to add it. 
+
+Definition at line 31 of file remove\+Dupe\+Nodes.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{31                                                \{}
+\DoxyCodeLine{32   \textcolor{comment}{// Check if node exists in rTree, if not, insert, if it does, make sure}}
+\DoxyCodeLine{33   \textcolor{comment}{// connectivity still works}}
+\DoxyCodeLine{34   rtree.\mbox{\hyperlink{classRTree_a98d1f0a325921db826b2a2d5a407c9be}{Insert}}(nodeBox.min.data(), nodeBox.max.data(), nodeBox.node\_id);}
+\DoxyCodeLine{35 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}\label{removeDupeNodes_8hpp_ab78231047fc6df9a75e20e1aa759d8e1}} 
+\index{removeDupeNodes.hpp@{removeDupeNodes.hpp}!searchTree@{searchTree}}
+\index{searchTree@{searchTree}!removeDupeNodes.hpp@{removeDupeNodes.hpp}}
+\doxysubsubsection{\texorpdfstring{searchTree()}{searchTree()}}
+{\footnotesize\ttfamily bool search\+Tree (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classRTree}{node\+Tree}} \&}]{rtree,  }\item[{const double \&}]{tol,  }\item[{std\+::map$<$ unsigned int, unsigned int $>$ \&}]{id\+\_\+map,  }\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+One,  }\item[{lib\+Mesh\+::\+Node \&}]{node }\end{DoxyParamCaption})}
+
+Function for searching the r\+Tree. Takes in a lib\+Mesh node and checks if it already exists in the tree. Note the argument, \char`\"{}mesh\char`\"{}. This refers to the mesh that already has it\textquotesingle{}s nodes in the r\+Tree, and was likely passed into create\+Tree. Here it is passed in so we can know the number of nodes it has, so that if we do find a novel node to add, we can know what ID to give it to ensure that it is higher than that which already exists in the mesh. We also keep a map \char`\"{}id\+\_\+map\char`\"{} to map from old node id\textquotesingle{}s to new node id\textquotesingle{}s for the nodes being added, as well as ones that stay the same 

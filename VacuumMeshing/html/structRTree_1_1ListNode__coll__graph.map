@@ -1,0 +1,6 @@
+<map id="RTree&lt; DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES &gt;::ListNode" name="RTree&lt; DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES &gt;::ListNode">
+<area shape="rect" id="node1" title="A link list of nodes for reinsertion after a delete operation." alt="" coords="5,124,223,195"/>
+<area shape="rect" id="node2" href="$structRTree_1_1Node.html" title="Node for each branch level." alt="" coords="80,5,335,61"/>
+<area shape="rect" id="node3" href="$structRTree_1_1Branch.html" title=" " alt="" coords="324,124,541,195"/>
+<area shape="rect" id="node4" href="$structRTree_1_1Rect.html" title="Minimal bounding rectangle (n&#45;dimensional)" alt="" coords="359,5,610,61"/>
+</map>

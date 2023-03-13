@@ -1,0 +1,6 @@
+<map id="RTree&lt; DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES &gt;::PartitionVars" name="RTree&lt; DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES &gt;::PartitionVars">
+<area shape="rect" id="node1" title="Variables for finding a split partition." alt="" coords="728,5,945,76"/>
+<area shape="rect" id="node2" href="$structRTree_1_1Rect.html" title="Minimal bounding rectangle (n&#45;dimensional)" alt="" coords="5,35,256,91"/>
+<area shape="rect" id="node3" href="$structRTree_1_1Branch.html" title=" " alt="" coords="353,71,571,141"/>
+<area shape="rect" id="node4" href="$structRTree_1_1Node.html" title="Node for each branch level." alt="" coords="709,102,964,158"/>
+</map>

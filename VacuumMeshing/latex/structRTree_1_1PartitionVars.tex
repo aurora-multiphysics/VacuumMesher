@@ -1,0 +1,75 @@
+\hypertarget{structRTree_1_1PartitionVars}{}\doxysection{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Partition\+Vars Struct Reference}
+\label{structRTree_1_1PartitionVars}\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$::PartitionVars@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$::PartitionVars}}
+
+
+Variables for finding a split partition.  
+
+
+
+
+{\ttfamily \#include $<$RTree.\+hpp$>$}
+
+
+
+Collaboration diagram for RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Partition\+Vars\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structRTree_1_1PartitionVars__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_aa4395bc76d345f0a081c164bf68d4744}\label{structRTree_1_1PartitionVars_aa4395bc76d345f0a081c164bf68d4744}} 
+enum \{ {\bfseries NOT\+\_\+\+TAKEN} = -\/1
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_a15b570f93f49884ccd637731d033da51}\label{structRTree_1_1PartitionVars_a15b570f93f49884ccd637731d033da51}} 
+int {\bfseries m\+\_\+partition} \mbox{[}\mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}{MAXNODES}}+1\mbox{]}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_a145b95cd4210c8e2dbb2015d379906e4}\label{structRTree_1_1PartitionVars_a145b95cd4210c8e2dbb2015d379906e4}} 
+int {\bfseries m\+\_\+total}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_a150d1fb0e446df4172c68eafbd0fc00d}\label{structRTree_1_1PartitionVars_a150d1fb0e446df4172c68eafbd0fc00d}} 
+int {\bfseries m\+\_\+min\+Fill}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_acbf70d46606cebe104471635d1c06c56}\label{structRTree_1_1PartitionVars_acbf70d46606cebe104471635d1c06c56}} 
+int {\bfseries m\+\_\+count} \mbox{[}2\mbox{]}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_ab59894eefb7f3f6cc7254bbc90cd2570}\label{structRTree_1_1PartitionVars_ab59894eefb7f3f6cc7254bbc90cd2570}} 
+\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} {\bfseries m\+\_\+cover} \mbox{[}2\mbox{]}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_aadf67cd0f0c071993f47b77b1e7a3b78}\label{structRTree_1_1PartitionVars_aadf67cd0f0c071993f47b77b1e7a3b78}} 
+ELEMTYPEREAL {\bfseries m\+\_\+area} \mbox{[}2\mbox{]}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_a73b5e398b4073ff923afaa765367958b}\label{structRTree_1_1PartitionVars_a73b5e398b4073ff923afaa765367958b}} 
+\mbox{\hyperlink{structRTree_1_1Branch}{Branch}} {\bfseries m\+\_\+branch\+Buf} \mbox{[}\mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}{MAXNODES}}+1\mbox{]}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_abaaed8bac2d71bc6debadc5136078a0b}\label{structRTree_1_1PartitionVars_abaaed8bac2d71bc6debadc5136078a0b}} 
+int {\bfseries m\+\_\+branch\+Count}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_a61d9eaaae4128365146d923123f4b8d1}\label{structRTree_1_1PartitionVars_a61d9eaaae4128365146d923123f4b8d1}} 
+\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} {\bfseries m\+\_\+cover\+Split}
+\item 
+\mbox{\Hypertarget{structRTree_1_1PartitionVars_ada65c4c4ae559f43f3b632bda1b7b7f2}\label{structRTree_1_1PartitionVars_ada65c4c4ae559f43f3b632bda1b7b7f2}} 
+ELEMTYPEREAL {\bfseries m\+\_\+cover\+Split\+Area}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$\newline
+struct RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::\+Partition\+Vars}
+
+Variables for finding a split partition. 
+
+Definition at line 317 of file RTree.\+hpp.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\+Utils/RTree.\+hpp\end{DoxyCompactItemize}

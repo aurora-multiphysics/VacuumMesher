@@ -1,0 +1,53 @@
+\hypertarget{classRTree_1_1Iterator}{}\doxysection{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Iterator Class Reference}
+\label{classRTree_1_1Iterator}\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$::Iterator@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$::Iterator}}
+
+
+\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} is not remove safe.  
+
+
+
+
+{\ttfamily \#include $<$RTree.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_a23f756ac37acc2b162b61230c27732b3}\label{classRTree_1_1Iterator_a23f756ac37acc2b162b61230c27732b3}} 
+bool \mbox{\hyperlink{classRTree_1_1Iterator_a23f756ac37acc2b162b61230c27732b3}{Is\+Null}} ()
+\begin{DoxyCompactList}\small\item\em Is iterator invalid. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_a8cd6bf4fa228497ac736e8d7993e7daf}\label{classRTree_1_1Iterator_a8cd6bf4fa228497ac736e8d7993e7daf}} 
+bool \mbox{\hyperlink{classRTree_1_1Iterator_a8cd6bf4fa228497ac736e8d7993e7daf}{Is\+Not\+Null}} ()
+\begin{DoxyCompactList}\small\item\em Is iterator pointing to valid data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_abb61d3a8396473b543cb15aa9002cfeb}\label{classRTree_1_1Iterator_abb61d3a8396473b543cb15aa9002cfeb}} 
+DATATYPE \& \mbox{\hyperlink{classRTree_1_1Iterator_abb61d3a8396473b543cb15aa9002cfeb}{operator$\ast$}} ()
+\begin{DoxyCompactList}\small\item\em Access the current data element. Caller must be sure iterator is not NULL first. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_a154157a231d3ec8b2dcfcfaf3d5255a4}\label{classRTree_1_1Iterator_a154157a231d3ec8b2dcfcfaf3d5255a4}} 
+const DATATYPE \& \mbox{\hyperlink{classRTree_1_1Iterator_a154157a231d3ec8b2dcfcfaf3d5255a4}{operator$\ast$}} () const
+\begin{DoxyCompactList}\small\item\em Access the current data element. Caller must be sure iterator is not NULL first. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_ad578bac71cfc7d324b84595032feda21}\label{classRTree_1_1Iterator_ad578bac71cfc7d324b84595032feda21}} 
+bool \mbox{\hyperlink{classRTree_1_1Iterator_ad578bac71cfc7d324b84595032feda21}{operator++}} ()
+\begin{DoxyCompactList}\small\item\em Find the next data element. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_a65121f5016c2b1bf4696797748092709}\label{classRTree_1_1Iterator_a65121f5016c2b1bf4696797748092709}} 
+void \mbox{\hyperlink{classRTree_1_1Iterator_a65121f5016c2b1bf4696797748092709}{Get\+Bounds}} (ELEMTYPE a\+\_\+min\mbox{[}NUMDIMS\mbox{]}, ELEMTYPE a\+\_\+max\mbox{[}NUMDIMS\mbox{]})
+\begin{DoxyCompactList}\small\item\em Get the bounds for this node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classRTree_1_1Iterator_af5d7fbb9e949ef77e8d3e32670fa9dd6}\label{classRTree_1_1Iterator_af5d7fbb9e949ef77e8d3e32670fa9dd6}} 
+class {\bfseries RTree}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$\newline
+class RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::\+Iterator}
+
+\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} is not remove safe. 
+
+Definition at line 119 of file RTree.\+hpp.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\+Utils/RTree.\+hpp\end{DoxyCompactItemize}

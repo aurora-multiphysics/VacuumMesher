@@ -1,0 +1,622 @@
+\hypertarget{surfaceMeshing_8hpp}{}\doxysection{include/\+Surface\+Meshing/surface\+Meshing.hpp File Reference}
+\label{surfaceMeshing_8hpp}\index{include/SurfaceMeshing/surfaceMeshing.hpp@{include/SurfaceMeshing/surfaceMeshing.hpp}}
+{\ttfamily \#include \char`\"{}Utils/get\+Elem\+Info.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/boundary\+\_\+info.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/elem.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/enum\+\_\+elem\+\_\+type.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/enum\+\_\+io\+\_\+package.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/libmesh.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/mesh.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}libmesh/mesh\+\_\+tools.\+h\char`\"{}}\newline
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{surfaceMeshing_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_aedb378c4a8fe83ad2294f5d38ecf9e76}{get\+Surface}} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&surface\+Mesh, std\+::multimap$<$ unsigned int, unsigned int $>$ \&surface\+Face\+Map, bool write\+Mesh=false, std\+::string output\+Filename=\char`\"{}surface\+\_\+mesh.\+e\char`\"{})
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_a6903a226368a00c7fc6dc48feb210973}{get\+Surface}} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&surface\+Mesh, bool write\+Mesh=false, std\+::string output\+Filename=\char`\"{}surface\+\_\+mesh.\+e\char`\"{})
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_a7547ef5751bf00cc37338d52f763a5f1}{get\+Surface}} (lib\+Mesh\+::\+Mesh \&mesh, lib\+Mesh\+::\+Mesh \&surface\+Mesh, std\+::vector$<$ int $>$ \&el\+Set, bool write\+Mesh=false, std\+::string output\+Filename=\char`\"{}surface\+\_\+mesh.\+e\char`\"{})
+\item 
+\mbox{\Hypertarget{surfaceMeshing_8hpp_a0207381bf37bc68d71a539c6652257cb}\label{surfaceMeshing_8hpp_a0207381bf37bc68d71a539c6652257cb}} 
+int {\bfseries get\+Num\+Surface\+Elems} ()
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}{is\+Element\+Surface}} (lib\+Mesh\+::\+Elem $\ast$element, std\+::vector$<$ int $>$ \&surface\+Faces)
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_aa541815bc741e90b31b3832d680fcaa0}{is\+Element\+Surface}} (lib\+Mesh\+::\+Elem $\ast$element, std\+::vector$<$ int $>$ \&el\+Set, std\+::vector$<$ int $>$ \&surface\+Faces)
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}{group\+Elems}} (lib\+Mesh\+::\+Mesh mesh, std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::dof\+\_\+id\+\_\+type $>$$>$ \&groups)
+\item 
+void \mbox{\hyperlink{surfaceMeshing_8hpp_a231206e51c0d32643fd7c72affff3d38}{save\+Grouped\+Elems}} (lib\+Mesh\+::\+Lib\+Mesh\+Init \&init, lib\+Mesh\+::\+Mesh \&surface\+Mesh, std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::dof\+\_\+id\+\_\+type $>$$>$ \&groups, std\+::string component\+Filename)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+As part of the process of vacuum mesh generation, the original part must be \char`\"{}skinned\char`\"{}. Methods pertaining to mesh skinning are found here, along with a few other potentially useful methods. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_a6903a226368a00c7fc6dc48feb210973}\label{surfaceMeshing_8hpp_a6903a226368a00c7fc6dc48feb210973}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!getSurface@{getSurface}}
+\index{getSurface@{getSurface}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{getSurface()}{getSurface()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void get\+Surface (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{lib\+Mesh\+::\+Mesh \&}]{surface\+Mesh,  }\item[{bool}]{write\+Mesh = {\ttfamily false},  }\item[{std\+::string}]{output\+Filename = {\ttfamily \char`\"{}surface\+\_\+mesh.e\char`\"{}} }\end{DoxyParamCaption})}
+
+Method to retrieve the \char`\"{}skin\char`\"{} of an input {\ttfamily mesh}, and store it in {\ttfamily surface\+Mesh}. {\ttfamily setting} write\+Mesh to true will write the surface\+Mesh out with a given {\ttfamily output\+Filename}, which by default is \char`\"{}surface\+\_\+mesh.\+e\char`\"{}. 
+
+Definition at line 154 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{155                                           \{}
+\DoxyCodeLine{156   \textcolor{comment}{// LibMesh method that has to be run in order to access neighbor info}}
+\DoxyCodeLine{157   mesh.find\_neighbors();}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159   \textcolor{comment}{// Variables to store element information so it is easily accessible later}}
+\DoxyCodeLine{160   \textcolor{comment}{// This implementation does assume only one element type is used}}
+\DoxyCodeLine{161   libMesh::ElemType elem\_type, face\_type;}
+\DoxyCodeLine{162   \textcolor{keywordtype}{int} num\_elem\_faces, num\_face\_nodes;}
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164   \textcolor{comment}{// //Counter to store the number of surface elements}}
+\DoxyCodeLine{165   \textcolor{keywordtype}{int} surface\_elem\_counter = 0;}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{167   \textcolor{comment}{// Sideset info}}
+\DoxyCodeLine{168   \textcolor{comment}{// std::vector<unsigned int> boundary\_nodes;}}
+\DoxyCodeLine{169   \textcolor{comment}{// std::vector<libMesh::boundary\_id\_type> boundary\_id;}}
+\DoxyCodeLine{170   std::map<int, std::vector<libMesh::boundary\_id\_type>> boundary\_data;}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{172   \textcolor{comment}{// Map from old node ids to the new ones in the surface mesh}}
+\DoxyCodeLine{173   std::vector<int> currentNodeIds;}
+\DoxyCodeLine{174   std::map<int, int> newNodeIds;}
+\DoxyCodeLine{175 }
+\DoxyCodeLine{176   \textcolor{comment}{// Connectivity of all the elements in the surface mesh}}
+\DoxyCodeLine{177   std::vector<int> connectivity;}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{179   \textcolor{comment}{// Use getElemInfo method to retrieve Element Info}}
+\DoxyCodeLine{180   getElemInfo(elem\_type, face\_type, mesh.elem\_ptr(0), num\_elem\_faces,}
+\DoxyCodeLine{181               num\_face\_nodes);}
+\DoxyCodeLine{182 }
+\DoxyCodeLine{183   \textcolor{comment}{// Loops over all the elements in the input vector}}
+\DoxyCodeLine{184   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elem : mesh.element\_ptr\_range()) \{}
+\DoxyCodeLine{185     \textcolor{comment}{// Initialise vecotr to store sides of element that are on surface}}
+\DoxyCodeLine{186     \textcolor{comment}{//, initialise all elements as -\/1, as this will be used to indicate}}
+\DoxyCodeLine{187     \textcolor{comment}{//   there are no more surface elements}}
+\DoxyCodeLine{188     std::vector<int> surfaceFaces(num\_elem\_faces, -\/1);}
+\DoxyCodeLine{189     \textcolor{comment}{// surfaceFaces.reserve(num\_elem\_faces);}}
+\DoxyCodeLine{190 }
+\DoxyCodeLine{191     \textcolor{comment}{// Method to check whether the current element has faces that are on the}}
+\DoxyCodeLine{192     \textcolor{comment}{// surface Stores these faces (if they exist) in surfaceFaces vector}}
+\DoxyCodeLine{193     \mbox{\hyperlink{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}{isElementSurface}}(elem, surfaceFaces);}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; surfaceFaces[i] != -\/1 \&\& i < elem-\/>n\_sides(); i++) \{}
+\DoxyCodeLine{196       \textcolor{comment}{// Check whether this side is a member of a sideset. If so, get the id of}}
+\DoxyCodeLine{197       \textcolor{comment}{// said sideset. Illiteration is fun.}}
+\DoxyCodeLine{198       std::vector<libMesh::boundary\_id\_type> boundary\_ids;}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200       mesh.get\_boundary\_info().boundary\_ids(elem, surfaceFaces[i],}
+\DoxyCodeLine{201                                             boundary\_ids);}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203       \textcolor{keywordflow}{if} (boundary\_ids.size() > 0) \{}
+\DoxyCodeLine{204         boundary\_data[surface\_elem\_counter] = boundary\_ids;}
+\DoxyCodeLine{205       \}}
+\DoxyCodeLine{206 }
+\DoxyCodeLine{207       \textcolor{comment}{// Loop over all the nodes on side 'surfaceFaces[i]' of element 'element',}}
+\DoxyCodeLine{208       \textcolor{comment}{// add necessary information to containers}}
+\DoxyCodeLine{209       \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&side\_node :}
+\DoxyCodeLine{210            elem-\/>build\_side\_ptr(surfaceFaces[i])-\/>node\_ref\_range()) \{}
+\DoxyCodeLine{211         \textcolor{keywordtype}{int} global\_node\_id = side\_node.id();}
+\DoxyCodeLine{212         connectivity.push\_back(global\_node\_id);}
+\DoxyCodeLine{213         currentNodeIds.push\_back(global\_node\_id);}
+\DoxyCodeLine{214       \}}
+\DoxyCodeLine{215       \textcolor{comment}{// Counter}}
+\DoxyCodeLine{216       surface\_elem\_counter++;}
+\DoxyCodeLine{217     \}}
+\DoxyCodeLine{218   \}}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{220   \textcolor{comment}{// Sorts the node ids in the currentNodeIds in numerical order and removes}}
+\DoxyCodeLine{221   \textcolor{comment}{// duplicates}}
+\DoxyCodeLine{222   std::sort(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{223   std::vector<int>::iterator newEnd;}
+\DoxyCodeLine{224   newEnd = std::unique(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{225   currentNodeIds.resize(std::distance(currentNodeIds.begin(), newEnd));}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{227   \textcolor{comment}{// Map from the currentNodeIds to the new node ids in the surface mesh}}
+\DoxyCodeLine{228   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < (int)currentNodeIds.size(); i++) \{}
+\DoxyCodeLine{229     newNodeIds[currentNodeIds[i]] = i;}
+\DoxyCodeLine{230   \}}
+\DoxyCodeLine{231 }
+\DoxyCodeLine{232   \textcolor{comment}{// Using the newNodeIds map, set all the node data needed for the new mesh}}
+\DoxyCodeLine{233   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} nodeId : currentNodeIds) \{}
+\DoxyCodeLine{234     libMesh::Node *node = mesh.node\_ptr(nodeId);}
+\DoxyCodeLine{235     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{236     pnt[0] = (*node)(0);}
+\DoxyCodeLine{237     pnt[1] = (*node)(1);}
+\DoxyCodeLine{238     pnt[2] = (*node)(2);}
+\DoxyCodeLine{239     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{240     surfaceMesh.add\_point(xyz, newNodeIds[nodeId]);}
+\DoxyCodeLine{241   \}}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243   \textcolor{comment}{// For all of the surface elements, create the representitive 2D libmesh}}
+\DoxyCodeLine{244   \textcolor{comment}{// element Connectivity is set and the element is added to the new mesh}}
+\DoxyCodeLine{245   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < surface\_elem\_counter; i++) \{}
+\DoxyCodeLine{246     libMesh::Elem *elem = libMesh::Elem::build(face\_type).release();}
+\DoxyCodeLine{247     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < num\_face\_nodes; j++) \{}
+\DoxyCodeLine{248       elem-\/>set\_node(j) = surfaceMesh.node\_ptr(}
+\DoxyCodeLine{249           newNodeIds[connectivity[(i * num\_face\_nodes) + j]]);}
+\DoxyCodeLine{250     \}}
+\DoxyCodeLine{251     elem-\/>set\_id(i);}
+\DoxyCodeLine{252     surfaceMesh.add\_elem(elem);}
+\DoxyCodeLine{253     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&\textcolor{keywordtype}{id} : boundary\_data[i]) \{}
+\DoxyCodeLine{254       surfaceMesh.boundary\_info-\/>add\_side(i, 0, \textcolor{keywordtype}{id});}
+\DoxyCodeLine{255     \}}
+\DoxyCodeLine{256   \}}
+\DoxyCodeLine{257   \textcolor{comment}{//}}
+\DoxyCodeLine{258   \textcolor{comment}{// surfaceMesh.boundary\_info-\/>build\_side\_list\_from\_node\_list();}}
+\DoxyCodeLine{259   \textcolor{comment}{// Set mesh dimensions}}
+\DoxyCodeLine{260   surfaceMesh.set\_mesh\_dimension(2); \textcolor{comment}{// Should this be 2 or 3???}}
+\DoxyCodeLine{261   surfaceMesh.set\_spatial\_dimension(3);}
+\DoxyCodeLine{262   surfaceMesh.prepare\_for\_use();}
+\DoxyCodeLine{263 }
+\DoxyCodeLine{264   libMesh::BoundingBox box =}
+\DoxyCodeLine{265       libMesh::MeshTools::create\_bounding\_box(surfaceMesh);}
+\DoxyCodeLine{266   \textcolor{keywordflow}{if} (writeMesh) \{}
+\DoxyCodeLine{267     surfaceMesh.write(outputFilename);}
+\DoxyCodeLine{268   \}}
+\DoxyCodeLine{269 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_aedb378c4a8fe83ad2294f5d38ecf9e76}\label{surfaceMeshing_8hpp_aedb378c4a8fe83ad2294f5d38ecf9e76}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!getSurface@{getSurface}}
+\index{getSurface@{getSurface}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{getSurface()}{getSurface()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void get\+Surface (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{lib\+Mesh\+::\+Mesh \&}]{surface\+Mesh,  }\item[{std\+::multimap$<$ unsigned int, unsigned int $>$ \&}]{surface\+Face\+Map,  }\item[{bool}]{write\+Mesh = {\ttfamily false},  }\item[{std\+::string}]{output\+Filename = {\ttfamily \char`\"{}surface\+\_\+mesh.e\char`\"{}} }\end{DoxyParamCaption})}
+
+Method to retrieve the \char`\"{}skin\char`\"{} of an input {\ttfamily mesh}, and store it in {\ttfamily surface\+Mesh}. {\ttfamily surface\+Face\+Map} is a multimap which maps from element id\textquotesingle{}s in the original mesh to the face id\textquotesingle{}s of that element that lie on the skin. This information can be used later to define a sideset in the final mesh that represents the elements of the skin. This can be useful for defining radiative boundary conditions or something of that ilk. {\ttfamily setting} write\+Mesh to true will write the surface\+Mesh out with a given {\ttfamily output\+Filename}, which by default is \char`\"{}surface\+\_\+mesh.\+e\char`\"{} 
+
+Definition at line 32 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{34                                                           \{}
+\DoxyCodeLine{35   \textcolor{comment}{// Variables to store element information so it is easily accessible later}}
+\DoxyCodeLine{36   \textcolor{comment}{// This implementation does assume only one element type is used}}
+\DoxyCodeLine{37   libMesh::ElemType elem\_type, face\_type;}
+\DoxyCodeLine{38   \textcolor{keywordtype}{int} num\_elem\_faces, num\_face\_nodes;}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40   \textcolor{comment}{// Use getElemInfo method to retrieve Element Info}}
+\DoxyCodeLine{41   getElemInfo(elem\_type, face\_type, mesh.elem\_ptr(0), num\_elem\_faces,}
+\DoxyCodeLine{42               num\_face\_nodes);}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44   \textcolor{comment}{// Counter to store the number of surface elements}}
+\DoxyCodeLine{45   \textcolor{keywordtype}{int} surface\_elem\_counter = 0;}
+\DoxyCodeLine{46   \textcolor{comment}{// Sideset info}}
+\DoxyCodeLine{47   \textcolor{comment}{// std::vector<unsigned int> boundary\_nodes;}}
+\DoxyCodeLine{48   \textcolor{comment}{// std::vector<libMesh::boundary\_id\_type> boundary\_id;}}
+\DoxyCodeLine{49   std::map<int, std::vector<libMesh::boundary\_id\_type>> boundary\_data;}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51   \textcolor{comment}{// Map from old node ids to the new ones in the surface mesh}}
+\DoxyCodeLine{52   std::vector<int> currentNodeIds;}
+\DoxyCodeLine{53   std::map<int, int> newNodeIds;}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55   \textcolor{comment}{// Connectivity of all the elements in the surface mesh}}
+\DoxyCodeLine{56   std::vector<int> connectivity;}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{58   \textcolor{comment}{// Loops over all the elements in the input vector}}
+\DoxyCodeLine{59   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elem : mesh.element\_ptr\_range()) \{}
+\DoxyCodeLine{60     \textcolor{comment}{// Initialise vecotr to store sides of element that are on surface}}
+\DoxyCodeLine{61     \textcolor{comment}{//, initialise all elements as -\/1, as this will be used to indicate}}
+\DoxyCodeLine{62     \textcolor{comment}{//   there are no more surface elements}}
+\DoxyCodeLine{63     std::vector<int> surfaceFaces(num\_face\_nodes, -\/1);}
+\DoxyCodeLine{64     \textcolor{comment}{// surfaceFaces.reserve(num\_elem\_faces);}}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66     \textcolor{comment}{// Method to check whether the current element has faces that are on the}}
+\DoxyCodeLine{67     \textcolor{comment}{// surface Stores these faces (if they exist) in surfaceFaces vector}}
+\DoxyCodeLine{68     \mbox{\hyperlink{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}{isElementSurface}}(elem, surfaceFaces);}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; (surfaceFaces[i] != -\/1) \&\& (i < elem-\/>n\_sides()); i++) \{}
+\DoxyCodeLine{71       \textcolor{comment}{// Check whether this side is a member of a sideset. If so, get the id of}}
+\DoxyCodeLine{72       \textcolor{comment}{// said sideset. Illiteration is fun.}}
+\DoxyCodeLine{73       std::vector<libMesh::boundary\_id\_type> boundary\_ids;}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75       mesh.get\_boundary\_info().boundary\_ids(elem, surfaceFaces[i],}
+\DoxyCodeLine{76                                             boundary\_ids);}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78       \textcolor{keywordflow}{if} (boundary\_ids.size() > 0) \{}
+\DoxyCodeLine{79         boundary\_data[surface\_elem\_counter] = boundary\_ids;}
+\DoxyCodeLine{80       \}}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82       \textcolor{comment}{// Loop over all the nodes on side 'surfaceFaces[i]' of element 'element',}}
+\DoxyCodeLine{83       \textcolor{comment}{// add necessary information to containers for(auto localNodeId:}}
+\DoxyCodeLine{84       \textcolor{comment}{// elem-\/>nodes\_on\_side(surfaceFaces[i]))}}
+\DoxyCodeLine{85       \textcolor{keywordtype}{int} count = 0;}
+\DoxyCodeLine{86       \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&side\_node :}
+\DoxyCodeLine{87            elem-\/>build\_side\_ptr(surfaceFaces[i])-\/>node\_ref\_range()) \{}
+\DoxyCodeLine{88         \textcolor{comment}{// std::cout << count++ << std::endl;}}
+\DoxyCodeLine{89         \textcolor{keywordtype}{int} global\_node\_id = side\_node.id();}
+\DoxyCodeLine{90         connectivity.push\_back(global\_node\_id);}
+\DoxyCodeLine{91         currentNodeIds.push\_back(global\_node\_id);}
+\DoxyCodeLine{92       \}}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94       \textcolor{comment}{//}}
+\DoxyCodeLine{95       surfaceFaceMap.insert(std::make\_pair(elem-\/>id(), surfaceFaces[i]));}
+\DoxyCodeLine{96       \textcolor{comment}{// Counter}}
+\DoxyCodeLine{97       surface\_elem\_counter++;}
+\DoxyCodeLine{98     \}}
+\DoxyCodeLine{99   \}}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101   std::cout << surface\_elem\_counter << std::endl;}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103   \textcolor{comment}{// Sorts the node ids in the currentNodeIds in numerical order and removes}}
+\DoxyCodeLine{104   \textcolor{comment}{// duplicates}}
+\DoxyCodeLine{105   std::sort(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{106   std::vector<int>::iterator newEnd;}
+\DoxyCodeLine{107   newEnd = std::unique(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{108   currentNodeIds.resize(std::distance(currentNodeIds.begin(), newEnd));}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110   \textcolor{comment}{// Map from the currentNodeIds to the new node ids in the surface mesh}}
+\DoxyCodeLine{111   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < (int)currentNodeIds.size(); i++) \{}
+\DoxyCodeLine{112     newNodeIds[currentNodeIds[i]] = i;}
+\DoxyCodeLine{113   \}}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115   surfaceMesh.reserve\_nodes(currentNodeIds.size());}
+\DoxyCodeLine{116   \textcolor{comment}{// Using the newNodeIds map, set all the node data needed for the new mesh}}
+\DoxyCodeLine{117   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} nodeId : currentNodeIds) \{}
+\DoxyCodeLine{118     libMesh::Node *node = mesh.node\_ptr(nodeId);}
+\DoxyCodeLine{119     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{120     \textcolor{keywordflow}{for} (u\_int i = 0; i < 3; i++) \{}
+\DoxyCodeLine{121       pnt[i] = (*node)(i);}
+\DoxyCodeLine{122     \}}
+\DoxyCodeLine{123     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{124     surfaceMesh.add\_point(xyz, newNodeIds[nodeId]);}
+\DoxyCodeLine{125   \}}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127   surfaceMesh.reserve\_elem(surface\_elem\_counter);}
+\DoxyCodeLine{128   \textcolor{comment}{// For all of the surface elements, create the representitive 2D libmesh}}
+\DoxyCodeLine{129   \textcolor{comment}{// element Connectivity is set and the element is added to the new mesh}}
+\DoxyCodeLine{130   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < surface\_elem\_counter; i++) \{}
+\DoxyCodeLine{131     libMesh::Elem *elem = libMesh::Elem::build(face\_type).release();}
+\DoxyCodeLine{132     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < num\_face\_nodes; j++) \{}
+\DoxyCodeLine{133       \textcolor{comment}{// std::cout << j << std::endl;}}
+\DoxyCodeLine{134       elem-\/>set\_node(j) = surfaceMesh.node\_ptr(}
+\DoxyCodeLine{135           newNodeIds[connectivity[(i * num\_face\_nodes) + j]]);}
+\DoxyCodeLine{136     \}}
+\DoxyCodeLine{137     elem-\/>set\_id(i);}
+\DoxyCodeLine{138     elem-\/>subdomain\_id() = 1;}
+\DoxyCodeLine{139     surfaceMesh.add\_elem(elem);}
+\DoxyCodeLine{140     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&\textcolor{keywordtype}{id} : boundary\_data[i]) \{}
+\DoxyCodeLine{141       surfaceMesh.boundary\_info-\/>add\_side(i, 0, \textcolor{keywordtype}{id});}
+\DoxyCodeLine{142       surfaceMesh.boundary\_info-\/>sideset\_name(\textcolor{keywordtype}{id}) =}
+\DoxyCodeLine{143           mesh.boundary\_info-\/>sideset\_name(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{144     \}}
+\DoxyCodeLine{145   \}}
+\DoxyCodeLine{146   \textcolor{comment}{// Prepare mesh for use}}
+\DoxyCodeLine{147   surfaceMesh.prepare\_for\_use();}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{149   \textcolor{keywordflow}{if} (writeMesh) \{}
+\DoxyCodeLine{150     surfaceMesh.write(outputFilename);}
+\DoxyCodeLine{151   \}}
+\DoxyCodeLine{152 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_a7547ef5751bf00cc37338d52f763a5f1}\label{surfaceMeshing_8hpp_a7547ef5751bf00cc37338d52f763a5f1}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!getSurface@{getSurface}}
+\index{getSurface@{getSurface}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{getSurface()}{getSurface()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void get\+Surface (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh \&}]{mesh,  }\item[{lib\+Mesh\+::\+Mesh \&}]{surface\+Mesh,  }\item[{std\+::vector$<$ int $>$ \&}]{el\+Set,  }\item[{bool}]{write\+Mesh = {\ttfamily false},  }\item[{std\+::string}]{output\+Filename = {\ttfamily \char`\"{}surface\+\_\+mesh.e\char`\"{}} }\end{DoxyParamCaption})}
+
+Method to retrieve the \char`\"{}skin\char`\"{} of a subest of the input {\ttfamily mesh}, and store it in {\ttfamily surface\+Mesh}. This subset is defined by {\ttfamily el\+Set}, a set of element id\textquotesingle{}s in {\ttfamily mesh} that you want the skin of. {\ttfamily setting} write\+Mesh to true will write the surface\+Mesh out with a given {\ttfamily output\+Filename}, which by default is \char`\"{}surface\+\_\+mesh.\+e\char`\"{}. 
+
+Definition at line 272 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{274                                           \{}
+\DoxyCodeLine{275   \textcolor{comment}{// LibMesh method that has to be run in order to access neighbor info}}
+\DoxyCodeLine{276   mesh.find\_neighbors();}
+\DoxyCodeLine{277 }
+\DoxyCodeLine{278   \textcolor{comment}{// Variables to store element information so it is easily accessible later}}
+\DoxyCodeLine{279   \textcolor{comment}{// This implementation does assume only one element type is used}}
+\DoxyCodeLine{280   libMesh::ElemType elem\_type, face\_type;}
+\DoxyCodeLine{281   \textcolor{keywordtype}{int} num\_elem\_faces, num\_face\_nodes;}
+\DoxyCodeLine{282 }
+\DoxyCodeLine{283   \textcolor{comment}{// //Counter to store the number of surface elements}}
+\DoxyCodeLine{284   \textcolor{keywordtype}{int} surface\_elem\_counter = 0;}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{286   \textcolor{comment}{// Map from old node ids to the new ones in the surface mesh}}
+\DoxyCodeLine{287   std::vector<int> currentNodeIds;}
+\DoxyCodeLine{288   std::map<int, int> newNodeIds;}
+\DoxyCodeLine{289 }
+\DoxyCodeLine{290   \textcolor{comment}{// Connectivity of all the elements in the surface mesh}}
+\DoxyCodeLine{291   std::vector<int> connectivity;}
+\DoxyCodeLine{292 }
+\DoxyCodeLine{293   \textcolor{comment}{// Use getElemInfo method to retrieve Element Info}}
+\DoxyCodeLine{294   libMesh::Elem *elem = mesh.elem\_ptr(0);}
+\DoxyCodeLine{295   getElemInfo(elem\_type, face\_type, elem, num\_elem\_faces, num\_face\_nodes);}
+\DoxyCodeLine{296 }
+\DoxyCodeLine{297   \textcolor{comment}{// Loops over all the elements in the input vector}}
+\DoxyCodeLine{298   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} elemNum : elSet) \{}
+\DoxyCodeLine{299     \textcolor{comment}{// Get ptr to current element}}
+\DoxyCodeLine{300     libMesh::Elem \&element = mesh.elem\_ref(elemNum);}
+\DoxyCodeLine{301 }
+\DoxyCodeLine{302     \textcolor{comment}{// Initialise vecotr to store sides of element that are on surface}}
+\DoxyCodeLine{303     \textcolor{comment}{//, initialise all elements as -\/1, as this will be used to indicate}}
+\DoxyCodeLine{304     \textcolor{comment}{//   there are no more surface elements}}
+\DoxyCodeLine{305     std::vector<int> surfaceFaces(num\_elem\_faces, -\/1);}
+\DoxyCodeLine{306     \textcolor{comment}{// surfaceFaces.reserve(num\_elem\_faces);}}
+\DoxyCodeLine{307 }
+\DoxyCodeLine{308     \textcolor{comment}{// Method to check whether the current element has faces that are on the}}
+\DoxyCodeLine{309     \textcolor{comment}{// surface Stores these faces (if they exist) in surfaceFaces vector}}
+\DoxyCodeLine{310     \mbox{\hyperlink{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}{isElementSurface}}(\&element, elSet, surfaceFaces);}
+\DoxyCodeLine{311 }
+\DoxyCodeLine{312     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; surfaceFaces[i] != -\/1 \&\& i < element.n\_sides(); i++) \{}
+\DoxyCodeLine{313       std::vector<unsigned int> nodes\_on\_side =}
+\DoxyCodeLine{314           element.nodes\_on\_side(surfaceFaces[i]);}
+\DoxyCodeLine{315 }
+\DoxyCodeLine{316       \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&side\_node :}
+\DoxyCodeLine{317            elem-\/>build\_side\_ptr(surfaceFaces[i])-\/>node\_ref\_range()) \{}
+\DoxyCodeLine{318         \textcolor{keywordtype}{int} global\_node\_id = side\_node.id();}
+\DoxyCodeLine{319         connectivity.push\_back(global\_node\_id);}
+\DoxyCodeLine{320         currentNodeIds.push\_back(global\_node\_id);}
+\DoxyCodeLine{321       \}}
+\DoxyCodeLine{322       surface\_elem\_counter++;}
+\DoxyCodeLine{323     \}}
+\DoxyCodeLine{324   \}}
+\DoxyCodeLine{325 }
+\DoxyCodeLine{326   \textcolor{comment}{// Sorts the node ids in the currentNodeIds in numerical order and removes}}
+\DoxyCodeLine{327   \textcolor{comment}{// duplicates}}
+\DoxyCodeLine{328   std::sort(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{329   std::vector<int>::iterator newEnd;}
+\DoxyCodeLine{330   newEnd = std::unique(currentNodeIds.begin(), currentNodeIds.end());}
+\DoxyCodeLine{331   currentNodeIds.resize(std::distance(currentNodeIds.begin(), newEnd));}
+\DoxyCodeLine{332 }
+\DoxyCodeLine{333   \textcolor{comment}{// Map from the currentNodeIds to the new node ids in the surface mesh}}
+\DoxyCodeLine{334   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < (int)currentNodeIds.size(); i++) \{}
+\DoxyCodeLine{335     newNodeIds[currentNodeIds[i]] = i;}
+\DoxyCodeLine{336   \}}
+\DoxyCodeLine{337 }
+\DoxyCodeLine{338   \textcolor{comment}{// Using the newNodeIds map, set all the node data needed for the new mesh}}
+\DoxyCodeLine{339   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} nodeId : currentNodeIds) \{}
+\DoxyCodeLine{340     libMesh::Node *node = mesh.node\_ptr(nodeId);}
+\DoxyCodeLine{341     \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{342     pnt[0] = (*node)(0);}
+\DoxyCodeLine{343     pnt[1] = (*node)(1);}
+\DoxyCodeLine{344     pnt[2] = (*node)(2);}
+\DoxyCodeLine{345     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{346     surfaceMesh.add\_point(xyz, newNodeIds[nodeId]);}
+\DoxyCodeLine{347   \}}
+\DoxyCodeLine{348 }
+\DoxyCodeLine{349   \textcolor{comment}{// For all of the surface elements, create the representitive 2D libmesh}}
+\DoxyCodeLine{350   \textcolor{comment}{// element Connectivity is set and the element is added to the new mesh}}
+\DoxyCodeLine{351   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < surface\_elem\_counter; i++) \{}
+\DoxyCodeLine{352     libMesh::Elem *elem = libMesh::Elem::build(face\_type).release();}
+\DoxyCodeLine{353     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < num\_face\_nodes; j++) \{}
+\DoxyCodeLine{354       elem-\/>set\_node(j) = surfaceMesh.node\_ptr(}
+\DoxyCodeLine{355           newNodeIds[connectivity[(i * num\_face\_nodes) + j]]);}
+\DoxyCodeLine{356     \}}
+\DoxyCodeLine{357     elem-\/>set\_id(i);}
+\DoxyCodeLine{358     surfaceMesh.add\_elem(elem);}
+\DoxyCodeLine{359   \}}
+\DoxyCodeLine{360 }
+\DoxyCodeLine{361   \textcolor{comment}{// Set mesh dimensions}}
+\DoxyCodeLine{362   surfaceMesh.prepare\_for\_use();}
+\DoxyCodeLine{363 }
+\DoxyCodeLine{364   \textcolor{keywordflow}{if} (writeMesh) \{}
+\DoxyCodeLine{365     surfaceMesh.write(outputFilename);}
+\DoxyCodeLine{366   \}}
+\DoxyCodeLine{367 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}\label{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!groupElems@{groupElems}}
+\index{groupElems@{groupElems}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{groupElems()}{groupElems()}}
+{\footnotesize\ttfamily void group\+Elems (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Mesh}]{mesh,  }\item[{std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::dof\+\_\+id\+\_\+type $>$$>$ \&}]{groups }\end{DoxyParamCaption})}
+
+Method for grouping a discontinuous mesh into its continuous chunks. 
+
+Definition at line 369 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{370                                                                   \{}
+\DoxyCodeLine{371   std::set<int> elems;}
+\DoxyCodeLine{372   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} elem : mesh.element\_ptr\_range()) \{}
+\DoxyCodeLine{373     elems.insert(elem-\/>id());}
+\DoxyCodeLine{374   \}}
+\DoxyCodeLine{375 }
+\DoxyCodeLine{376   \textcolor{keywordflow}{while} (!elems.empty()) \{}
+\DoxyCodeLine{377     \textcolor{keyword}{auto} it = elems.begin();}
+\DoxyCodeLine{378     libMesh::dof\_id\_type next = *(it);}
+\DoxyCodeLine{379     elems.erase(it);}
+\DoxyCodeLine{380     std::set<libMesh::dof\_id\_type> neighbors;}
+\DoxyCodeLine{381 }
+\DoxyCodeLine{382     \textcolor{comment}{// Adding first element to nesighbors}}
+\DoxyCodeLine{383     neighbors.insert(next);}
+\DoxyCodeLine{384     std::vector<libMesh::dof\_id\_type> \mbox{\hyperlink{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}{groupElems}}(0);}
+\DoxyCodeLine{385 }
+\DoxyCodeLine{386     \textcolor{comment}{// While elements exist in neighbors}}
+\DoxyCodeLine{387     \textcolor{keywordflow}{while} (!neighbors.empty()) \{}
+\DoxyCodeLine{388 }
+\DoxyCodeLine{389       std::set<libMesh::dof\_id\_type> new\_neighbors;}
+\DoxyCodeLine{390 }
+\DoxyCodeLine{391       \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&next : neighbors) \{}
+\DoxyCodeLine{392         \textcolor{comment}{// Add current elems to groupElems vector}}
+\DoxyCodeLine{393         \mbox{\hyperlink{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}{groupElems}}.push\_back(next);}
+\DoxyCodeLine{394 }
+\DoxyCodeLine{395         \textcolor{comment}{// Get the libMesh element}}
+\DoxyCodeLine{396         libMesh::Elem \&elem = mesh.elem\_ref(next);}
+\DoxyCodeLine{397 }
+\DoxyCodeLine{398         \textcolor{comment}{// How many nearest neighbors (general element)?}}
+\DoxyCodeLine{399         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} NN = elem.n\_neighbors();}
+\DoxyCodeLine{400 }
+\DoxyCodeLine{401         \textcolor{comment}{// Loop over neighbors}}
+\DoxyCodeLine{402         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i = 0; i < NN; i++) \{}
+\DoxyCodeLine{403 }
+\DoxyCodeLine{404           \textcolor{keyword}{const} libMesh::Elem *nnptr = elem.neighbor\_ptr(i);}
+\DoxyCodeLine{405           \textcolor{comment}{// If on boundary, some may be null ptrs}}
+\DoxyCodeLine{406           \textcolor{keywordflow}{if} (nnptr == \textcolor{keyword}{nullptr}) \{}
+\DoxyCodeLine{407             \textcolor{comment}{// std::cout << "{}null\(\backslash\)n"{};}}
+\DoxyCodeLine{408             \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{409           \}}
+\DoxyCodeLine{410           libMesh::dof\_id\_type idnn = nnptr-\/>id();}
+\DoxyCodeLine{411 }
+\DoxyCodeLine{412           \textcolor{comment}{// Select only those that exist within elems set}}
+\DoxyCodeLine{413           \textcolor{keywordflow}{if} (elems.find(idnn) != elems.end()) \{}
+\DoxyCodeLine{414             \textcolor{comment}{// Add these neighbor ids to new\_neighbors}}
+\DoxyCodeLine{415             new\_neighbors.insert(idnn);}
+\DoxyCodeLine{416             \textcolor{comment}{// Remove these neighbor ids from elems}}
+\DoxyCodeLine{417             elems.erase(idnn);}
+\DoxyCodeLine{418           \}}
+\DoxyCodeLine{419         \}}
+\DoxyCodeLine{420       \}}
+\DoxyCodeLine{421       \textcolor{comment}{// End loop over previous neighbors}}
+\DoxyCodeLine{422       \textcolor{comment}{// Found all the new neighbors, done with current set.}}
+\DoxyCodeLine{423       neighbors = new\_neighbors;}
+\DoxyCodeLine{424     \}}
+\DoxyCodeLine{425     groups.push\_back(\mbox{\hyperlink{surfaceMeshing_8hpp_a0a4f126d06d427886629b5ee5b3126fe}{groupElems}});}
+\DoxyCodeLine{426   \}}
+\DoxyCodeLine{427 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_aa541815bc741e90b31b3832d680fcaa0}\label{surfaceMeshing_8hpp_aa541815bc741e90b31b3832d680fcaa0}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!isElementSurface@{isElementSurface}}
+\index{isElementSurface@{isElementSurface}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{isElementSurface()}{isElementSurface()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void is\+Element\+Surface (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Elem $\ast$}]{element,  }\item[{std\+::vector$<$ int $>$ \&}]{el\+Set,  }\item[{std\+::vector$<$ int $>$ \&}]{surface\+Faces }\end{DoxyParamCaption})}
+
+Method for checking whether an element has sides which should be in the skin. This method is used for when you are skinning a subset of the mesh. The sides of {\ttfamily element} are checked first to see if their neighbor element is null. If null, then this side must lie on the skin, If not, then we check if the neighbor element ID exists within the vector el\+Set. If it does, then this element does not lie on the skin are is not stored in {\ttfamily surface\+Faces} If it does NOT, then it\textquotesingle{}s neighboring element is not part of the subset of the mesh we are trying to skin. Henceforth it must lie on the skin of the mesh, and this side\textquotesingle{}s ID is stored in surface\+Faces. 
+
+Definition at line 14 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{15                                                     \{}
+\DoxyCodeLine{16   \textcolor{keywordtype}{int} neighbor\_counter = 0;}
+\DoxyCodeLine{17   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} side = 0; side < element-\/>n\_sides(); side++) \{}
+\DoxyCodeLine{18     \textcolor{keywordflow}{if} (element-\/>neighbor\_ptr(side) == \textcolor{keyword}{nullptr}) \{}
+\DoxyCodeLine{19       surfaceFaces[neighbor\_counter++] = side;}
+\DoxyCodeLine{20     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{21       \textcolor{keywordflow}{if} (!std::binary\_search(elSet.begin(), elSet.end(),}
+\DoxyCodeLine{22                               element-\/>neighbor\_ptr(side)-\/>id())) \{}
+\DoxyCodeLine{23         surfaceFaces[neighbor\_counter++] = side;}
+\DoxyCodeLine{24       \}}
+\DoxyCodeLine{25     \}}
+\DoxyCodeLine{26   \}}
+\DoxyCodeLine{27 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}\label{surfaceMeshing_8hpp_ad9179a35dbe4432599d8c9f94f3f7940}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!isElementSurface@{isElementSurface}}
+\index{isElementSurface@{isElementSurface}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{isElementSurface()}{isElementSurface()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void is\+Element\+Surface (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Elem $\ast$}]{element,  }\item[{std\+::vector$<$ int $>$ \&}]{surface\+Faces }\end{DoxyParamCaption})}
+
+Method for checking whether an element has sides which should be in the skin. Looks at the sides (faces or edges, depends if 2D or 3D element) of {\ttfamily element}, and checks whether they are null. If they are, this side of {\ttfamily element} must lie on the skin. If a side does lie of the skin then it\textquotesingle{}s local ID is stored in surface\+Faces. 
+
+Definition at line 4 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{4                                                                           \{}
+\DoxyCodeLine{5   \textcolor{keywordtype}{int} neighbor\_counter = 0;}
+\DoxyCodeLine{6   \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} side = 0; side < element-\/>n\_sides(); side++) \{}
+\DoxyCodeLine{7     \textcolor{keywordflow}{if} (element-\/>neighbor\_ptr(side) == \textcolor{keyword}{nullptr}) \{}
+\DoxyCodeLine{8       surfaceFaces[neighbor\_counter++] = side;}
+\DoxyCodeLine{9     \}}
+\DoxyCodeLine{10   \}}
+\DoxyCodeLine{11 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{surfaceMeshing_8hpp_a231206e51c0d32643fd7c72affff3d38}\label{surfaceMeshing_8hpp_a231206e51c0d32643fd7c72affff3d38}} 
+\index{surfaceMeshing.hpp@{surfaceMeshing.hpp}!saveGroupedElems@{saveGroupedElems}}
+\index{saveGroupedElems@{saveGroupedElems}!surfaceMeshing.hpp@{surfaceMeshing.hpp}}
+\doxysubsubsection{\texorpdfstring{saveGroupedElems()}{saveGroupedElems()}}
+{\footnotesize\ttfamily void save\+Grouped\+Elems (\begin{DoxyParamCaption}\item[{lib\+Mesh\+::\+Lib\+Mesh\+Init \&}]{init,  }\item[{lib\+Mesh\+::\+Mesh \&}]{surface\+Mesh,  }\item[{std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::dof\+\_\+id\+\_\+type $>$$>$ \&}]{groups,  }\item[{std\+::string}]{component\+Filename }\end{DoxyParamCaption})}
+
+Method for checking whether an element has sides which should be in the skin. 
+
+Definition at line 429 of file surface\+Meshing.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{431                                                    \{}
+\DoxyCodeLine{432   \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} count = 0;}
+\DoxyCodeLine{433 }
+\DoxyCodeLine{434   \textcolor{keywordflow}{if} (groups.size() == 1) \{}
+\DoxyCodeLine{435     std::cout}
+\DoxyCodeLine{436         << \textcolor{stringliteral}{"{}All elements belong to one entity already, no grouping necessary"{}}}
+\DoxyCodeLine{437         << std::endl;}
+\DoxyCodeLine{438     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{439   \}}
+\DoxyCodeLine{440 }
+\DoxyCodeLine{441   \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&vector : groups) \{}
+\DoxyCodeLine{442     \textcolor{comment}{// Mesh of subdomain we are going to save}}
+\DoxyCodeLine{443     libMesh::Mesh newMesh(init.comm());}
+\DoxyCodeLine{444     libMesh::ElemType face\_type;}
+\DoxyCodeLine{445     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} num\_elems, num\_face\_nodes;}
+\DoxyCodeLine{446     newMesh.clear();}
+\DoxyCodeLine{447     face\_type = (surfaceMesh.elem\_ref(0)).type();}
+\DoxyCodeLine{448     num\_elems = vector.size();}
+\DoxyCodeLine{449     std::vector<unsigned int> current\_nodes\_ids;}
+\DoxyCodeLine{450     std::vector<unsigned int> connectivity;}
+\DoxyCodeLine{451     num\_face\_nodes = (surfaceMesh.elem\_ref(0)).n\_nodes();}
+\DoxyCodeLine{452     current\_nodes\_ids.reserve(num\_elems * num\_face\_nodes);}
+\DoxyCodeLine{453     connectivity.reserve(num\_elems * num\_face\_nodes);}
+\DoxyCodeLine{454 }
+\DoxyCodeLine{455     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&elementID : vector) \{}
+\DoxyCodeLine{456       libMesh::Elem \&elem = surfaceMesh.elem\_ref(elementID);}
+\DoxyCodeLine{457       \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&node : elem.node\_ref\_range()) \{}
+\DoxyCodeLine{458         current\_nodes\_ids.emplace\_back(node.id());}
+\DoxyCodeLine{459         connectivity.emplace\_back(node.id());}
+\DoxyCodeLine{460       \}}
+\DoxyCodeLine{461     \}}
+\DoxyCodeLine{462 }
+\DoxyCodeLine{463     std::sort(current\_nodes\_ids.begin(), current\_nodes\_ids.end());}
+\DoxyCodeLine{464     std::vector<unsigned int>::iterator newEnd;}
+\DoxyCodeLine{465     newEnd = std::unique(current\_nodes\_ids.begin(), current\_nodes\_ids.end());}
+\DoxyCodeLine{466     current\_nodes\_ids.resize(std::distance(current\_nodes\_ids.begin(), newEnd));}
+\DoxyCodeLine{467     std::map<unsigned int, unsigned int> nodeMap;}
+\DoxyCodeLine{468 }
+\DoxyCodeLine{469     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < current\_nodes\_ids.size(); i++) \{}
+\DoxyCodeLine{470       nodeMap[current\_nodes\_ids[i]] = i;}
+\DoxyCodeLine{471     \}}
+\DoxyCodeLine{472 }
+\DoxyCodeLine{473     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&nodeID : current\_nodes\_ids) \{}
+\DoxyCodeLine{474       libMesh::Node *node = surfaceMesh.node\_ptr(nodeID);}
+\DoxyCodeLine{475       \textcolor{keywordtype}{double} pnt[3];}
+\DoxyCodeLine{476       pnt[0] = (*node)(0);}
+\DoxyCodeLine{477       pnt[1] = (*node)(1);}
+\DoxyCodeLine{478       pnt[2] = (*node)(2);}
+\DoxyCodeLine{479       libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);}
+\DoxyCodeLine{480       newMesh.add\_point(xyz, nodeMap[nodeID]);}
+\DoxyCodeLine{481     \}}
+\DoxyCodeLine{482 }
+\DoxyCodeLine{483     \textcolor{comment}{// For all of the surface elements, create the representitive 2D libmesh}}
+\DoxyCodeLine{484     \textcolor{comment}{// element Connectivity is set and the element is added to the new mesh}}
+\DoxyCodeLine{485     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < num\_elems; i++) \{}
+\DoxyCodeLine{486       \textcolor{comment}{// Create elem to add}}
+\DoxyCodeLine{487       libMesh::Elem *elem = libMesh::Elem::build(face\_type).release();}
+\DoxyCodeLine{488 }
+\DoxyCodeLine{489       \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < num\_face\_nodes; j++) \{}
+\DoxyCodeLine{490         elem-\/>set\_node(j) =}
+\DoxyCodeLine{491             newMesh.node\_ptr(nodeMap[connectivity[(i * num\_face\_nodes) + j]]);}
+\DoxyCodeLine{492       \}}
+\DoxyCodeLine{493       elem-\/>set\_id(i);}
+\DoxyCodeLine{494       newMesh.add\_elem(elem);}
+\DoxyCodeLine{495     \}}
+\DoxyCodeLine{496     newMesh.set\_mesh\_dimension(2); \textcolor{comment}{// Should this be 2 or 3???}}
+\DoxyCodeLine{497     newMesh.set\_spatial\_dimension(3);}
+\DoxyCodeLine{498     newMesh.prepare\_for\_use();}
+\DoxyCodeLine{499     std::string newMeshName = componentFilename + std::to\_string(count) + \textcolor{stringliteral}{"{}.e"{}};}
+\DoxyCodeLine{500     newMesh.write(newMeshName);}
+\DoxyCodeLine{501 }
+\DoxyCodeLine{502     count++;}
+\DoxyCodeLine{503   \}}
+\DoxyCodeLine{504 \}}
+
+\end{DoxyCode}

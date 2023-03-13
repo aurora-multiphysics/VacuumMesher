@@ -1,0 +1,305 @@
+\hypertarget{classRTree}{}\doxysection{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$ Class Template Reference}
+\label{classRTree}\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}
+
+
+{\ttfamily \#include $<$RTree.\+hpp$>$}
+
+
+
+Collaboration diagram for RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classRTree__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structRTree_1_1Branch}{Branch}}
+\item 
+class \mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} is not remove safe. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structRTree_1_1ListNode}{List\+Node}}
+\begin{DoxyCompactList}\small\item\em A link list of nodes for reinsertion after a delete operation. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structRTree_1_1Node}{Node}}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{structRTree_1_1Node}{Node}} for each branch level. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}}
+\begin{DoxyCompactList}\small\item\em Variables for finding a split partition. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structRTree_1_1Rect}{Rect}}
+\begin{DoxyCompactList}\small\item\em Minimal bounding rectangle (n-\/dimensional) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}{MAXNODES}} = TMAXNODES
+, \mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7a3be3d8c82fd5bfbd5e5a496e9877d71a}{MINNODES}} = TMINNODES
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classRTree_ad725314141631faaa59b421bc03c14ef}\label{classRTree_ad725314141631faaa59b421bc03c14ef}} 
+{\bfseries RTree} (const \mbox{\hyperlink{classRTree}{RTree}} \&other)
+\item 
+void \mbox{\hyperlink{classRTree_a98d1f0a325921db826b2a2d5a407c9be}{Insert}} (const ELEMTYPE a\+\_\+min\mbox{[}NUMDIMS\mbox{]}, const ELEMTYPE a\+\_\+max\mbox{[}NUMDIMS\mbox{]}, const DATATYPE \&a\+\_\+data\+Id)
+\item 
+void \mbox{\hyperlink{classRTree_a1b4b6b4c73bc47029ba696c49265c043}{Remove}} (const ELEMTYPE a\+\_\+min\mbox{[}NUMDIMS\mbox{]}, const ELEMTYPE a\+\_\+max\mbox{[}NUMDIMS\mbox{]}, const DATATYPE \&a\+\_\+data\+Id)
+\item 
+int \mbox{\hyperlink{classRTree_af98c1c13f24083a0a656b09a602c331b}{Search}} (const ELEMTYPE a\+\_\+min\mbox{[}NUMDIMS\mbox{]}, const ELEMTYPE a\+\_\+max\mbox{[}NUMDIMS\mbox{]}, std\+::function$<$ bool(const DATATYPE \&)$>$ callback) const
+\item 
+\mbox{\Hypertarget{classRTree_a396f1031eb2c8224715741fd0b77349d}\label{classRTree_a396f1031eb2c8224715741fd0b77349d}} 
+void \mbox{\hyperlink{classRTree_a396f1031eb2c8224715741fd0b77349d}{Remove\+All}} ()
+\begin{DoxyCompactList}\small\item\em Remove all entries from tree. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a813cdf63ce3e3e255821d9ba4bc9e7df}\label{classRTree_a813cdf63ce3e3e255821d9ba4bc9e7df}} 
+int \mbox{\hyperlink{classRTree_a813cdf63ce3e3e255821d9ba4bc9e7df}{Count}} ()
+\begin{DoxyCompactList}\small\item\em Count the data elements in this container. This is slow as no internal counter is maintained. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_adbd1f87715d22ed75b2b8be738583fc2}\label{classRTree_adbd1f87715d22ed75b2b8be738583fc2}} 
+bool \mbox{\hyperlink{classRTree_adbd1f87715d22ed75b2b8be738583fc2}{Load}} (const char $\ast$a\+\_\+file\+Name)
+\begin{DoxyCompactList}\small\item\em Load tree contents from file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_ad02dc25a34d9b5b291c8ff3f1b002b09}\label{classRTree_ad02dc25a34d9b5b291c8ff3f1b002b09}} 
+bool \mbox{\hyperlink{classRTree_ad02dc25a34d9b5b291c8ff3f1b002b09}{Load}} (\mbox{\hyperlink{classRTFileStream}{RTFile\+Stream}} \&a\+\_\+stream)
+\begin{DoxyCompactList}\small\item\em Load tree contents from stream. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a6817692e1e8e416843be1ea628f7a074}\label{classRTree_a6817692e1e8e416843be1ea628f7a074}} 
+bool \mbox{\hyperlink{classRTree_a6817692e1e8e416843be1ea628f7a074}{Save}} (const char $\ast$a\+\_\+file\+Name)
+\begin{DoxyCompactList}\small\item\em Save tree contents to file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a7066ea753180537a3a870c84e4fcefce}\label{classRTree_a7066ea753180537a3a870c84e4fcefce}} 
+bool \mbox{\hyperlink{classRTree_a7066ea753180537a3a870c84e4fcefce}{Save}} (\mbox{\hyperlink{classRTFileStream}{RTFile\+Stream}} \&a\+\_\+stream)
+\begin{DoxyCompactList}\small\item\em Save tree contents to stream. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_acbcbd987b4f6549cd53e373e01b74efa}\label{classRTree_acbcbd987b4f6549cd53e373e01b74efa}} 
+void \mbox{\hyperlink{classRTree_acbcbd987b4f6549cd53e373e01b74efa}{Get\+First}} (\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} \&a\+\_\+it)
+\begin{DoxyCompactList}\small\item\em Get \textquotesingle{}first\textquotesingle{} for iteration. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a41da97d27b44e7d7e852150ced23a610}\label{classRTree_a41da97d27b44e7d7e852150ced23a610}} 
+void \mbox{\hyperlink{classRTree_a41da97d27b44e7d7e852150ced23a610}{Get\+Next}} (\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} \&a\+\_\+it)
+\begin{DoxyCompactList}\small\item\em Get Next for iteration. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a8b8c51698e5b8df1e715650a43aad7f4}\label{classRTree_a8b8c51698e5b8df1e715650a43aad7f4}} 
+bool \mbox{\hyperlink{classRTree_a8b8c51698e5b8df1e715650a43aad7f4}{Is\+Null}} (\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} \&a\+\_\+it)
+\begin{DoxyCompactList}\small\item\em Is iterator NULL, or at end? \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_aab228fbd816b5e5c93666c37b47635f3}\label{classRTree_aab228fbd816b5e5c93666c37b47635f3}} 
+DATATYPE \& \mbox{\hyperlink{classRTree_aab228fbd816b5e5c93666c37b47635f3}{Get\+At}} (\mbox{\hyperlink{classRTree_1_1Iterator}{Iterator}} \&a\+\_\+it)
+\begin{DoxyCompactList}\small\item\em Get object at iterator position. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_a00366dddc155c183a67277783bdc5f5e}\label{classRTree_a00366dddc155c183a67277783bdc5f5e}} 
+std\+::vector$<$ \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $>$ {\bfseries List\+Tree} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classRTree_af118b3fc992c88a61fb2e1ebc0c96fc9}\label{classRTree_af118b3fc992c88a61fb2e1ebc0c96fc9}} 
+\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$ {\bfseries Alloc\+Node} ()
+\item 
+\mbox{\Hypertarget{classRTree_a6b5438d9cb74dbfc63f3bfff275f506b}\label{classRTree_a6b5438d9cb74dbfc63f3bfff275f506b}} 
+void {\bfseries Free\+Node} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node)
+\item 
+\mbox{\Hypertarget{classRTree_aa24d93770aaa1042136daeabfdb8de3e}\label{classRTree_aa24d93770aaa1042136daeabfdb8de3e}} 
+void {\bfseries Init\+Node} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node)
+\item 
+\mbox{\Hypertarget{classRTree_aa065e71784e5cac81acd16c07c6abe5e}\label{classRTree_aa065e71784e5cac81acd16c07c6abe5e}} 
+void {\bfseries Init\+Rect} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect)
+\item 
+\mbox{\Hypertarget{classRTree_af8e10a4e616414ddf6c0ee40a6c95664}\label{classRTree_af8e10a4e616414ddf6c0ee40a6c95664}} 
+bool {\bfseries Insert\+Rect\+Rec} (const \mbox{\hyperlink{structRTree_1_1Branch}{Branch}} \&a\+\_\+branch, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$$\ast$a\+\_\+new\+Node, int a\+\_\+level)
+\item 
+\mbox{\Hypertarget{classRTree_a0a9b36fceaa83240e41d67b7665f6d3d}\label{classRTree_a0a9b36fceaa83240e41d67b7665f6d3d}} 
+bool {\bfseries Insert\+Rect} (const \mbox{\hyperlink{structRTree_1_1Branch}{Branch}} \&a\+\_\+branch, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$$\ast$a\+\_\+root, int a\+\_\+level)
+\item 
+\mbox{\Hypertarget{classRTree_a19dc96034d7a3230ba877953247457e1}\label{classRTree_a19dc96034d7a3230ba877953247457e1}} 
+\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} {\bfseries Node\+Cover} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node)
+\item 
+\mbox{\Hypertarget{classRTree_a1028d814e1f54328cf58371ea4f9f9bf}\label{classRTree_a1028d814e1f54328cf58371ea4f9f9bf}} 
+bool {\bfseries Add\+Branch} (const \mbox{\hyperlink{structRTree_1_1Branch}{Branch}} $\ast$a\+\_\+branch, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$$\ast$a\+\_\+new\+Node)
+\item 
+\mbox{\Hypertarget{classRTree_adcdcac926b2de35cc1f4f07e02b70bf6}\label{classRTree_adcdcac926b2de35cc1f4f07e02b70bf6}} 
+void {\bfseries Disconnect\+Branch} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, int a\+\_\+index)
+\item 
+\mbox{\Hypertarget{classRTree_a142464629cd61c2541d6d0e0cc7d2d80}\label{classRTree_a142464629cd61c2541d6d0e0cc7d2d80}} 
+int {\bfseries Pick\+Branch} (const \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node)
+\item 
+\mbox{\Hypertarget{classRTree_a295ad765615975e4b848592e424a5ca2}\label{classRTree_a295ad765615975e4b848592e424a5ca2}} 
+\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} {\bfseries Combine\+Rect} (const \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rectA, const \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rectB)
+\item 
+\mbox{\Hypertarget{classRTree_aec268045161713d5225ed8151c5068dd}\label{classRTree_aec268045161713d5225ed8151c5068dd}} 
+void {\bfseries Split\+Node} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, const \mbox{\hyperlink{structRTree_1_1Branch}{Branch}} $\ast$a\+\_\+branch, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$$\ast$a\+\_\+new\+Node)
+\item 
+\mbox{\Hypertarget{classRTree_a7958e17fc046e5d648d8e23ffc82e849}\label{classRTree_a7958e17fc046e5d648d8e23ffc82e849}} 
+ELEMTYPEREAL {\bfseries Rect\+Spherical\+Volume} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect)
+\item 
+\mbox{\Hypertarget{classRTree_af9f63fef551a4c3a42cd915618a9917a}\label{classRTree_af9f63fef551a4c3a42cd915618a9917a}} 
+ELEMTYPEREAL {\bfseries Rect\+Volume} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect)
+\item 
+\mbox{\Hypertarget{classRTree_a224ba0af4dcb435dbb016327307d664b}\label{classRTree_a224ba0af4dcb435dbb016327307d664b}} 
+ELEMTYPEREAL {\bfseries Calc\+Rect\+Volume} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect)
+\item 
+\mbox{\Hypertarget{classRTree_a3b8fdb0a33793dba49f9870868a95a43}\label{classRTree_a3b8fdb0a33793dba49f9870868a95a43}} 
+void {\bfseries Get\+Branches} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, const \mbox{\hyperlink{structRTree_1_1Branch}{Branch}} $\ast$a\+\_\+branch, \mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars)
+\item 
+\mbox{\Hypertarget{classRTree_a282f6ef6b93f714d8a8eca3c4d587cbd}\label{classRTree_a282f6ef6b93f714d8a8eca3c4d587cbd}} 
+void {\bfseries Choose\+Partition} (\mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars, int a\+\_\+min\+Fill)
+\item 
+\mbox{\Hypertarget{classRTree_a88e9eef4ad30d4dee0c783df5e6840a0}\label{classRTree_a88e9eef4ad30d4dee0c783df5e6840a0}} 
+void {\bfseries Load\+Nodes} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+nodeA, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+nodeB, \mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars)
+\item 
+\mbox{\Hypertarget{classRTree_aac207d4389fcca1aa0b72361d84117ec}\label{classRTree_aac207d4389fcca1aa0b72361d84117ec}} 
+void {\bfseries Init\+Par\+Vars} (\mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars, int a\+\_\+max\+Rects, int a\+\_\+min\+Fill)
+\item 
+\mbox{\Hypertarget{classRTree_af4232dd5fd978fcce12ce32f9df20f58}\label{classRTree_af4232dd5fd978fcce12ce32f9df20f58}} 
+void {\bfseries Pick\+Seeds} (\mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars)
+\item 
+\mbox{\Hypertarget{classRTree_a5da8614a152145988f010a0b7ff9cb4d}\label{classRTree_a5da8614a152145988f010a0b7ff9cb4d}} 
+void {\bfseries Classify} (int a\+\_\+index, int a\+\_\+group, \mbox{\hyperlink{structRTree_1_1PartitionVars}{Partition\+Vars}} $\ast$a\+\_\+par\+Vars)
+\item 
+\mbox{\Hypertarget{classRTree_a64a1092e85775014ce01e1bb6bc8a938}\label{classRTree_a64a1092e85775014ce01e1bb6bc8a938}} 
+bool {\bfseries Remove\+Rect} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect, const DATATYPE \&a\+\_\+id, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$$\ast$a\+\_\+root)
+\item 
+\mbox{\Hypertarget{classRTree_a519d3084a57b45ed4e4167b382bc977e}\label{classRTree_a519d3084a57b45ed4e4167b382bc977e}} 
+bool {\bfseries Remove\+Rect\+Rec} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect, const DATATYPE \&a\+\_\+id, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{structRTree_1_1ListNode}{List\+Node}} $\ast$$\ast$a\+\_\+list\+Node)
+\item 
+\mbox{\Hypertarget{classRTree_aa688a31e4de0090985045cfabfa42d2d}\label{classRTree_aa688a31e4de0090985045cfabfa42d2d}} 
+\mbox{\hyperlink{structRTree_1_1ListNode}{List\+Node}} $\ast$ {\bfseries Alloc\+List\+Node} ()
+\item 
+\mbox{\Hypertarget{classRTree_a0c92660832f03d899608d73b994e95a5}\label{classRTree_a0c92660832f03d899608d73b994e95a5}} 
+void {\bfseries Free\+List\+Node} (\mbox{\hyperlink{structRTree_1_1ListNode}{List\+Node}} $\ast$a\+\_\+list\+Node)
+\item 
+\mbox{\Hypertarget{classRTree_ac873c3cd745b8665eb57283c3bb57a0d}\label{classRTree_ac873c3cd745b8665eb57283c3bb57a0d}} 
+bool {\bfseries Overlap} (\mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rectA, \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rectB) const
+\item 
+\mbox{\Hypertarget{classRTree_a5d2b072588eae9e9058224942ae0294f}\label{classRTree_a5d2b072588eae9e9058224942ae0294f}} 
+void {\bfseries Re\+Insert} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{structRTree_1_1ListNode}{List\+Node}} $\ast$$\ast$a\+\_\+list\+Node)
+\item 
+\mbox{\Hypertarget{classRTree_af297d98acedb8cbacd9c4c9347fc48ce}\label{classRTree_af297d98acedb8cbacd9c4c9347fc48ce}} 
+bool {\bfseries Search} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{structRTree_1_1Rect}{Rect}} $\ast$a\+\_\+rect, int \&a\+\_\+found\+Count, std\+::function$<$ bool(const DATATYPE \&)$>$ callback) const
+\item 
+\mbox{\Hypertarget{classRTree_a5045d833566114335162fda10d58081d}\label{classRTree_a5045d833566114335162fda10d58081d}} 
+void {\bfseries Remove\+All\+Rec} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node)
+\item 
+\mbox{\Hypertarget{classRTree_a2508b9d85f5b5f553b313356c05c6e0c}\label{classRTree_a2508b9d85f5b5f553b313356c05c6e0c}} 
+void {\bfseries Reset} ()
+\item 
+\mbox{\Hypertarget{classRTree_a22345d494c1d6bf907444f17802bd864}\label{classRTree_a22345d494c1d6bf907444f17802bd864}} 
+void {\bfseries Count\+Rec} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, int \&a\+\_\+count)
+\item 
+\mbox{\Hypertarget{classRTree_a53a8af8a04a9a4a9eb93a6a0792fea95}\label{classRTree_a53a8af8a04a9a4a9eb93a6a0792fea95}} 
+bool {\bfseries Save\+Rec} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{classRTFileStream}{RTFile\+Stream}} \&a\+\_\+stream)
+\item 
+\mbox{\Hypertarget{classRTree_aa432ad1d5dfc151c1f8eac388af41968}\label{classRTree_aa432ad1d5dfc151c1f8eac388af41968}} 
+bool {\bfseries Load\+Rec} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$a\+\_\+node, \mbox{\hyperlink{classRTFileStream}{RTFile\+Stream}} \&a\+\_\+stream)
+\item 
+\mbox{\Hypertarget{classRTree_aa2d9c8b258ab38f37f10cabf6018bab0}\label{classRTree_aa2d9c8b258ab38f37f10cabf6018bab0}} 
+void {\bfseries Copy\+Rec} (\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$current, \mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$other)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classRTree_a5028f4e28918519bc70cb1f615316582}\label{classRTree_a5028f4e28918519bc70cb1f615316582}} 
+\mbox{\hyperlink{structRTree_1_1Node}{Node}} $\ast$ \mbox{\hyperlink{classRTree_a5028f4e28918519bc70cb1f615316582}{m\+\_\+root}}
+\begin{DoxyCompactList}\small\item\em Root of tree. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classRTree_af26d4beb8ce3a381ee75eabeec4727e3}\label{classRTree_af26d4beb8ce3a381ee75eabeec4727e3}} 
+ELEMTYPEREAL \mbox{\hyperlink{classRTree_af26d4beb8ce3a381ee75eabeec4727e3}{m\+\_\+unit\+Sphere\+Volume}}
+\begin{DoxyCompactList}\small\item\em Unit sphere constant for required number of dimensions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$\newline
+class RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}
+
+Implementation of \mbox{\hyperlink{classRTree}{RTree}}, a multidimensional bounding rectangle tree. Example usage\+: For a 3-\/dimensional tree use RTree$<$\+Object$\ast$, float, 3$>$ my\+Tree;
+
+This modified, templated C++ version by Greg Douglas at Auran (\href{http://www.auran.com}{\texttt{ http\+://www.\+auran.\+com}})
+
+DATATYPE Referenced data, should be int, void$\ast$, obj$\ast$ etc. no larger than sizeof$<$void$\ast$$>$ and simple type ELEMTYPE Type of element such as int or float NUMDIMS Number of dimensions such as 2 or 3 ELEMTYPEREAL Type of element that allows fractional and large values such as float or double, for use in volume calcs
+
+NOTES\+: Inserting and removing data requires the knowledge of its constant Minimal Bounding Rectangle. This version uses new/delete for nodes, I recommend using a fixed size allocator for efficiency. Instead of using a callback function for returned results, I recommend and efficient pre-\/sized, grow-\/only memory array similar to MFC CArray or STL Vector for returning search query result. 
+
+Definition at line 56 of file RTree.\+hpp.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classRTree_afaccb2e611f17ff46b623771ad7043d7}\label{classRTree_afaccb2e611f17ff46b623771ad7043d7}} 
+\doxysubsubsection{\texorpdfstring{anonymous enum}{anonymous enum}}
+{\footnotesize\ttfamily template$<$class DATATYPE , class ELEMTYPE , int NUMDIMS, class ELEMTYPEREAL  = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$ \\
+anonymous enum}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAXNODES@{MAXNODES}!RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}!MAXNODES@{MAXNODES}}}\mbox{\Hypertarget{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}\label{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}} 
+MAXNODES&Max elements in node. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MINNODES@{MINNODES}!RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}!MINNODES@{MINNODES}}}\mbox{\Hypertarget{classRTree_afaccb2e611f17ff46b623771ad7043d7a3be3d8c82fd5bfbd5e5a496e9877d71a}\label{classRTree_afaccb2e611f17ff46b623771ad7043d7a3be3d8c82fd5bfbd5e5a496e9877d71a}} 
+MINNODES&Min elements in node. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 68 of file RTree.\+hpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{69   \{}
+\DoxyCodeLine{70     \mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7ac05afe446df73fa67991e5199453a37f}{MAXNODES}} = TMAXNODES,                         }
+\DoxyCodeLine{71     \mbox{\hyperlink{classRTree_afaccb2e611f17ff46b623771ad7043d7a3be3d8c82fd5bfbd5e5a496e9877d71a}{MINNODES}} = TMINNODES,                         }
+\DoxyCodeLine{72   \};}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classRTree_a98d1f0a325921db826b2a2d5a407c9be}\label{classRTree_a98d1f0a325921db826b2a2d5a407c9be}} 
+\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}!Insert@{Insert}}
+\index{Insert@{Insert}!RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}
+\doxysubsubsection{\texorpdfstring{Insert()}{Insert()}}
+{\footnotesize\ttfamily template$<$class DATATYPE , class ELEMTYPE , int NUMDIMS, class ELEMTYPEREAL  = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$ \\
+void \mbox{\hyperlink{classRTree}{RTree}}$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Insert (\begin{DoxyParamCaption}\item[{const ELEMTYPE}]{a\+\_\+min\mbox{[}\+NUMDIMS\mbox{]},  }\item[{const ELEMTYPE}]{a\+\_\+max\mbox{[}\+NUMDIMS\mbox{]},  }\item[{const DATATYPE \&}]{a\+\_\+data\+Id }\end{DoxyParamCaption})}
+
+Insert entry 
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+min} & Min of bounding rect \\
+\hline
+{\em a\+\_\+max} & Max of bounding rect \\
+\hline
+{\em a\+\_\+data\+Id} & Positive Id of data. Maybe zero, but negative numbers not allowed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classRTree_a1b4b6b4c73bc47029ba696c49265c043}\label{classRTree_a1b4b6b4c73bc47029ba696c49265c043}} 
+\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}!Remove@{Remove}}
+\index{Remove@{Remove}!RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}
+\doxysubsubsection{\texorpdfstring{Remove()}{Remove()}}
+{\footnotesize\ttfamily template$<$class DATATYPE , class ELEMTYPE , int NUMDIMS, class ELEMTYPEREAL  = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$ \\
+void \mbox{\hyperlink{classRTree}{RTree}}$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Remove (\begin{DoxyParamCaption}\item[{const ELEMTYPE}]{a\+\_\+min\mbox{[}\+NUMDIMS\mbox{]},  }\item[{const ELEMTYPE}]{a\+\_\+max\mbox{[}\+NUMDIMS\mbox{]},  }\item[{const DATATYPE \&}]{a\+\_\+data\+Id }\end{DoxyParamCaption})}
+
+Remove entry 
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+min} & Min of bounding rect \\
+\hline
+{\em a\+\_\+max} & Max of bounding rect \\
+\hline
+{\em a\+\_\+data\+Id} & Positive Id of data. Maybe zero, but negative numbers not allowed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classRTree_af98c1c13f24083a0a656b09a602c331b}\label{classRTree_af98c1c13f24083a0a656b09a602c331b}} 
+\index{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}!Search@{Search}}
+\index{Search@{Search}!RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$@{RTree$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$}}
+\doxysubsubsection{\texorpdfstring{Search()}{Search()}}
+{\footnotesize\ttfamily template$<$class DATATYPE , class ELEMTYPE , int NUMDIMS, class ELEMTYPEREAL  = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2$>$ \\
+int \mbox{\hyperlink{classRTree}{RTree}}$<$ DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES $>$\+::Search (\begin{DoxyParamCaption}\item[{const ELEMTYPE}]{a\+\_\+min\mbox{[}\+NUMDIMS\mbox{]},  }\item[{const ELEMTYPE}]{a\+\_\+max\mbox{[}\+NUMDIMS\mbox{]},  }\item[{std\+::function$<$ bool(const DATATYPE \&)$>$}]{callback }\end{DoxyParamCaption}) const}
+
+Find all within search rectangle 
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+min} & Min of search bounding rect \\
+\hline
+{\em a\+\_\+max} & Max of search bounding rect \\
+\hline
+{\em a\+\_\+search\+Result} & Search result array. Caller should set grow size. Function will reset, not append to array. \\
+\hline
+{\em a\+\_\+result\+Callback} & Callback function to return result. Callback should return \textquotesingle{}true\textquotesingle{} to continue searching \\
+\hline
+{\em a\+\_\+context} & User context to pass as parameter to a\+\_\+result\+Callback \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the number of entries found 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\+Utils/RTree.\+hpp\end{DoxyCompactItemize}

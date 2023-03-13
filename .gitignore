@@ -25,3 +25,5 @@ Visualisations/*
 profiling/*
 *.stl
 *.log
+profiling/*
+pythonScripts/*
