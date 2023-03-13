@@ -2,7 +2,7 @@
 #include "SkinningTest.hpp"
 
 
-class TetrahedraliseTest : public SkinningTest
+class TetrahedraliseTest : public MeshTest
 {
 
 protected:
@@ -10,7 +10,6 @@ protected:
     {
     }
 
-e
     virtual void SetUp() override
     {
         getFilePaths();

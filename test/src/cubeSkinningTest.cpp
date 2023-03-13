@@ -3,7 +3,7 @@
 class cubeSkinningTest : public SkinningTest 
 {
  protected:
-    cubeSkinningTest() : SkinningTest("unit_cube.e"){} 
+    cubeSkinningTest() : SkinningTest("testingMeshes/unit_cube.e"){} 
 
     virtual void OverRide() {BasicTest::TearDown();}
 };
