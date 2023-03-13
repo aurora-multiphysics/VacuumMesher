@@ -7,7 +7,7 @@ class MeshTest : public BasicTest
 public:
     
 protected:
-    MeshTest(std::string meshFile) : BasicTest(), filename(meshFile)
+    MeshTest(std::string meshfile) : BasicTest(), filename(meshfile)
     {
     }
 
@@ -18,22 +18,10 @@ protected:
         setMesh();
     }
 
-    virtual void getFilePaths() 
-    {
-        filenameNoExt = std::filesystem::path(filename).stem().string();
-        filepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + ".e"; 
-        refSurfaceFilepath = "./test/testingMeshes/" + filenameNoExt + "/" + filenameNoExt + "_surf.e";
-    }
-
     virtual void setMesh() 
     {   
         mesh = std::make_shared<libMesh::Mesh>(init->comm());
-        readMesh(mesh, filepath);
-    }
-
-    virtual void readMesh(std::shared_ptr<libMesh::Mesh> libmeshMesh, std::string filename) 
-    {
-        libmeshMesh->read(filename);
+        mesh->read(meshfile);
     }
 
     //Libmesh Mesh object

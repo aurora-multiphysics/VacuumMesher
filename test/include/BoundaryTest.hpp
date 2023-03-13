@@ -15,23 +15,19 @@ protected:
 
     virtual void SetUp() override
     {
-        getFilePaths();
+        // Initialise all meshes, read in starting mesh
         setMesh();
-    }
 
-    virtual void getFilePaths() override
-    {
-        MeshTest::getFilePaths();
-        boundaryFilename = filenameNoExt + "_bound.e";
-        boundaryPath = "./test/testingMeshes/" + boundaryFilename;
+        // 
+        getSurf
     }
 
     virtual void setMesh() override
     {   
-        createBound(filepath);
-        readMesh(mesh, boundaryPath);
+        MeshTest::setMesh();
+        boundaryMesh = std::make_shared<libMesh::Mesh>(init->comm());
     }
 
+    std::shared_ptr<libMesh::Mesh> boundaryMesh = nullptr;
     //File name of the mesh to be skinned
-    std::string boundaryFilename, boundaryPath;
 };

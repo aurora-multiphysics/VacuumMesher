@@ -1,5 +1,6 @@
 #include "BoundaryGeneration/boundaryGeneration.hpp"
 #include "MeshContainer.hpp"
+#include "SurfaceMeshing/surfaceMeshing.hpp"
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "Utils/parseFlags.hpp"
 #include <chrono>
@@ -21,9 +22,6 @@ int main(int argc, const char **argv) {
   MeshContainer meshes(init, flags.infile.value());
 
   // Read volume mesh
-  getSurface(meshes.userMesh().libmeshMesh(),
-             meshes.skinnedMesh().libmeshMesh(), meshes.surfaceFaceMap(), true,
-             meshes.skinFilename_);
-
+  getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), &(meshes.surfaceFaceMap()));
   return 0;
 }

@@ -17,6 +17,32 @@
 // using namespace libMesh;
 
 /**
+ * Method to retrieve the "skin" of a subest of the input \p mesh, and store it
+ * in \p surfaceMesh. This subset is defined by \p elSet, a set of element id's
+ * in \p mesh that you want the skin of. \p setting writeMesh to true will write
+ * the surfaceMesh out with a given \p outputFilename, which by default is
+ * "surface_mesh.e".
+ */
+void getSurface(libMesh::Mesh &mesh, 
+                libMesh::Mesh &surfaceMesh,
+                std::vector<libMesh::Elem*> &elSet, 
+                std::multimap<unsigned int, unsigned int> *surfaceFaceMap,
+                bool writeMesh = false,
+                bool search = true,
+                std::string outputFilename = "surface_mesh.e");
+
+
+/**
+ * Method to retrieve the "skin" of an input \p mesh, and store it in \p
+ * surfaceMesh. \p setting writeMesh to true will write the surfaceMesh out with
+ * a given \p outputFilename, which by default is "surface_mesh.e".
+ */
+void getSurface(libMesh::Mesh &mesh, 
+                libMesh::Mesh &surfaceMesh,
+                bool writeMesh = false,
+                std::string outputFilename = "surface_mesh.e");                
+
+/**
  * Method to retrieve the "skin" of an input \p mesh, and store it in \p
  * surfaceMesh. \p surfaceFaceMap is a multimap which maps from element id's in
  * the original mesh to the face id's of that element that lie on the skin. This
@@ -26,30 +52,12 @@
  * to true will write the surfaceMesh out with a given \p outputFilename, which
  * by default is "surface_mesh.e"
  */
-void getSurface(libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
-                std::multimap<unsigned int, unsigned int> &surfaceFaceMap,
+void getSurface(libMesh::Mesh &mesh, 
+                libMesh::Mesh &surfaceMesh,
+                std::multimap<unsigned int, unsigned int> *surfaceFaceMap,
                 bool writeMesh = false,
                 std::string outputFilename = "surface_mesh.e");
 
-/**
- * Method to retrieve the "skin" of an input \p mesh, and store it in \p
- * surfaceMesh. \p setting writeMesh to true will write the surfaceMesh out with
- * a given \p outputFilename, which by default is "surface_mesh.e".
- */
-void getSurface(libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
-                bool writeMesh = false,
-                std::string outputFilename = "surface_mesh.e");
-
-/**
- * Method to retrieve the "skin" of a subest of the input \p mesh, and store it
- * in \p surfaceMesh. This subset is defined by \p elSet, a set of element id's
- * in \p mesh that you want the skin of. \p setting writeMesh to true will write
- * the surfaceMesh out with a given \p outputFilename, which by default is
- * "surface_mesh.e".
- */
-void getSurface(libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
-                std::vector<int> &elSet, bool writeMesh = false,
-                std::string outputFilename = "surface_mesh.e");
 
 /**
  *

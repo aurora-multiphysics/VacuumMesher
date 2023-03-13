@@ -8,6 +8,11 @@
 #include "initer.h"
 #include "Tetrahedralisation/tetMaker.hpp"
 #include "SurfaceMeshing/surfaceMeshing.hpp"
+#include "BoundaryGeneration/boundaryGeneration.hpp"
+#include "MeshContainer.hpp"
+#include "Tetrahedralisation/removeDupeNodes.hpp"
+#include "Utils/parseFlags.hpp"
+#include <chrono>
 #include "algorithm"
 #include <filesystem>
 

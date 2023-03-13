@@ -3,4 +3,4 @@
 #message(STATUS ${libmesh_INCLUDE})
 add_executable(runTests ${projectSrc} ${testSrc})
 target_include_directories(runTests PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/test/include ${GTEST_INCLUDE_DIRS})
-target_link_libraries(runTests ${GTEST_LIBRARIES} pthread ${libmesh_LIBS} MPI::MPI_CXX igl::glfw igl::embree)
+target_link_libraries(runTests ${GTEST_LIBRARIES} pthread MPI::MPI_CXX VacuumMeshing mesh_opt)
