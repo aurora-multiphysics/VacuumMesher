@@ -2,12 +2,10 @@ name: BuildTest
 on:
   push:
     branches:
-       - master
-       - manifoldSplitter
+       - main
   pull_request:
     branches:
-       - master
-       - manifoldSplitter
+       - main
 
 jobs:
   docker-build-test-ubuntu:
