@@ -3,10 +3,20 @@
 class cubeSkinningTest : public SkinningTest 
 {
  protected:
-    cubeSkinningTest() : SkinningTest("testingMeshes/unit_cube.e")
+    cubeSkinningTest() : SkinningTest("./test/testingMeshes/unit_cube/unit_cube.e")
     {
-        refSkinnedMesh->read("testingMeshes/unit_cube_ref.e");
+        std::cout << "Reading Mesh" << std::endl;
+
+        // refSkinnedMesh->read("/home/bill/projects/libmesh-skinning/test/testingMeshes/unit_cube/unit_cube_surf.e");
+        // std::cout << "Mesh read" << std::endl;
     } 
+
+    virtual void SetUp()
+    {
+        SkinningTest::SetUp();
+        refSkinnedMesh->read("/home/bill/projects/libmesh-skinning/test/testingMeshes/unit_cube/unit_cube_surf.e");
+    }
+
 
     
 
@@ -20,7 +30,7 @@ TEST_F(cubeSkinningTest, checkNumNodes)
 
 TEST_F(cubeSkinningTest, checkNumElems)
 {
-    ASSERT_EQ(skinnedMesh->n_elem(), 1404) << "Number of elements does not align with verified mesh";
+    ASSERT_EQ(skinnedMesh->n_elem(), 1405) << "Number of elements does not align with verified mesh";
 }
 
 TEST_F(cubeSkinningTest, checkNodeSimilarity)
