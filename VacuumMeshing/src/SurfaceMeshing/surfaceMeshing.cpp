@@ -49,11 +49,11 @@ void getSurface(libMesh::Mesh &mesh,
     //Variables to store element information so it is easily accessible later
     //This implementation does assume only one element type is used
     libMesh::ElemType elem_type, face_type; 
-    int num_elem_faces, num_face_nodes;
+    int num_elem_sides, num_face_nodes;
 
     //Use getElemInfo method to retrieve Element Info 
     getElemInfo(elem_type, face_type, 
-        mesh.elem_ptr(0), num_elem_faces, num_face_nodes);
+        mesh.elem_ptr(0), num_elem_sides, num_face_nodes);
         
     //Counter to store the number of surface elements
     int surface_elem_counter = 0;
@@ -75,7 +75,7 @@ void getSurface(libMesh::Mesh &mesh,
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
-        std::vector<int> surfaceFaces(num_elem_faces, -1);
+        std::vector<int> surfaceFaces(num_elem_sides, -1);
         // surfaceFaces.reserve(num_elem_faces);
 
         //Method to check whether the current element has faces that are on the surface
