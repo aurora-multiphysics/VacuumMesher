@@ -75,7 +75,7 @@ void getSurface(libMesh::Mesh &mesh,
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate
         //  there are no more surface elements
-        std::vector<int> surfaceFaces(num_face_nodes, -1);
+        std::vector<int> surfaceFaces(num_elem_faces, -1);
         // surfaceFaces.reserve(num_elem_faces);
 
         //Method to check whether the current element has faces that are on the surface
