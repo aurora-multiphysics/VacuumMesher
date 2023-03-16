@@ -67,7 +67,7 @@ RUN cd /$WORKDIR && \
     cd libmeshSkinning && \
     mkdir build && \
     cd build && \
-    cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DLIBMESH_CONF_DIR=/usr/local/bin ../ && \
+    cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
     make -j "$compile_cores" && \
     cd /opt/libmeshSkinning && \
     ./build/test/runTests
