@@ -65,7 +65,6 @@ RUN cd /$WORKDIR && \
 RUN cd /$WORKDIR && \
     git clone https://github.com/aurora-multiphysics/libmeshSkinning.git && \
     cd libmeshSkinning && \
-    git checkout manifoldSplitter && \
     mkdir build && \
     cd build && \
     cmake -DFETCHCONTENT_SOURCE_DIR_LIBIGL=/opt/libigl -DLIBMESH_CONF_DIR=/usr/local/bin ../ && \
