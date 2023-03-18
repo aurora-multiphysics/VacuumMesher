@@ -9,11 +9,11 @@ void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
   Eigen::MatrixXd tempVerts;
   Eigen::MatrixXi tempElems;
   // Generate boundary mesh
-  genBoundary(tempVerts, tempElems, length, subdivisions, triSettings, 1e-04);
+  genBoundary(tempVerts, tempElems, length, subdivisions, triSettings, 1e-08);
   // Turn IGL mesh into libmesh Mesh
   IGLToLibMesh(boundaryMesh, tempVerts, tempElems);
   // Combine IGL mesh with boundary
-  combineMeshes(1e-06, boundaryMesh, skinnedMesh);
+  combineMeshes(1e-07, boundaryMesh, skinnedMesh);
 }
 
 void generateCoilBoundary(libMesh::Mesh &mesh, libMesh::Mesh &boundaryMesh, double length,

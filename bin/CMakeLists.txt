@@ -40,6 +40,12 @@ add_executable(exampleTet texExample.cpp ${projectSrc})
 target_include_directories(exampleTet PUBLIC ${CMAKE_SOURCE_DIR}/include ${libmesh_INCLUDE})
 target_link_libraries(exampleTet PUBLIC MPI::MPI_CXX mesh_opt VacuumMeshing) 
 
+#Example
+add_executable(genVac generateVac.cpp ${projectSrc})
+target_include_directories(genVac PUBLIC ${CMAKE_SOURCE_DIR}/include ${libmesh_INCLUDE})
+target_link_libraries(genVac PUBLIC MPI::MPI_CXX mesh_opt VacuumMeshing) 
+
+
 # #coil poc
 # add_executable(coilPoc poc.cpp ${projectSrc})
 # target_include_directories(coilPoc PRIVATE ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
