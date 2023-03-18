@@ -15,7 +15,6 @@ MeshContainer::MeshContainer(const libMesh::LibMeshInit &init,
     : userMesh_(init), skinnedMesh_(init), boundaryMesh_(init),
       vacuumMesh_(init) {
   setFilenames(meshFilepath);
-  std::cout << meshFilepath << std::endl;
   // Read mesh from file user has specified
   std::cout << "Reading Mesh" << std::endl;
   userMesh_.libmeshMesh().read(meshFilepath);

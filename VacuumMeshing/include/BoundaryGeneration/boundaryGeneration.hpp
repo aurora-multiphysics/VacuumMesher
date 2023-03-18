@@ -12,7 +12,7 @@
   is stored in the \c boundaryMesh. The \c length and number of mesh \c subdivisions are 
   required inputs, as well as the \c triSettings that are input to the triangle lib calls */
 void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
-                 double length, int subdivisions, std::string triSettings);
+                 double length, int subdivisions, double tol, std::string triSettings);
 
 /** Method to generate the boundary for a coil. A method exists specifically for
   coils, as often the boundary needs to be coplanar with some coil "in" and

@@ -3,7 +3,10 @@
 #include "SurfaceMeshing/surfaceMeshing.hpp"
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "Utils/parseFlags.hpp"
+#include "Utils/divConq.hpp"
 #include <chrono>
+
+// Global tolerance for rTree merges
 
 int main(int argc, const char** argv){
 
@@ -13,25 +16,25 @@ int main(int argc, const char** argv){
     // Setup simple argv for use with libMesh init
     std::string appName(argv[0]);
     std::vector<char *> libmeshArgv = {(char *)appName.data()};
-    std::cout << flags.tetSettings << std::endl;
+    // std::cout << flags.tetSettings << std::endl;
 
     // Initialise libmesh functions and mpi
     libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
     // Mesh container object, that has ownership of the mesh, surfaceMesh, Vacuum
     MeshContainer meshes(init, flags.infile.value());
 
+    ClosestPairFinder pairFinder(meshes.userMesh().libmeshMesh());
+    double tol = (pairFinder.closestPair3D(pairFinder.xPoints))/100;
     // Generate skinned mesh
     getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), &(meshes.surfaceFaceMap()), true, meshes.skinFilename_);
 
-    std::cout << "Got surf" << std::endl;
     // Get seed points for tetrahedralisation 
     Eigen::MatrixXd seed_points = getSeeds(meshes.skinnedMesh().libmeshMesh());
 
-    std::cout << "Got seeds" << std::endl;
     // long long int surfNodes = meshes.skinnedMesh().libmeshMesh().n_nodes();
     // Adds a boundary to the surface mesh
     addBoundary(meshes.skinnedMesh().libmeshMesh(), meshes.boundaryMesh().libmeshMesh(), flags.boundLen.value(),
-              flags.boundSubd.value(), flags.triSettings);
+              flags.boundSubd.value(), tol, flags.triSettings);
 
     meshes.boundaryMesh().libmeshMesh().write(meshes.boundFilename_);
 
@@ -42,11 +45,16 @@ int main(int argc, const char** argv){
 
     
 
+    auto t1 = std::chrono::high_resolution_clock::now();
     
     // Combine the vacuum mesh and the part mesh 
-    combineMeshes(1e-07, meshes.userMesh().libmeshMesh(),
+    combineMeshes(tol, meshes.userMesh().libmeshMesh(),
                   meshes.vacuumMesh().libmeshMesh(),
                   meshes.surfaceFaceMap());
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto t = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);   
+    std::cout << "Tol = " << tol << ", combine time = " << t.count() << std::endl;
     // auto end1 = std::chrono::steady_clock::now();
     // std::cout << "Elapsed time in milliseconds: "
     // << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()

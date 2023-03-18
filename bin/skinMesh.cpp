@@ -22,7 +22,7 @@ int main(int argc, const char **argv) {
   MeshContainer meshes(init, flags.infile.value());
 
   // Read volume mesh
-  getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), &(meshes.surfaceFaceMap()), true);
+  getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), &(meshes.surfaceFaceMap()));
 
   
   ClosestPairFinder loler(meshes.userMesh().libmeshMesh());

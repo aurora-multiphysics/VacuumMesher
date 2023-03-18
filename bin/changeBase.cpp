@@ -2,6 +2,7 @@
 #include "MeshContainer.hpp"
 #include "Tetrahedralisation/removeDupeNodes.hpp"
 #include "Utils/parseFlags.hpp"
+#include "Utils/divConq.hpp"
 #include <chrono>
 
 int main(int argc, const char **argv) {
@@ -17,6 +18,10 @@ int main(int argc, const char **argv) {
   // Create mesh object to store original model mesh
   MeshContainer meshes(init, flags.infile.value());
 
+  // 
+  ClosestPairFinder pairFinder(meshes.userMesh().libmeshMesh());
+  double tol = (pairFinder.closestPair3D(pairFinder.xPoints))/100;
+
   // If user has not specified the length of the boundary, then it is set here
   if (!flags.boundLen.has_value()) {
     // create bounding box around mesh
@@ -30,15 +35,14 @@ int main(int argc, const char **argv) {
   // Multimap to store which sides of the elements are boundary sides (i.e.
   // which sides have the null neighbor)
   getSurface(meshes.userMesh().libmeshMesh(),
-             meshes.skinnedMesh().libmeshMesh(), meshes.surfaceFaceMap(),
-             true);
+             meshes.skinnedMesh().libmeshMesh(), &meshes.surfaceFaceMap());
 
   // Convert surface mesh to libIGL compatible data structures
   meshes.skinnedMesh().createIglAnalogue();
 
   // Get seed points
   Eigen::MatrixXd seed_points =
-      getSeeds(meshes.skinnedMesh().libmeshMesh(), 1e-04);
+      getSeeds(meshes.skinnedMesh().libmeshMesh(), 1e-08);
 
   // Turn surfMesh into boundaryMesh
   generateCoilBoundary(meshes.userMesh().libmeshMesh(),
@@ -55,7 +59,7 @@ int main(int argc, const char **argv) {
   }
 
   // Tolerance for rTree combining of meshes
-  const double tol = 1e-05;
+  // const double tol = 1e-05;
 
   // Combine the boundary with the surface mesh to create a closed manifold we
   // can use for tetrahedrelisation
@@ -75,6 +79,6 @@ int main(int argc, const char **argv) {
   meshes.userMesh().libmeshMesh().write(meshes.vacuumFilename_);
   // // Write the mesh to either the value provided in the input flags, or a
   // default filepath
-
+  std::cout << "Tol, " << tol << std::endl;
   return 0;
 }

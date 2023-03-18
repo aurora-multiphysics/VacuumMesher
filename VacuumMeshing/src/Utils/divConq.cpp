@@ -186,48 +186,6 @@ void ClosestPairFinder::enumeratePotentialPairs(std::vector<libMesh::Node*> &X, 
     }
 }
 
-double ClosestPairFinder::closestPairHead(std::vector<libMesh::Node*> &X)
-{
-    std::vector<libMesh::Node*> Y = X;
-    sortByIthCoord(1, Y);
-
-    int n = X.size();
-    // Base cases
-    // if(n == 1){;}
-    if(n == 2){return dist(X[0], X[1]);}
-    if(n == 3){std::vector<double> dists{dist(X[0], X[1]), dist(X[0], X[2]), dist(X[1], X[2])}; return *std::min_element(dists.begin(), dists.end());}
-
-    // std::vector<libMesh::Node*>::iterator midPoint = X[n/2]; 
-
-    std::vector<libMesh::Node*> xS1(X.begin(), X.begin()+n/2);
-    std::vector<libMesh::Node*> xS2(X.begin()+n/2, X.end());
-
-    double midX = (**(X.begin()+n/2))(0);
-
-    double d1 = closestPair2D(xS1);
-    double d2 = closestPair2D(xS2);
-
-    double delta = std::min(d1, d2);
-
-    std::cout << "Recursion done" << std::endl;
-    std::vector<libMesh::Node*> S;
-    for(auto& node: Y)
-    {
-        if((midX-delta) <= (*node)(0) <= (midX+delta))
-        {
-            S.push_back(node);
-        }
-    }
-    std::cout << "Made Y" << std::endl;
-    for(auto& node: S)
-    {
-        for(int i = 1; i<=7; i++)
-        {
-            (dist(node, node+i) < delta) ? delta = dist(node, node+i) : delta = delta;
-        }
-    }
-    return delta;
-}
 
 void ClosestPairFinder::sortByIthCoord(unsigned int axis, std::vector<libMesh::Node*>& vec)
 {

@@ -70,7 +70,7 @@ void getSurface(libMesh::Mesh &mesh,
     std::vector<int> connectivity;
 
     // Loops over all the elements in the input vector 
-    for(auto&& elem: elSet)
+    for(auto& elem: elSet)
     {
         //Initialise vecotr to store sides of element that are on surface
         //, initialise all elements as -1, as this will be used to indicate

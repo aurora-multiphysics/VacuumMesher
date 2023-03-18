@@ -3,17 +3,17 @@
 #include "BoundaryGeneration/boundaryGeneration.hpp"
 
 void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
-                 double length, int subdivisions, std::string triSettings)
+                 double length, int subdivisions, double tol, std::string triSettings)
 {
   // Data structures to store boundary mesh
   Eigen::MatrixXd tempVerts;
   Eigen::MatrixXi tempElems;
   // Generate boundary mesh
-  genBoundary(tempVerts, tempElems, length, subdivisions, triSettings, 1e-08);
+  genBoundary(tempVerts, tempElems, length, subdivisions, triSettings, tol);
   // Turn IGL mesh into libmesh Mesh
   IGLToLibMesh(boundaryMesh, tempVerts, tempElems);
   // Combine IGL mesh with boundary
-  combineMeshes(1e-07, boundaryMesh, skinnedMesh);
+  combineMeshes(tol, boundaryMesh, skinnedMesh);
 }
 
 void generateCoilBoundary(libMesh::Mesh &mesh, libMesh::Mesh &boundaryMesh, double length,
