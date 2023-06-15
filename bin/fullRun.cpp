@@ -1,62 +1,85 @@
+#include "BoundaryGeneration/boundaryGeneration.hpp"
+#include "MeshContainer.hpp"
 #include "Tetrahedralisation/removeDupeNodes.hpp"
+#include "Utils/parseFlags.hpp"
 #include <chrono>
-int main(int argc, char** argv)
-{
-    std::string appName(argv[0]);
-    std::vector<char*> libmeshArgv = {(char*)appName.data()};
-    std::string path, filepath, filenameNoExt, surfFilename, boundFilename, tetFilename; 
-    std::string surfFilepath, boundFilepath, tetFilepath; 
-    std::string filename(argv[1]);
 
-    path = "./Meshes/";
-    filepath = path + filename;
-    filenameNoExt = filename.substr(0, filename.find("."));
+int main(int argc, const char **argv) {
+  inputFlags flags(parse_settings(argc, argv));
+  flags.setSwitches();
+  // Setup simple argv for use with libMesh init
+  std::string appName(argv[0]);
+  std::vector<char *> libmeshArgv = {(char *)appName.data()};
+  std::cout << flags.tetSettings << std::endl;
 
-    surfFilename = filenameNoExt + "_surf.e";
-    boundFilename = filenameNoExt + "_bound.e";
-    tetFilename = filenameNoExt + "_tet.e";
+  // 
+  libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
+  // Create mesh object to store original model mesh
+  MeshContainer meshes(init, flags.infile.value());
 
-    surfFilepath = path + surfFilename; 
-    boundFilepath = path + boundFilename;
-    tetFilepath = path + tetFilename; 
-    
-    libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
-    //Create mesh object to store original model mesh
-    libMesh::Mesh mesh(init.comm());
-    //Create mesh object to store surface mesh
-    libMesh::Mesh surfMesh(init.comm());
-    //Create mesh object to store vacuum mesh
-    libMesh::Mesh vacuumMesh(init.comm());
+  // If user has not specified the length of the boundary, then it is set here
+  if (!flags.boundLen.has_value()) {
+    // create bounding box around mesh
+    auto box = libMesh::MeshTools::create_bounding_box(
+        meshes.userMesh().libmeshMesh());
 
-    auto start1 = std::chrono::steady_clock::now();
-    mesh.read(filepath);
-    surfMesh.clear();
+    // Use bounding points to determine a suitable boundary length
+    flags.boundLen = 1.5 * (box.max() - box.min()).norm();
+  }
+  
+  // Multimap to store which sides of the elements are boundary sides (i.e.
+  // which sides have the null neighbor)
+  getSurface(meshes.userMesh().libmeshMesh(),
+             meshes.skinnedMesh().libmeshMesh(), &meshes.surfaceFaceMap());
+  // Convert surface mesh to libIGL compatible data structures
+  meshes.skinnedMesh().createIglAnalogue();
 
-    // Multimap to store which sides of the elements are boundary sides (i.e. which sides have the null neighbor)
-    std::multimap<unsigned int, unsigned int> surfaceFaceMap;
-    getSurface(mesh, surfMesh, surfaceFaceMap, true, surfFilepath);
-    // Get seed points for tetrahedralisation 
-    // surfMesh.read("./Meshes/target_surf_cubit.e");
-    Eigen::MatrixXd seed_points = getSeeds(surfMesh);
+  // Get seed points
+  Eigen::MatrixXd seed_points =
+      getSeeds(meshes.skinnedMesh().libmeshMesh(), 1e-04);
 
-    long long int surfNodes = surfMesh.n_nodes();
-    // Adds a boundary to the surface mesh
-    createBoundary(init, surfMesh, 1.2);
+  // Turn surfMesh into boundaryMesh
+  // generateCoilBoundary(meshes.userMesh().libmeshMesh(),
+  //                      meshes.boundaryMesh().libmeshMesh(),
+  //                      flags.boundLen.value(),
+  //                      flags.boundSubd.value(), flags.triSettings);
 
-    // Tetrahedralise everything
-    tetrahedraliseVacuumRegion(surfMesh, vacuumMesh, seed_points);
-    long long int totalNodes = mesh.n_nodes() + vacuumMesh.n_nodes();
-    
-    vacuumMesh.write("targetVac.e");
-    // Combine the vacuum mesh and the part mesh 
-    combineMeshes(1e-05, mesh, vacuumMesh, surfaceFaceMap);
-    auto end1 = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - start1).count()
-    << " ms" << std::endl;
-    long long int zero = totalNodes - (mesh.n_nodes() + surfNodes);
-    std::cout << "Is this 0?: " << zero << std::endl;
-    mesh.write(tetFilepath);
+  addBoundary(meshes.skinnedMesh().libmeshMesh(), meshes.boundaryMesh().libmeshMesh(),
+              flags.boundLen.value(),
+              flags.boundSubd.value(), flags.triSettings);
 
-    return 0;
+  std::cout << "Getting surface" << std::endl;
+
+
+  // We got the boundary mesh as a libmesh mesh, but we need its IGL version as well
+  meshes.boundaryMesh().createIglAnalogue();
+  // If verbose flag is set, output the boundaryMesh
+  if (flags.verbose) {
+    meshes.boundaryMesh().createLibmeshAnalogue();
+    meshes.boundaryMesh().libmeshMesh().write(meshes.boundFilename_);
+  }
+
+  // Tolerance for rTree combining of meshes
+  const double tol = 1e-05;
+
+  // Combine the boundary with the surface mesh to create a closed manifold we
+  // can use for tetrahedrelisation
+  // combineMeshes(
+  //     tol, meshes.boundaryMesh().iglVerts(), meshes.boundaryMesh().iglElems(),
+  //     meshes.skinnedMesh().iglVerts(), meshes.skinnedMesh().iglElems());
+
+  // Tetrahedralise everything
+  tetrahedraliseVacuumRegion(
+      meshes.boundaryMesh().iglVerts(), meshes.boundaryMesh().iglElems(),
+      meshes.vacuumMesh().libmeshMesh(), seed_points, flags.tetSettings);
+
+  //
+  combineMeshes(tol, meshes.userMesh().libmeshMesh(),
+                meshes.vacuumMesh().libmeshMesh(), meshes.surfaceFaceMap());
+
+  meshes.userMesh().libmeshMesh().write(meshes.vacuumFilename_);
+  // // Write the mesh to either the value provided in the input flags, or a
+  // default filepath
+
+  return 0;
 }
