@@ -53,26 +53,30 @@ int main(int argc, const char **argv) {
   // Turn surfMesh into boundaryMesh
 
 
-    generateCoilBoundary(meshes.userMesh().libmeshMesh(), meshes.boundaryMesh().libmeshMesh(),
+  generateCoilBoundary(meshes.userMesh().libmeshMesh(), meshes.boundaryMesh().libmeshMesh(),
                          flags.boundLen.value(), flags.boundSubd.value(), flags.triSettings);
 
 
 
 
   // If verbose flag is set, output the boundaryMesh
-  if (flags.verbose) {
-    meshes.boundaryMesh().createLibmeshAnalogue();
-    meshes.boundaryMesh().libmeshMesh().write(meshes.boundFilename_);
-  }                         
-
-
+                  
     const double tol = 1e-05;
       // Combine the boundary with the surface mesh to create a closed manifold we
   // can use for tetrahedrelisation
-  combineMeshes(
-      tol, meshes.boundaryMesh().iglVerts(), meshes.boundaryMesh().iglElems(),
-      meshes.skinnedMesh().iglVerts(), meshes.skinnedMesh().iglElems());
+  // combineMeshes(
+  //     tol, meshes.boundaryMesh().iglVerts(), meshes.boundaryMesh().iglElems(),
+  //     meshes.skinnedMesh().iglVerts(), meshes.skinnedMesh().iglElems());
 
+
+  combineMeshes(tol,
+              meshes.boundaryMesh().libmeshMesh(),
+              meshes.skinnedMesh().libmeshMesh());
+
+    if (flags.verbose) {
+    meshes.boundaryMesh().libmeshMesh().write(meshes.boundFilename_);
+  }     
+  meshes.boundaryMesh().createIglAnalogue();
   // Tetrahedralise everything
   tetrahedraliseVacuumRegion(
       meshes.boundaryMesh().iglVerts(), meshes.boundaryMesh().iglElems(),
@@ -85,8 +89,8 @@ int main(int argc, const char **argv) {
   meshes.userMesh().libmeshMesh().write(meshes.vacuumFilename_);
 
 
-  // We got the boundary mesh as a libmesh mesh, but we need its IGL version as well
-  meshes.boundaryMesh().createIglAnalogue();
+  // // We got the boundary mesh as a libmesh mesh, but we need its IGL version as well
+  // meshes.boundaryMesh().createIglAnalogue();
 
   return 0;
 }
