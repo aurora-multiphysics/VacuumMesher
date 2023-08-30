@@ -35,17 +35,18 @@ const std::unordered_map<std::string, OneArgHandle> OneArgs {
 };
 
 inputFlags parse_settings(int argc, const char* argv[]) {
+
   // inputFlags object we will return
   inputFlags settings;
 
-  // Start at one because arg 0 is the program name 
-  for(int i {1}; i < argc; i++) {
+  // Start at 1 because arg 0 is the exe name 
+  for(int i = 1; i < argc; i++) {
     std::string opt {argv[i]};
-
-    // Is this a NoArg?
-    if(auto j {NoArgs.find(opt)}; j != NoArgs.end())
+    // Check if this is a noArg
+    if(auto j = NoArgs.find(opt); j != NoArgs.end())
     {
-      j->second(settings); // Yes, handle it!
+      // If arg is found, set it's corresponding switch to true 
+      j->second(settings); 
     }
       
 
@@ -67,12 +68,15 @@ inputFlags parse_settings(int argc, const char* argv[]) {
     }    
 
 
-      
-      
 
     // Yes, possibly throw here, or just print an error
     else
       std::cerr << "unrecognized command-line option " << opt << std::endl;
+  }
+
+  if(settings.help = true)
+  {
+    settings.helpMessage();
   }
       
   if(!settings.infile)
@@ -86,7 +90,6 @@ inputFlags parse_settings(int argc, const char* argv[]) {
 
 void inputFlags::setSwitches()
 {
-
   if(order == 2)
   {
     tetSettings += "o2";
@@ -121,4 +124,19 @@ void inputFlags::setSwitches()
   }
 
   
+}
+
+void inputFlags::helpMessage()
+{
+  std::cout << "\nVacuumMesher "  <<
+      "Options:" << std::endl <<
+      "-h | --help        Print this help" << std::endl <<
+      "-v | --verbose     Print out more info from this program and contributing libs" << std::endl <<
+      "-i | --input       Specify the input mesh file" << std::endl <<
+      "-o | --output      Use non-defualt name for " << std::endl <<
+      "-p | --order       Set desired element order (stuck at 1 for now) " << std::endl <<
+      "--max_tri          Set maximum triangle area " << std::endl <<
+      "--max_tet          Set maximum tetrahedra volume" << std::endl <<
+      "--bound_subdiv     Set the number of subdivisions on one edge of the boundary" << std::endl <<
+      "--bound_len        Set the length of one edge of the boundary\n" << std::endl;
 }

@@ -31,8 +31,16 @@ struct inputFlags {
 
     // Small method to 
     void setSwitches();
+    void helpMessage();
 };
 
 
 // Function that will return an inputFlags struct from which we can access CLI flags
 inputFlags parse_settings(int argc, const char* argv[]);
+
+// Method to print out help message
+
+
+
+
+
