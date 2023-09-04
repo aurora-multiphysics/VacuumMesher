@@ -1,10 +1,15 @@
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
 #include <algorithm>
 
+SurfaceMeshGenerator::~SurfaceMeshGenerator() {
+  // DESTROY
+}
+
 SurfaceMeshGenerator::SurfaceMeshGenerator(
     libMesh::Mesh &meshRef, libMesh::Mesh &surfaceMeshRef,
-    std::vector<libMesh::Elem *> &elements) mesh(meshRef),
-    surfaceMesh(surfaceMeshRef) {
+    std::vector<libMesh::Elem *> elements)
+    : mesh(meshRef), surfaceMesh(surfaceMeshRef), el_set({}) {
+
   // Retrieve useful element info
   getElemInfo(elem_type, face_type, mesh.elem_ptr(0), num_elem_sides,
               num_face_nodes);
@@ -19,9 +24,8 @@ SurfaceMeshGenerator::SurfaceMeshGenerator(
   //  anything. A set containing all the element id's in the mesh is created for
   //  them
   if (!elements.empty()) {
-    this->el_set(el_set.begin(), el_set.end());
+    this->el_set = elements;
   } else {
-    el_set.reserve(mesh.n_elem());
     for (auto &elem : mesh.element_ptr_range()) {
       el_set.emplace_back(elem);
     }
@@ -64,9 +68,7 @@ void SurfaceMeshGenerator::isElementSurface(
 // Get surface for when the user just wants the whole mesh skinned, and not a
 // subsection of it
 //  i.e. they haven't specified an el_set
-void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh,
-                                      libMesh::Mesh &surfaceMesh,
-                                      bool writeMesh,
+void SurfaceMeshGenerator::getSurface(bool writeMesh,
                                       std::string output_filename) {
 
   // Counter to store the number of surface elements
@@ -88,15 +90,14 @@ void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh,
     // Instantiate vector to store sides that belong to the surface.
     //  Initialise all elements as -1, a value of -1 will be used to indicate
     //   end of list. This seems a bit more efficient that changing the size of
-    //   the vector
-    //    everytime a new surface face is found
+    //   the vector everytime a new surface face is found
     std::vector<int> surface_faces(num_elem_sides, -1);
     // surface_faces.reserve(num_elem_faces);
 
     // Method to check whether the current element has faces that are on the
     // surface. If they exist, the face ID's are stored in the  in the
     // surface_faces vector
-    if (el_set.size() < mesh.n_elems()) {
+    if (el_set.size() < mesh.n_elem()) {
       isElementSurface(elem, el_set, surface_faces);
     } else {
       isElementSurface(elem, surface_faces);
@@ -127,9 +128,7 @@ void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh,
         current_node_ids.push_back(global_node_id);
       }
 
-      if (surfaceFaceMap != nullptr) {
-        surfaceFaceMap->insert(std::make_pair(elem->id(), surface_faces[i]));
-      }
+      surface_face_map.insert(std::make_pair(elem->id(), surface_faces[i]));
 
       // Counter
       surface_elem_counter++;
@@ -194,6 +193,7 @@ void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh,
   if (writeMesh) {
     surfaceMesh.write(output_filename);
   }
+  std::cout << "SurfaceMeshGenerated" << std::endl;
 }
 
 // void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh, libMesh::Mesh
@@ -211,20 +211,20 @@ void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh,
 // }
 
 // Get surface for when the user DOES want only a subset of the mesh skinned
-void SurfaceMeshGenerator::getSurface(
-    libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
-    std::multimap<unsigned int, unsigned int> *surfaceFaceMap, bool writeMesh,
-    std::string output_filename) {
-  // Create a vector with all elements in it
-  std::vector<libMesh::Elem *> el_set;
-  el_set.reserve(mesh.n_elem());
-  for (auto &elem : mesh.element_ptr_range()) {
-    el_set.emplace_back(elem);
-  }
+// void SurfaceMeshGenerator::getSurface(
+//     libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
+//     std::multimap<unsigned int, unsigned int> *surface_face_map, bool
+//     writeMesh, std::string output_filename) {
+//   // Create a vector with all elements in it
+//   std::vector<libMesh::Elem *> el_set;
+//   el_set.reserve(mesh.n_elem());
+//   for (auto &elem : mesh.element_ptr_range()) {
+//     el_set.emplace_back(elem);
+//   }
 
-  getSurface(mesh, surfaceMesh, el_set, surfaceFaceMap, writeMesh, false,
-             output_filename);
-}
+//   getSurface(mesh, surfaceMesh, el_set, surface_face_map, writeMesh, false,
+//              output_filename);
+// }
 
 void SurfaceMeshGenerator::groupElems(
     libMesh::Mesh mesh,
