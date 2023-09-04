@@ -85,10 +85,7 @@ void combineMeshes(const double &tol, libMesh::Mesh &meshOne,
   // nodes. For example, if Node 4 in the surface mesh and Node 6 in the vacuum
   // mesh are the same, "id_map[4]" will return 6
   std::map<unsigned int, unsigned int> id_map;
-
-  // Loop over all the nodes in the original geometry. If the node is not a
-  // duplicate, add it to the mesh , if the node is a duplicate, it is
-  for (auto &node : meshTwo.local_node_ptr_range()) {
+  Get for (auto &node : meshTwo.local_node_ptr_range()) {
     // Create box representing the node to search rTree with
     std::array node_coords = {(*node)(0), (*node)(1), (*node)(2)};
     Box node_box = Box(node_coords, tol, node->id());
