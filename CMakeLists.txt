@@ -13,7 +13,7 @@ set(libmesh_INCLUDE ${LIBMESH_DIR}/include)
 link_directories (${LIBMESH_DIR}/lib/)
 
 #Get gtest and MPI packages
-find_package(GTest REQUIRED)
+find_package(Catch2 3 REQUIRED)
 find_package(MPI REQUIRED)
 # find_package(libmesh REQUIRED)
 
