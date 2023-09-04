@@ -12,7 +12,7 @@ struct inputFlags {
     // Length of the cubic boundary   
     std::optional<double> boundLen;
     //  The number of subdivisions  (triangular elements) along the side of the mesh boundary 
-    std::optional<int> boundSubd {20};
+    std::optional<int> boundSubd = 20;
     // The mesh file to be read in
     std::optional<std::string> infile;
     // The name of the file to be output

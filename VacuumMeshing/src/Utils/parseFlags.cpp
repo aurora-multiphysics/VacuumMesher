@@ -41,7 +41,7 @@ inputFlags parse_settings(int argc, const char* argv[]) {
 
   // Start at 1 because arg 0 is the exe name 
   for(int i = 1; i < argc; i++) {
-    std::string opt {argv[i]};
+    std::string opt = argv[i];
     // Check if this is a noArg
     if(auto j = NoArgs.find(opt); j != NoArgs.end())
     {
@@ -50,41 +50,39 @@ inputFlags parse_settings(int argc, const char* argv[]) {
     }
       
 
-    // Is this a OneArg?
-    else if(auto k {OneArgs.find(opt)}; k != OneArgs.end())
+    // Check if this is a OneArg
+    else if(auto k = OneArgs.find(opt); k != OneArgs.end())
     {
-      // Yes, do we have a parameter?
-      if(++i < argc)
+      // Check if the arg has a parameter
+      if(++i > argc)
       {
-        // Yes, handle it!
-        k->second(settings, {argv[i]});
-      }
-        
-      else
-      {
-        // No, and we cannot continue, throw an error
+        // If we enter this conditional then the arg was not given a parameter, 
+        //  so throw an error
         throw std::runtime_error {"missing param after " + opt};
       }
+
+      // An argument was recieved, use it in settings
+      k->second(settings, argv[i]);
     }    
 
-
-
-    // Yes, possibly throw here, or just print an error
+    // If the argument is not recognised throw an error and print the unrecognised option
     else
+    {
       std::cerr << "unrecognized command-line option " << opt << std::endl;
+    }   
   }
 
   if(settings.help = true)
   {
+    // Print help message
     settings.helpMessage();
   }
       
   if(!settings.infile)
   {
-    // No, use this as the input file
+    // No input mesh parameter was given by user, throw an error
     throw std::runtime_error {"missing input mesh paramter!"};
   }
-
   return settings;
 }
 
