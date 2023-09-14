@@ -95,5 +95,6 @@ private:
   libMesh::ElemType elem_type, face_type;
   int num_elem_sides, num_face_nodes;
 
+  //
   std::multimap<unsigned int, unsigned int> surface_face_map;
 };

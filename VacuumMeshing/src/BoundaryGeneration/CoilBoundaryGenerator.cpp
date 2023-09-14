@@ -148,13 +148,6 @@ void CoilBoundaryGenerator::changeMeshBasis(Eigen::MatrixXd &verts,
   }
 }
 
-void CoilBoundaryGenerator::translateMesh(Eigen::MatrixXd &verts,
-                                          Eigen::Vector3d translationVector) {
-  for (int i = 0; i < verts.rows(); i++) {
-    verts.row(i) += translationVector;
-  }
-}
-
 bool CoilBoundaryGenerator::getBasisMatrix(Eigen::Matrix3d &basisMatrix,
                                            Eigen::Matrix3d &planePoints) {
   // Basis vectors X Y and Z
@@ -497,5 +490,5 @@ void BoundaryGenerator::getCoplanarSeedPoints(libMesh::Mesh &mesh,
     // for (u_int i = 0; i < 3; i++) {
     //   seedPoints.row(0)(i) = centre1(i);
     //   seedPoints.row(1)(i) = centre2(i);
-    // }
   }
+}

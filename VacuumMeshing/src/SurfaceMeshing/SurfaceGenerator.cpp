@@ -196,36 +196,6 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
   std::cout << "SurfaceMeshGenerated" << std::endl;
 }
 
-// void SurfaceMeshGenerator::getSurface(libMesh::Mesh &mesh, libMesh::Mesh
-// &surfaceMesh, bool writeMesh,
-//                 std::string output_filename) {
-//   // Create a vector with all elements in it
-//   std::vector<libMesh::Elem *> el_set;
-//   el_set.reserve(mesh.n_elem());
-//   for (auto &elem : mesh.element_ptr_range()) {
-//     el_set.emplace_back(elem);
-//   }
-//     // Run getSurface with newly created el_set
-//   getSurface(mesh, surfaceMesh, el_set, nullptr, writeMesh, false,
-//              output_filename);
-// }
-
-// Get surface for when the user DOES want only a subset of the mesh skinned
-// void SurfaceMeshGenerator::getSurface(
-//     libMesh::Mesh &mesh, libMesh::Mesh &surfaceMesh,
-//     std::multimap<unsigned int, unsigned int> *surface_face_map, bool
-//     writeMesh, std::string output_filename) {
-//   // Create a vector with all elements in it
-//   std::vector<libMesh::Elem *> el_set;
-//   el_set.reserve(mesh.n_elem());
-//   for (auto &elem : mesh.element_ptr_range()) {
-//     el_set.emplace_back(elem);
-//   }
-
-//   getSurface(mesh, surfaceMesh, el_set, surface_face_map, writeMesh, false,
-//              output_filename);
-// }
-
 void SurfaceMeshGenerator::groupElems(
     libMesh::Mesh mesh,
     std::vector<std::vector<libMesh::dof_id_type>> &groups) {

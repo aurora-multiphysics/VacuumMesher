@@ -1,4 +1,4 @@
-#include "BoundaryGeneration/boundaryGeneration.hpp"
+#include "BoundaryGeneration/BoundaryGenerator.hpp"
 
 class CoilBoundaryGenerator : public BoundaryGenerator {
 public:

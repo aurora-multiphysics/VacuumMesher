@@ -12,14 +12,15 @@ int main(int argc, const char **argv) {
   std::vector<char *> libmeshArgv = {(char *)appName.data()};
   std::cout << flags.tetSettings << std::endl;
 
-  // 
+  //
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
   // Create mesh object to store original model mesh
   MeshContainer meshes(init, flags.infile.value());
 
-  // If user has not specified the length of the boundary, then it is set here
+  // If user has not specified the length of the boundary then it is set here
   if (!flags.boundLen.has_value()) {
-    // create bounding box around mesh
+    // Create bounding box in order to calculate how large the boundary should
+    //  be, it is not used in any other form
     auto box = libMesh::MeshTools::create_bounding_box(
         meshes.userMesh().libmeshMesh());
 
@@ -41,12 +42,12 @@ int main(int argc, const char **argv) {
       getSeeds(meshes.skinnedMesh().libmeshMesh(), 1e-04);
 
   // Turn surfMesh into boundaryMesh
-  generateCoilBoundary(meshes.userMesh().libmeshMesh(),
-                       meshes.boundaryMesh().libmeshMesh(),
-                       flags.boundLen.value(),
-                       flags.boundSubd.value(), flags.triSettings);
+  generateCoilBoundary(
+      meshes.userMesh().libmeshMesh(), meshes.boundaryMesh().libmeshMesh(),
+      flags.boundLen.value(), flags.boundSubd.value(), flags.triSettings);
 
-  // We got the boundary mesh as a libmesh mesh, but we need its IGL version as well
+  // We got the boundary mesh as a libmesh mesh, but we need its IGL version as
+  // well
   meshes.boundaryMesh().createIglAnalogue();
   // If verbose flag is set, output the boundaryMesh
   if (flags.verbose) {

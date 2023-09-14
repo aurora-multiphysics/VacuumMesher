@@ -4,6 +4,7 @@
  * to doing exactly that.
  */
 #pragma once
+#include "Utils/libmeshConversions.hpp"
 #include "igl/triangle/triangulate.h"
 #include "libmesh/boundary_info.h"
 #include "libmesh/elem.h"
@@ -35,8 +36,7 @@ public:
  added is stored in the \c boundaryMesh. The \c length and number of mesh \c
  subdivisions are required inputs, as well as the \c triSettings that are input
  to the triangle lib calls */
-  void addBoundary(libMesh::Mesh &skinnedMesh, libMesh::Mesh &boundaryMesh,
-                   double length, int subdivisions, std::string triSettings);
+  void addBoundary(double length, int subdivisions, std::string triSettings);
 
   //
   void doubleCheck(Eigen::Matrix3d &basisMatrix, Eigen::Vector3d &origin,
@@ -63,8 +63,8 @@ public:
   // Generates a cubic boundary used to define a vacuum region for
   // tetrahedralisation
   void genBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,
-                   double length, int subd libMesh::Mesh &mesh, &surfaceMesh;
-                   ivisions, std::string triSettings, double tol);
+                   double length, int subdivisions, std::string triSettings,
+                   double tol);
 
   /** Generates the 5 remaining faces of a cubic boundary*/
   void genRemainingBoundary(Eigen::MatrixXd &triVerts,
@@ -72,8 +72,15 @@ public:
                             int subdivisions, std::string triSettings,
                             double tol);
 
+  void translateMesh(Eigen::MatrixXd &verts, Eigen::Vector3d translationVector);
+
 protected:
+  // Libmesh meshes to store the meshes we need
   libMesh::Mesh &mesh, &surfaceMesh, &boundaryMesh;
+
+  // Eigen data structures to store mesh data for our boundaryz
+  // Eigen::MatrixXd boundary_verts;
+  // Eigen::MatrixXi boundary_elems;
 
 private:
 };
