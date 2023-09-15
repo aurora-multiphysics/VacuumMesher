@@ -375,9 +375,9 @@ void CoilBoundaryGenerator::getCoplanarSeedPoints(
   // As soon as an element not on the boundary is found, use one of its nodes
   //  as a seeding point
   for (auto &elem : sideset_one_mesh.active_element_ptr_range()) {
-    if (elem->!on_boundary()) {
+    if (!(elem->on_boundary())) {
       for (u_int i = 0; i < 3; i++) {
-        seedPoints.row(0)(i) = elem->node_ref(0)(i);
+        seed_points.row(0)(i) = elem->node_ref(0)(i);
       }
       break;
     }
@@ -386,9 +386,9 @@ void CoilBoundaryGenerator::getCoplanarSeedPoints(
   // As soon as an element not on the boundary is found, use one of its nodes
   //  as a seeding point
   for (auto &elem : sideset_two_mesh.active_element_ptr_range()) {
-    if (elem->!on_boundary()) {
+    if (!(elem->on_boundary())) {
       for (u_int i = 0; i < 3; i++) {
-        seedPoints.row(1)(i) = elem->node_ref(0)(i);
+        seed_points.row(1)(i) = elem->node_ref(0)(i);
       }
       break;
     }
