@@ -9,7 +9,7 @@ BoundaryGenerator::BoundaryGenerator(libMesh::Mesh &meshRef,
     : mesh(meshRef), surfaceMesh(surfaceMeshRef),
       boundaryMesh(boundaryMeshRef) {}
 
-BoundaryGenerator::~BoundaryGenerator(){};
+BoundaryGenerator::~BoundaryGenerator() {}
 
 void BoundaryGenerator::addBoundary(double length, int subdivisions,
                                     std::string triSettings) {

@@ -66,12 +66,6 @@ public:
                    double length, int subdivisions, std::string triSettings,
                    double tol);
 
-  /** Generates the 5 remaining faces of a cubic boundary*/
-  void genRemainingBoundary(Eigen::MatrixXd &triVerts,
-                            Eigen::MatrixXi &triElems, double length,
-                            int subdivisions, std::string triSettings,
-                            double tol);
-
   void translateMesh(Eigen::MatrixXd &verts, Eigen::Vector3d translationVector);
 
 protected:

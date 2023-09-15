@@ -1,297 +1,321 @@
 #include "BoundaryGeneration/CoilBoundaryGenerator.hpp"
+#include "SurfaceMeshing/SurfaceGenerator.hpp"
+#include "Utils/removeDupeNodes.hpp"
 
-void CoilBoundaryGenerator::generateCoilBoundary(libMesh::Mesh &mesh,
-                                                 libMesh::Mesh &boundaryMesh,
-                                                 double length,
-                                                 int subdivisions,
-                                                 std::string triSettings) {
+// CoilBoundaryGenerator::CoilBoundaryGenerator(){}
 
-  // Libmesh mesh that stores only sideset data
-  libMesh::Mesh sidesetMesh(mesh.comm());
-  libMesh::Mesh sidesetMeshSkinned(mesh.comm());
+CoilBoundaryGenerator::CoilBoundaryGenerator(libMesh::Mesh &mesh,
+                                             libMesh::Mesh &surface_mesh,
+                                             libMesh::Mesh &boundary_mesh)
+    : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh) {}
 
-  // Generate sideset mesh (uses default argument for sideset names)
-  genSidesetMesh(mesh, sidesetMesh);
+CoilBoundaryGenerator::~CoilBoundaryGenerator() {}
 
-  // Skin the sideset mesh to get the edge elements that represent the
-  // boundaries of the sidesets
-  getSurface(sidesetMesh, sidesetMeshSkinned);
+void CoilBoundaryGenerator::generateCoilBoundary(const double length,
+                                                 const int subdivisions,
+                                                 const std::string tri_flags) {
+
+  // Libmesh mesh_ that stores only sideset data
+  libMesh::Mesh sideset_mesh(mesh_.comm());
+  libMesh::Mesh sideset_mesh_skinned(mesh_.comm());
+
+  // Generate sideset mesh_ (uses default argument for sideset names)
+  genSidesetMesh(mesh_, sideset_mesh);
+
+  // Use a SurfaceMeshGenerator to "skin" the mesh of the sidesets. This results
+  // in a mesh
+  //  of edge elements
+  SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skinned);
+  sidesetSkinner.getSurface();
 
   // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that
   // will be used to define the plane that they sit on
-  Eigen::Matrix3d planePoints;
+  Eigen::Matrix3d plane_points;
 
   // Populate plane points matrix with the nodes belonging to an element on
   // the sidesets
   for (int row_id = 0; row_id < 3; row_id++) {
-    auto &node = sidesetMesh.elem_ref(0).node_ref(row_id);
-    planePoints.row(row_id) << node(0), node(1), node(2);
+    auto &node = sideset_mesh.elem_ref(0).node_ref(row_id);
+    plane_points.row(row_id) << node(0), node(1), node(2);
   }
 
   // Eigen 3x3 Matrix that will store the basis vectors of our transformed
   // cartesian system
-  Eigen::Matrix3d basisMatrix;
+  Eigen::Matrix3d basis_matrix;
 
   // Define new origin as a point on the coil sideset(s), this will be fairly
   // central
-  Eigen::Vector3d origin = planePoints.row(0);
+  Eigen::Vector3d origin = plane_points.row(0);
 
   // Generate basis matrix based on 3 points that define a plane
-  getBasisMatrix(basisMatrix, planePoints);
+  getBasisMatrix(basis_matrix, plane_points);
 
   // Eigen objects to store
-  Eigen::MatrixXd ssVerts, cubeVerts;
-  Eigen::MatrixXi ssElems, cubeElems;
+  Eigen::MatrixXd sideset_vertices, cube_vertices;
+  Eigen::MatrixXi sideset_element_verts, cube_element_verts;
 
-  // Convert the sideset mesh to
-  libMeshToIGL(sidesetMeshSkinned, ssVerts, ssElems);
+  // Convert the sideset mesh_ to
+  libMeshToIGL(sideset_mesh_skinned, sideset_vertices, sideset_element_verts);
   Eigen::MatrixXd normTest;
 
   // igl::per_face_normals(verts, elems, normTest);
-  changeMeshBasis(ssVerts, origin, basisMatrix);
+  changeMeshBasis(sideset_vertices, origin, basis_matrix);
 
   // Define seed points matrix
   Eigen::MatrixXd seed_points(2, 3);
 
   // Get the seed points of the coplanar coil boundaries
-  getCoplanarSeedPoints(mesh, seed_points);
+  getCoplanarSeedPoints(mesh_, seed_points);
 
   // Transform seed points into new coordinate system
   for (int i = 0; i < seed_points.rows(); i++) {
     Eigen::Vector3d point(seed_points.row(i));
-    seed_points.row(i) = calculateLocalCoords(point, origin, basisMatrix);
+    seed_points.row(i) = calculateLocalCoords(point, origin, basis_matrix);
   }
 
   // Generates the face of the boundary that is coplanar with the coil sidesets
   // (the special boundary face)
-  generateCoilFaceBound(ssVerts, ssElems, seed_points, cubeVerts, cubeElems,
-                        length, subdivisions, triSettings);
-
-  const double tol = 1e-08;
+  generateCoilFaceBound(sideset_vertices, sideset_element_verts, seed_points,
+                        cube_vertices, cube_element_verts, length, subdivisions,
+                        tri_flags);
 
   // Generates the 5 other faces of the cubic boundary
-  genRemainingBoundary(cubeVerts, cubeElems, length, subdivisions, triSettings,
-                       tol);
+  genRemainingFiveBoundaryFaces(cube_vertices, cube_element_verts, length,
+                                subdivisions, tri_flags);
 
   // Change back to original basis
-  changeMeshBasis(cubeVerts, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin,
-                  basisMatrix);
+  changeMeshBasis(cube_vertices, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin,
+                  basis_matrix);
 
-  IGLToLibMesh(boundaryMesh, cubeVerts, cubeElems);
+  // Convert our IGL mesh back to libMesh
+  IGLToLibMesh(boundary_mesh_, cube_vertices, cube_element_verts);
 }
 
-Eigen::Vector3d CoilBoundaryGenerator::calculateLocalCoords(
-    Eigen::Vector3d &point, Eigen::Vector3d newOrigin, Eigen::Matrix3d newBasis,
-    Eigen::Vector3d oldOrigin, Eigen::Matrix3d oldBasis) {
-  Eigen::Vector3d localCoords =
-      newBasis.inverse() * (oldOrigin - newOrigin + (oldBasis * point));
-  return localCoords;
-}
-
-void CoilBoundaryGenerator::changeMeshBasis(libMesh::Mesh &mesh,
-                                            Eigen::Vector3d newOrigin,
-                                            Eigen::Matrix3d newBasis,
-                                            Eigen::Vector3d oldOrigin,
-                                            Eigen::Matrix3d oldBasis) {
-  libMesh::Mesh meshCopy(mesh);
-  mesh.clear();
-
-  for (auto &node : meshCopy.node_ptr_range()) {
-    // Eigen::Vector to store node coords
-    Eigen::Vector3d point, newPoint;
-
-    for (u_int i = 0; i < 3; i++) {
-      point(i) = (*node)(i);
-    }
-
-    newPoint =
-        calculateLocalCoords(point, newOrigin, newBasis, oldOrigin, oldBasis);
-    // newPoint = calculateLocalCoords(basisMatrix, origin, origin);
-    // std::cout << newPoint.transpose() << std::endl;
-
-    double pnt[3];
-    for (u_int i = 0; i < 3; i++) {
-      pnt[i] = newPoint(i);
-    }
-
-    libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
-    // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
-    mesh.add_point(xyz, node->id());
-  }
-
-  for (auto &elem : meshCopy.element_ptr_range()) {
-    libMesh::Elem *new_elem = libMesh::Elem::build(elem->type()).release();
-    for (int j = 0; j < elem->n_nodes(); j++) {
-      new_elem->set_node(j) = mesh.node_ptr(elem->node_ref(j).id());
-    }
-    mesh.add_elem(new_elem);
-  }
-  mesh.prepare_for_use();
-}
-
-// Change mesh basis for a libIGL (Eigen) mesh
-void CoilBoundaryGenerator::changeMeshBasis(Eigen::MatrixXd &verts,
-                                            Eigen::Vector3d newOrigin,
-                                            Eigen::Matrix3d newBasis,
-                                            Eigen::Vector3d oldOrigin,
-                                            Eigen::Matrix3d oldBasis) {
-  // Inverse the new basis matrix
-  Eigen::Matrix3d newBasisInverse = newBasis.inverse();
-  // We assume we are changing basis from bog standard cartesian coords.
-  //  i.e. an origin of 0,0,0 and basis vectors of (1,0,0), (0,1,0), (0,0,1)
-  // Eigen::Matrix3d oldBasis(Eigen::Matrix3d::Identity());
-  // Eigen::Vector3d oldOrigin(Eigen::Vector3d::Zero());
-  // Do row wise operations on
-  for (int i = 0; i < verts.rows(); i++) {
-    verts.row(i) = newBasisInverse * (oldOrigin - newOrigin +
-                                      (oldBasis * verts.row(i).transpose()));
-  }
-}
-
-bool CoilBoundaryGenerator::getBasisMatrix(Eigen::Matrix3d &basisMatrix,
-                                           Eigen::Matrix3d &planePoints) {
+bool CoilBoundaryGenerator::getBasisMatrix(
+    Eigen::Matrix3d &basis_matrix, const Eigen::Matrix3d &plane_points) {
   // Basis vectors X Y and Z
   Eigen::Vector3d X, Y, Z;
 
   // Vectors between the 3 points that will define our plane
-  Eigen::Vector3d AB = (planePoints.row(1) - planePoints.row(0));
-  Eigen::Vector3d AC = (planePoints.row(2) - planePoints.row(0));
+  Eigen::Vector3d AB = (plane_points.row(1) - plane_points.row(0));
+  Eigen::Vector3d AC = (plane_points.row(2) - plane_points.row(0));
 
   // Normalise basis vectors so that their magnitude is one, relative to
   // original basis
   X = AB.normalized();
   Z = (AC.cross(AB)).normalized();
   Y = (X.cross(Z)).normalized();
-  // Add our basis vectors to 'basisMatrix' matrix
-  basisMatrix.col(0) << X;
-  basisMatrix.col(1) << Y;
-  basisMatrix.col(2) << Z;
+  // Add our basis vectors to 'basis_matrix' matrix
+  basis_matrix.col(0) << X;
+  basis_matrix.col(1) << Y;
+  basis_matrix.col(2) << Z;
 
   return true;
 }
 
+Eigen::Vector3d CoilBoundaryGenerator::calculateLocalCoords(
+    Eigen::Vector3d &point, Eigen::Vector3d new_origin,
+    Eigen::Matrix3d new_basis, Eigen::Vector3d old_origin,
+    Eigen::Matrix3d old_basis) {
+  Eigen::Vector3d local_coords =
+      new_basis.inverse() * (old_origin - new_origin + (old_basis * point));
+  return local_coords;
+}
+
 void CoilBoundaryGenerator::generateCoilFaceBound(
-    Eigen::MatrixXd &verts, Eigen::MatrixXi &elems, Eigen::MatrixXd &holes,
-    Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems, double length,
-    int subdivisions, std::string triSettings) {
+    const Eigen::MatrixXd &verts, const Eigen::MatrixXi &elems,
+    const Eigen::MatrixXd &holes, Eigen::MatrixXd &tri_vertices,
+    Eigen::MatrixXi &tri_elems, double length, int subdivisions,
+    std::string tri_flags) {
   //
   Eigen::MatrixXd holes2D = holes.block(0, 0, 2, 2);
   Eigen::MatrixXd verts2D = verts.block(0, 0, verts.rows(), 2);
   Eigen::MatrixXi elems2D = elems;
 
-  // Generate a boarder around the skinned sideset set to define space for
-  // triangulation
+  // Generate a border around the skinned sideset, which is then used to define
+  // space for triangulation
   genSidesetBounds(verts2D, elems2D, length, subdivisions);
 
   // Perform Delauny triangulation
-  igl::triangle::triangulate(verts2D, elems2D, holes2D, triSettings, triVerts,
-                             triElems);
+  igl::triangle::triangulate(verts2D, elems2D, holes2D, tri_flags, tri_vertices,
+                             tri_elems);
 
   // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D), set
   // all z coords to 0
-  triVerts.conservativeResize(triVerts.rows(), triVerts.cols() + 1);
-  triVerts.col(triVerts.cols() - 1) = Eigen::VectorXd::Zero(triVerts.rows());
+  tri_vertices.conservativeResize(tri_vertices.rows(), tri_vertices.cols() + 1);
+  tri_vertices.col(tri_vertices.cols() - 1) =
+      Eigen::VectorXd::Zero(tri_vertices.rows());
 }
 
 void CoilBoundaryGenerator::generateCoilFaceBound(
-    libMesh::Mesh &mesh, libMesh::Mesh &outputMesh,
-    libMesh::Mesh &remainingBoundary, Eigen::MatrixXd &holes,
+    libMesh::Mesh &mesh, libMesh::Mesh &output_mesh,
+    libMesh::Mesh &remaining_boundary, Eigen::MatrixXd &holes,
     std::string &tri_args) {
 
   //
   Eigen::MatrixXd verts, newVerts;
   Eigen::MatrixXi elems, newElems;
   //
-  genSidesetBounds(mesh, remainingBoundary);
+  genSidesetBounds(mesh, remaining_boundary);
   //
   libMeshToIGL(mesh, verts, elems, 2);
   //
   igl::triangle::triangulate(verts, elems, holes, tri_args, newVerts, newElems);
-  IGLToLibMesh(outputMesh, newVerts, newElems);
+  IGLToLibMesh(output_mesh, newVerts, newElems);
   //
-  combineMeshes(1e-05, outputMesh, remainingBoundary);
+  combineMeshes(1e-05, output_mesh, remaining_boundary);
 }
 
-void CoilBoundaryGenerator::genSidesetMesh(libMesh::Mesh &mesh,
-                                           libMesh::Mesh &sidesetMesh,
-                                           std::vector<std::string> ssNames) {
+void CoilBoundaryGenerator::genSidesetMesh(
+    libMesh::Mesh &mesh, libMesh::Mesh &sideset_mesh,
+    std::vector<std::string> sideset_names) {
 
   // Create set to store ids of sidesets that will be included in mesh
   std::set<libMesh::boundary_id_type> ids;
-  // Insert the sideset id's that correspond to the given ssNames into a set
-  for (auto &ssName : ssNames) {
+  // Insert the sideset id's that correspond to the given sideset_names into a
+  // set
+  for (auto &ssName : sideset_names) {
     ids.insert(mesh.get_boundary_info().get_id_by_name(ssName));
   }
   // Get sideset boundary
-  mesh.get_boundary_info().sync(ids, sidesetMesh);
+  mesh.get_boundary_info().sync(ids, sideset_mesh);
 }
 
 void CoilBoundaryGenerator::genSidesetBounds(Eigen::MatrixXd &verts,
                                              Eigen::MatrixXi &elems,
-                                             double length, int subdivisions) {
-  Eigen::MatrixXd squareVerts((4 * subdivisions), 2);
-  Eigen::MatrixXi squareElems((4 * subdivisions), 2);
+                                             const double length,
+                                             const int subdivisions) {
+  Eigen::MatrixXd square_verts((4 * subdivisions), 2);
+  Eigen::MatrixXi square_elems((4 * subdivisions), 2);
 
-  genSquare(squareVerts, squareElems, length, subdivisions);
+  genSquare(square_verts, square_elems, length, subdivisions);
 
-  combineIGLMeshes(verts, elems, squareVerts, squareElems);
+  combineIGLMeshes(verts, elems, square_verts, square_elems);
 }
 
-void CoilBoundaryGenerator::genSidesetBounds(libMesh::Mesh &sidesetMesh,
-                                             libMesh::Mesh &remainingBoundary) {
+void CoilBoundaryGenerator::genSidesetBounds(
+    libMesh::Mesh &sideset_mesh,
+    libMesh::Mesh &boundary_without_coilside_face) {
 
   //
   std::unordered_map<u_int, libMesh::dof_id_type> id_map;
-  libMesh::Mesh skinnedBound(sidesetMesh.comm());
-  getSurface(remainingBoundary, skinnedBound);
+  libMesh::Mesh skinned_square(sideset_mesh.comm());
+
+  // Here skin
+  SurfaceMeshGenerator boundary_skin_generator(boundary_without_coilside_face,
+                                               skinned_square);
+  boundary_skin_generator.getSurface();
 
   // Starting node ID for points
-  libMesh::dof_id_type startingNode = sidesetMesh.max_node_id() + 1;
-  libMesh::dof_id_type startingElem = sidesetMesh.max_elem_id() + 1;
+  libMesh::dof_id_type starting_node = sideset_mesh.max_node_id() + 1;
+  libMesh::dof_id_type starting_elem = sideset_mesh.max_elem_id() + 1;
 
-  for (auto &node : skinnedBound.node_ptr_range()) {
+  // Build mesh of 2D edge elements, including the skinned sideset and a square
+  // boundary
+  for (auto &node : skinned_square.node_ptr_range()) {
     double pnt[2];
     for (u_int i = 0; i < 2; i++) {
       pnt[i] = (*node)(i);
     }
     libMesh::Point xyz(pnt[0], pnt[1]);
-    id_map[node->id()] = startingNode;
-    sidesetMesh.add_point(xyz, startingNode);
-    startingNode++;
+    id_map[node->id()] = starting_node;
+    sideset_mesh.add_point(xyz, starting_node);
+    starting_node++;
   }
 
-  for (auto &elem : skinnedBound.element_ptr_range()) {
+  for (auto &elem : skinned_square.element_ptr_range()) {
     libMesh::Elem *newElem = libMesh::Elem::build(elem->type()).release();
     for (int j = 0; j < elem->n_nodes(); j++) {
       // std::cout << id_map[elem->node_id(j)] << std::endl;
-      newElem->set_node(j) = sidesetMesh.node_ptr(id_map[elem->node_id(j)]);
+      newElem->set_node(j) = sideset_mesh.node_ptr(id_map[elem->node_id(j)]);
     }
-    newElem->set_id(startingElem++);
-    sidesetMesh.add_elem(newElem);
+    newElem->set_id(starting_elem++);
+    sideset_mesh.add_elem(newElem);
   }
 
   //
-  sidesetMesh.prepare_for_use();
+  sideset_mesh.prepare_for_use();
 }
 
-void CoilBoundaryGenerator::genRemainingBoundary(
-    Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems, double length,
-    int subdivisions, std::string triSettings, double tol) {
-  Eigen::MatrixXd borderVerts(4 * subdivisions, 2);
-  Eigen::MatrixXi borderElems(4 * subdivisions, 2);
+void CoilBoundaryGenerator::changeMeshBasis(libMesh::Mesh &input_mesh,
+                                            const Eigen::Vector3d &new_origin,
+                                            const Eigen::Matrix3d &new_basis,
+                                            const Eigen::Vector3d &old_origin,
+                                            const Eigen::Matrix3d &old_basis) {
+  libMesh::Mesh mesh_copy(input_mesh);
+  input_mesh.clear();
 
-  Eigen::MatrixXd squareVerts(4 * subdivisions, 2);
-  Eigen::MatrixXi squareElems(4 * subdivisions, 2);
+  for (auto &node : mesh_copy.node_ptr_range()) {
+    // Eigen::Vector to store node coords
+    Eigen::Vector3d point, new_point;
 
-  // triVerts(4 * subdivisions, 2);
-  // triElems(4 * subdivisions, 3);
+    for (u_int i = 0; i < 3; i++) {
+      point(i) = (*node)(i);
+    }
+
+    new_point = calculateLocalCoords(point, new_origin, new_basis, old_origin,
+                                     old_basis);
+    // new_point = calculateLocalCoords(basisMatrix, origin, origin);
+    // std::cout << new_point.transpose() << std::endl;
+
+    double pnt[3];
+    for (u_int i = 0; i < 3; i++) {
+      pnt[i] = new_point(i);
+    }
+
+    libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
+    // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
+    input_mesh.add_point(xyz, node->id());
+  }
+
+  for (auto &elem : mesh_copy.element_ptr_range()) {
+    libMesh::Elem *new_elem = libMesh::Elem::build(elem->type()).release();
+    for (int j = 0; j < elem->n_nodes(); j++) {
+      new_elem->set_node(j) = input_mesh.node_ptr(elem->node_ref(j).id());
+    }
+    input_mesh.add_elem(new_elem);
+  }
+  input_mesh.prepare_for_use();
+}
+
+// Change mesh basis for a libIGL (Eigen) mesh
+void CoilBoundaryGenerator::changeMeshBasis(Eigen::MatrixXd &vertices,
+                                            const Eigen::Vector3d &new_origin,
+                                            const Eigen::Matrix3d &new_basis,
+                                            const Eigen::Vector3d &old_origin,
+                                            const Eigen::Matrix3d &old_basis) {
+  // Inverse the new basis matrix
+  Eigen::Matrix3d new_basis_inverse = new_basis.inverse();
+  // We assume we are changing basis from bog standard cartesian coords.
+  //  i.e. an origin of 0,0,0 and basis vectors of (1,0,0), (0,1,0), (0,0,1)
+  // Eigen::Matrix3d old_basis(Eigen::Matrix3d::Identity());
+  // Eigen::Vector3d old_origin(Eigen::Vector3d::Zero());
+  // Do row wise operations on
+  for (int i = 0; i < vertices.rows(); i++) {
+    vertices.row(i) =
+        new_basis_inverse *
+        (old_origin - new_origin + (old_basis * vertices.row(i).transpose()));
+  }
+}
+
+void CoilBoundaryGenerator::genRemainingFiveBoundaryFaces(
+    Eigen::MatrixXd &tri_vertices, Eigen::MatrixXi &tri_elems, double length,
+    int subdivisions, std::string tri_flags) {
+  Eigen::MatrixXd border_verts(4 * subdivisions, 2);
+  Eigen::MatrixXi border_elems(4 * subdivisions, 2);
+
+  Eigen::MatrixXd square_verts(4 * subdivisions, 2);
+  Eigen::MatrixXi square_elems(4 * subdivisions, 2);
+
+  // tri_vertices(4 * subdivisions, 2);
+  // tri_elems(4 * subdivisions, 3);
 
   Eigen::MatrixXd seeds;
 
-  genSquare(borderVerts, borderElems, length, subdivisions);
+  genSquare(border_verts, border_elems, length, subdivisions);
 
-  igl::triangle::triangulate(borderVerts, borderElems, seeds, triSettings,
-                             squareVerts, squareElems);
+  igl::triangle::triangulate(border_verts, border_elems, seeds, tri_flags,
+                             square_verts, square_elems);
 
   // Rotational matrices to rotate elements
   Eigen::Matrix3d x_rot_base;
@@ -300,195 +324,77 @@ void CoilBoundaryGenerator::genRemainingBoundary(
   Eigen::Matrix3d y_rot_base;
   y_rot_base << 0, 0, -1, 0, 1, 0, 1, 0, 0;
 
-  // Resize triVerts to work in 3d, as it is currently a 2D mesh,
+  // Resize tri_vertices to work in 3d, as it is currently a 2D mesh,
   //  this is done just by adding a column of zeroes as our "z" coord
-  squareVerts.conservativeResize(squareVerts.rows(), squareVerts.cols() + 1);
-  squareVerts.col(squareVerts.cols() - 1) =
-      Eigen::VectorXd::Zero(squareVerts.rows());
+  square_verts.conservativeResize(square_verts.rows(), square_verts.cols() + 1);
+  square_verts.col(square_verts.cols() - 1) =
+      Eigen::VectorXd::Zero(square_verts.rows());
 
   // Define our rotation matrices
   std::vector<Eigen::Matrix3d> rot_matrices = {x_rot_base, y_rot_base};
-  std::vector<Eigen::MatrixXd> newFaces(5, squareVerts);
+  std::vector<Eigen::MatrixXd> new_faces(5, square_verts);
 
-  squareVerts.col(squareVerts.cols() - 1) =
-      Eigen::VectorXd::Constant(squareVerts.rows(), length);
-  // triElems.conservativeResize(triElems.rows(), triElems.cols()+1);
-  // triElems.col(triElems.cols()-1) = Eigen::VectorXi::Zero(triElems.rows());
+  square_verts.col(square_verts.cols() - 1) =
+      Eigen::VectorXd::Constant(square_verts.rows(), length);
+  // tri_elems.conservativeResize(tri_elems.rows(), tri_elems.cols()+1);
+  // tri_elems.col(tri_elems.cols()-1) =
+  // Eigen::VectorXi::Zero(tri_elems.rows());
 
   for (int i = 0; i < 4; i++) {
-    newFaces[i] *= rot_matrices[(i % 2)];
+    new_faces[i] *= rot_matrices[(i % 2)];
   }
 
-  translateMesh(newFaces[0], {0, length / 2, length / 2});
-  translateMesh(newFaces[1], {length / 2, 0, length / 2});
-  translateMesh(newFaces[2], {0, -length / 2, length / 2});
-  translateMesh(newFaces[3], {-length / 2, 0, length / 2});
-  translateMesh(newFaces[4], {0, 0, length});
+  translateMesh(new_faces[0], {0, length / 2, length / 2});
+  translateMesh(new_faces[1], {length / 2, 0, length / 2});
+  translateMesh(new_faces[2], {0, -length / 2, length / 2});
+  translateMesh(new_faces[3], {-length / 2, 0, length / 2});
+  translateMesh(new_faces[4], {0, 0, length});
 
   for (int i = 0; i < 5; i++) {
-    combineMeshes(tol, triVerts, triElems, newFaces[i], squareElems);
+    combineMeshes(merge_tolerance_, tri_vertices, tri_elems, new_faces[i],
+                  square_elems);
   }
 }
 
-//
-void BoundaryGenerator::getCoplanarSeedPoints(libMesh::Mesh &mesh,
-                                              Eigen::MatrixXd &seedPoints,
-                                              std::string ss1Name,
-                                              std::string ss2Name) {
-  // generate separate meshes for two coil sidesets
-  std::set<libMesh::boundary_id_type> ss1_id, ss2_id;
+void CoilBoundaryGenerator::getCoplanarSeedPoints(
+    libMesh::Mesh &mesh, Eigen::MatrixXd &seed_points,
+    const std::string &sideset_one_name, const std::string &sideset_two_name) {
 
-  //
-  ss1_id.insert(mesh.boundary_info->get_id_by_name(ss1Name));
-  ss2_id.insert(mesh.boundary_info->get_id_by_name(ss2Name));
+  // Because of annoying libMesh methods, we need to make sets to store the
+  // sideset ID's
+  std::set<libMesh::boundary_id_type> sideset_one_id, sideset_two_id;
+  sideset_one_id.insert(mesh.boundary_info->get_id_by_name(sideset_one_name));
+  sideset_two_id.insert(mesh.boundary_info->get_id_by_name(sideset_two_name));
 
-  //
-  libMesh::Mesh ss1(mesh.comm());
-  libMesh::Mesh ss2(mesh.comm());
-  mesh.boundary_info->sync(ss1_id, ss1);
-  mesh.boundary_info->sync(ss2_id, ss2);
+  // Generate separate meshes for two coil sidesets
+  libMesh::Mesh sideset_one_mesh(mesh.comm());
+  libMesh::Mesh sideset_two_mesh(mesh.comm());
+  mesh.boundary_info->sync(sideset_one_id, sideset_one_mesh);
+  mesh.boundary_info->sync(sideset_one_id, sideset_two_mesh);
 
   // As soon as an element not on the boundary is found, use one of its nodes
   //  as a seeding point
-  for (auto &elem : ss1.active_element_ptr_range()) {
-    if (elem->on_boundary()) {
-      continue;
-    }
-    for (u_int i = 0; i < 3; i++) {
-      seedPoints.row(0)(i) = elem->node_ref(0)(i);
-    }
-    break;
-  }
-
-  // As soon as an element not on the boundary is found, use one of its nodes
-  //  as a seeding point
-  for (auto &elem : ss2.active_element_ptr_range()) {
-    if (elem->on_boundary()) {
-      continue;
-    }
-    for (u_int i = 0; i < 3; i++) {
-      seedPoints.row(1)(i) = elem->node_ref(0)(i);
-    }
-    break;
-  }
-
-  // libMesh::Point centre1, centre2;
-
-  // // Create a bounding box around these 2D sidesets to figure out where a
-  // // seeding point should be placed
-  // auto box1 = libMesh::MeshTools::create_bounding_box(ss1);
-  // auto box2 = libMesh::MeshTools::create_bounding_box(ss2);
-
-  // centre1 = (box1.max() + box1.min()) / 2;//
-  void BoundaryGenerator::getCoplanarSeedPoints(
-      libMesh::Mesh & mesh, Eigen::MatrixXd & seedPoints, std::string ss1Name,
-      std::string ss2Name) {
-    // generate separate meshes for two coil sidesets
-    std::set<libMesh::boundary_id_type> ss1_id, ss2_id;
-
-    //
-    ss1_id.insert(mesh.boundary_info->get_id_by_name(ss1Name));
-    ss2_id.insert(mesh.boundary_info->get_id_by_name(ss2Name));
-
-    //
-    libMesh::Mesh ss1(mesh.comm());
-    libMesh::Mesh ss2(mesh.comm());
-    mesh.boundary_info->sync(ss1_id, ss1);
-    mesh.boundary_info->sync(ss2_id, ss2);
-
-    // As soon as an element not on the boundary is found, use one of its nodes
-    //  as a seeding point
-    for (auto &elem : ss1.active_element_ptr_range()) {
-      if (elem->on_boundary()) {
-        continue;
-      }
+  for (auto &elem : sideset_one_mesh.active_element_ptr_range()) {
+    if (elem->!on_boundary()) {
       for (u_int i = 0; i < 3; i++) {
         seedPoints.row(0)(i) = elem->node_ref(0)(i);
       }
       break;
     }
+  }
 
-    // As soon as an element not on the boundary is found, use one of its nodes
-    //  as a seeding point
-    for (auto &elem : ss2.active_element_ptr_range()) {
-      if (elem->on_boundary()) {
-        continue;
-      }
+  // As soon as an element not on the boundary is found, use one of its nodes
+  //  as a seeding point
+  for (auto &elem : sideset_two_mesh.active_element_ptr_range()) {
+    if (elem->!on_boundary()) {
       for (u_int i = 0; i < 3; i++) {
         seedPoints.row(1)(i) = elem->node_ref(0)(i);
       }
       break;
     }
-    //
-    void CoilBoundaryGenerator::getCoplanarSeedPoints(
-        libMesh::Mesh & mesh, Eigen::MatrixXd & seedPoints, std::string ss1Name,
-        std::string ss2Name) {
-      // generate separate meshes for two coil sidesets
-      std::set<libMesh::boundary_id_type> ss1_id, ss2_id;
-
-      //
-      ss1_id.insert(mesh.boundary_info->get_id_by_name(ss1Name));
-      ss2_id.insert(mesh.boundary_info->get_id_by_name(ss2Name));
-
-      //
-      libMesh::Mesh ss1(mesh.comm());
-      libMesh::Mesh ss2(mesh.comm());
-      mesh.boundary_info->sync(ss1_id, ss1);
-      mesh.boundary_info->sync(ss2_id, ss2);
-
-      // As soon as an element not on the boundary is found, use one of its
-      // nodes
-      //  as a seeding point
-      for (auto &elem : ss1.active_element_ptr_range()) {
-        if (elem->on_boundary()) {
-          continue;
-        }
-        for (u_int i = 0; i < 3; i++) {
-          seedPoints.row(0)(i) = elem->node_ref(0)(i);
-        }
-        break;
-      }
-
-      // As soon as an element not on the boundary is found, use one of its
-      // nodes
-      //  as a seeding point
-      for (auto &elem : ss2.active_element_ptr_range()) {
-        if (elem->on_boundary()) {
-          continue;
-        }
-        for (u_int i = 0; i < 3; i++) {
-          seedPoints.row(1)(i) = elem->node_ref(0)(i);
-        }
-        break;
-      }
-
-      // libMesh::Point centre1, centre2;
-
-      // // Create a bounding box around these 2D sidesets to figure out where a
-      // // seeding point should be placed
-      // auto box1 = libMesh::MeshTools::create_bounding_box(ss1);
-      // auto box2 = libMesh::MeshTools::create_bounding_box(ss2);
-
-      // centre1 = (box1.max() + box1.min()) / 2;
-      // centre2 = (box2.max() + box2.min()) / 2;
-      // //
-      // for (u_int i = 0; i < 3; i++) {
-      //   seedPoints.row(0)(i) = centre1(i);
-      //   seedPoints.row(1)(i) = centre2(i);
-      // }
-    }
-    // libMesh::Point centre1, centre2;
-
-    // // Create a bounding box around these 2D sidesets to figure out where a
-    // // seeding point should be placed
-    // auto box1 = libMesh::MeshTools::create_bounding_box(ss1);
-    // auto box2 = libMesh::MeshTools::create_bounding_box(ss2);
-
-    // centre1 = (box1.max() + box1.min()) / 2;
-    // centre2 = (box2.max() + box2.min()) / 2;
-    // //
-    // for (u_int i = 0; i < 3; i++) {
-    //   seedPoints.row(0)(i) = centre1(i);
-    //   seedPoints.row(1)(i) = centre2(i);
   }
+}
+
+void CoilBoundaryGenerator::setTolerance(const double tolerance) {
+  merge_tolerance_ = tolerance;
 }
