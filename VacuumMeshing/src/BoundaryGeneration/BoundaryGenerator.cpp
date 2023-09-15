@@ -1,7 +1,7 @@
 
 
 #include "BoundaryGeneration/BoundaryGenerator.hpp"
-#include "Tetrahedralisation/removeDupeNodes.hpp"
+#include "Utils/removeDupeNodes.hpp"
 
 BoundaryGenerator::BoundaryGenerator(libMesh::Mesh &meshRef,
                                      libMesh::Mesh &surfaceMeshRef,
