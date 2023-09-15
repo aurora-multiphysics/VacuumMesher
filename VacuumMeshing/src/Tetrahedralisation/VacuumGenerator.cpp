@@ -1,16 +1,17 @@
 #include "Tetrahedralisation/VacuumGenerator.hpp"
 
-namespace fs = std::filesystem;
+VacuumGenerator(libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh)
+    : boundary_mesh_(boundary_mesh), vacuum_mesh_(vacuum_mesh) {}
+
+VacuumGenerator::~VacuumGenerator(){};
 
 // Takes in seedPoints arguments for meshes with internal cavities
 // , this will be most vacuum meshes I think?
-void tetrahedraliseVacuumRegion(libMesh::Mesh &boundaryMesh,
-                                libMesh::Mesh &vacuumMesh,
-                                Eigen::MatrixXd &seedPoints,
-                                std::string tet_settings) {
+void VacuumGenerator::tetrahedraliseVacuumRegion(Eigen::MatrixXd &seedPoints,
+                                                 std::string tet_settings) {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  libMeshToIGL(boundaryMesh, V, F);
+  libMeshToIGL(boundary_mesh_, V, F);
 
   Eigen::MatrixXd R;
   Eigen::MatrixXd TV;
@@ -24,13 +25,13 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh &boundaryMesh,
   igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, tet_settings, TV,
                                         TT, TF, TR, TN, PT, FT, numRegions);
 
-  IGLToLibMesh(vacuumMesh, TV, TT);
+  IGLToLibMesh(vacuum_mesh_, TV, TT);
 }
 
-void tetrahedraliseVacuumRegion(Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                                libMesh::Mesh &vacuumMesh,
-                                Eigen::MatrixXd &seedPoints,
-                                std::string tet_settings) {
+void VacuumGenerator::tetrahedraliseVacuumRegion(Eigen::MatrixXd &V,
+                                                 Eigen::MatrixXi &F,
+                                                 Eigen::MatrixXd &seedPoints,
+                                                 std::string tet_settings) {
   Eigen::MatrixXd R;
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TT;
@@ -43,15 +44,15 @@ void tetrahedraliseVacuumRegion(Eigen::MatrixXd &V, Eigen::MatrixXi &F,
   igl::copyleft::tetgen::tetrahedralize(V, F, seedPoints, R, tet_settings, TV,
                                         TT, TF, TR, TN, PT, FT, numRegions);
 
-  IGLToLibMesh(vacuumMesh, TV, TT);
+  IGLToLibMesh(vacuum_mesh_, TV, TT);
 }
 
 // Version of the function primarily built for use with coils. When generating
 // the vacuum mesh for coil geometry , there is no "internal cavity". The
 // internal geometry for the coil is already represented in the boundary mesh.
-void tetrahedraliseVacuumRegion(libMesh::Mesh &boundaryMesh,
-                                libMesh::Mesh &vacuumMesh,
-                                std::string tet_settings) {
+void VacuumGenerator::tetrahedraliseVacuumRegion(libMesh::Mesh &boundaryMesh,
+                                                 libMesh::Mesh &vacuumMesh,
+                                                 std::string tet_settings) {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   libMeshToIGL(boundaryMesh, V, F);
@@ -73,7 +74,7 @@ void tetrahedraliseVacuumRegion(libMesh::Mesh &boundaryMesh,
   IGLToLibMesh(vacuumMesh, TV, TT);
 }
 
-Eigen::MatrixXd getSeeds(libMesh::Mesh mesh, double tol) {
+Eigen::MatrixXd VacuumGenerator::getSeeds(libMesh::Mesh mesh, double tol) {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   // Oreintated faces
