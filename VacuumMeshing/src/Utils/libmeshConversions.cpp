@@ -2,7 +2,7 @@
 
 
 void 
-libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
+libMeshToIGL(const libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F, unsigned int dim)
 {
     V = Eigen::MatrixXd(libmeshMesh.n_nodes(), dim);
     F = Eigen::MatrixXi(libmeshMesh.n_elem(), libmeshMesh.elem_ptr(0)->n_nodes());
@@ -29,7 +29,7 @@ libMeshToIGL(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
 }
 
 void 
-IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+IGLToLibMesh(libMesh::Mesh& libmeshMesh, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
 {
     libmeshMesh.clear();
 
@@ -64,7 +64,7 @@ IGLToLibMesh(libMesh::Mesh& libmeshMesh, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 }
 
 libMesh::ElemType
-getElemType(Eigen::MatrixXi& F)
+getElemType(const Eigen::MatrixXi& F)
 {
     switch(F.cols())
     {
@@ -80,96 +80,5 @@ getElemType(Eigen::MatrixXi& F)
             return(libMesh::TET10);
     }
     return libMesh::INVALID_ELEM;
-}
-
-void
-libmeshToCGAL(libMesh::Mesh& libmeshMesh, 
-              Polyhedron& poly)
-{
-    // typedefs for cleanliness
-    typedef typename Polyhedron::HalfedgeDS HalfedgeDS;
-    typedef typename HalfedgeDS::Vertex Vertex;
-    typedef typename Vertex::Point Point;
-
-    CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
-    B.begin_surface(libmeshMesh.n_nodes(), libmeshMesh.n_elem());
-
-    // 
-    for(int v = 0;v<libmeshMesh.n_nodes();v++)
-    {
-        libMesh::Node libNode = libmeshMesh.node_ref(v);
-        B.add_vertex(Point(libNode(0), libNode(1), libNode(2)));
-    }
-
-    for(int f=0; f<libmeshMesh.n_elem(); f++)
-    {
-        libMesh::Elem* libPtr = libmeshMesh.elem_ptr(f);
-        std::vector<libMesh::dof_id_type> connec;
-        libPtr->connectivity(0, libMesh::IOPackage::VTK, connec);
-        B.begin_facet();
-        for(int c = 0;c<3;c++)
-        {
-            B.add_vertex_to_facet(connec[c]);
-        }
-        B.end_facet();
-    }
-
-    B.end_surface();
-    return;
-}
-
-void
-CGALToLibmesh(libMesh::Mesh& libmeshMesh,
-              Polyhedron & poly)
-{
-    // typdef the vertex iterator for cleanliness
-    typedef typename Polyhedron::Vertex_const_iterator Vertex_iterator;
-    // Clear libmesh mesh incase anything is in it
-    libmeshMesh.clear();
-    // Map of CGAL vertex iteration to node id in the libmesh mesh
-    std::map<Vertex_iterator, unsigned int> vertex_to_index;
-    // Counter to give nodes correct ID in libmesh mesh
-    unsigned int id = 0;
-    {
-        double pnt[3];
-        double x,y,z;
-        // Loop over vertices in cgal mesh to 
-        for(Vertex_iterator p = poly.vertices_begin(); 
-            p != poly.vertices_end();
-            p++)
-        {
-            pnt[0]=CGAL::to_double(p->point().x());
-            pnt[1]=CGAL::to_double(p->point().y());
-            pnt[2]=CGAL::to_double(p->point().z());
-            // Generate libmesh points representitive of current point
-            libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
-            // Add point to the mesh
-            libmeshMesh.add_point(xyz, id);
-            // Add point to the map
-            vertex_to_index[p] = id;
-            id++;
-        }
-    }
-    
-    {
-        for(typename Polyhedron::Facet_const_iterator facet = poly.facets_begin();
-            facet != poly.facets_end();
-            ++facet)
-
-        {
-            // Create libmesh element that represents the CGAL facet, and release it from it's unique_ptr
-            libMesh::Elem* elem = libMesh::Elem::build(libMesh::TRI3).release();
-
-            typename Polyhedron::Halfedge_around_facet_const_circulator he = facet->facet_begin();
-            unsigned int j = 0;
-            do 
-            {
-                elem->set_node(j) = libmeshMesh.node_ptr(vertex_to_index[he->vertex()]);
-                j++;
-            } while ( ++he != facet->facet_begin());
-            libmeshMesh.add_elem(elem);
-        }
-    }
-    libmeshMesh.prepare_for_use();
 }
 
