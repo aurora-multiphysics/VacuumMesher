@@ -23,17 +23,23 @@ int main(int argc, const char **argv) {
   libMesh::Mesh surface_mesh(init.comm());
   libMesh::Mesh boundary_mesh(init.comm());
   libMesh::Mesh vacuum_mesh(init.comm());
-  mesh.read(flags.infile);
 
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh, &(surfMeshGen.surface_face_map));
 
-  // Read volume mesh
+  // Skin mesh
   surfMeshGen.getSurface();
+  // Add boundary to skinned mesh
   boundMeshGen.addBoundary(9, 20, flags.triSettings);
+  // Generate vacuum region
   vacGenner.generateVacuumMesh(flags.tetSettings);
-  vacuum_mesh.write("MastU_Test.e");
+  // Write output mesh
+  vacuum_mesh.write(flags.outfile.value());
 
   return 0;
 }

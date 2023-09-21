@@ -15,13 +15,19 @@ int main(int argc, const char **argv) {
 
   // Initialise libmesh functions and mpi
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
-  // instantiate libmesh::mesh objects 
+
+  // Instantiate all our mesh objects
   libMesh::Mesh mesh(init.comm());
   libMesh::Mesh surface_mesh(init.comm());
-  mesh.read("../hive_coil.e");
 
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
-  // Read volume mesh
+  // Skin mesh
   surfMeshGen.getSurface();
+  // Write output mesh
+  surface_mesh.write(flags.outfile.value());
   return 0;
 }

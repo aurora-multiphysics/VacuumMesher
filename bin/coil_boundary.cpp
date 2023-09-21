@@ -22,14 +22,20 @@ int main(int argc, const char **argv) {
   libMesh::Mesh mesh(init.comm());
   libMesh::Mesh surface_mesh(init.comm());
   libMesh::Mesh boundary_mesh(init.comm());
-  mesh.read("../hive_coil.e");
 
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   CoilBoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
   
-  // Read volume mesh
+  // Skin mesh
   surfMeshGen.getSurface();
+  // Add boundary to skinned mesh
   boundMeshGen.addBoundary(0.2, 20, flags.triSettings);
+  // Write output mesh
+  boundary_mesh.write(flags.outfile.value())
 
   return 0;
 }

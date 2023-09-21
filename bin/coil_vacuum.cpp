@@ -17,23 +17,29 @@ int main(int argc, const char **argv) {
 
   // Initialise libmesh functions and mpi
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
-  // Mesh container object, that has ownership of the mesh, surfaceMesh, Vacuum
-  // MeshContainer meshes(init, flags.infile.value());
+
+  // Instantiate all our mesh objects
   libMesh::Mesh mesh(init.comm());
   libMesh::Mesh surface_mesh(init.comm());
   libMesh::Mesh boundary_mesh(init.comm());
   libMesh::Mesh vacuum_mesh(init.comm());
-  mesh.read("../hive_coil.e");
 
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   CoilBoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
-  
-  // Read volume mesh
-  surfMeshGen.getSurface();
-  boundMeshGen.addBoundary(0.2, 20, flags.triSettings);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh, &(surfMeshGen.surface_face_map));
+
+  // Skin mesh
+  surfMeshGen.getSurface();
+  // Add boundary to skinned mesh
+  boundMeshGen.addBoundary(0.2, 20, flags.triSettings);
+  // Generate vacuum region
   vacGenner.generateVacuumMesh(flags.tetSettings);
-  vacuum_mesh.write("new_vac.e");
+  // Write output mesh
+  vacuum_mesh.write(flags.outfile.value());
 
   return 0;
 }

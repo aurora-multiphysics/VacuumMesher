@@ -16,20 +16,25 @@ int main(int argc, const char **argv) {
 
   // Initialise libmesh functions and mpi
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
-  // Mesh container object, that has ownership of the mesh, surfaceMesh, Vacuum
-  // MeshContainer meshes(init, flags.infile.value());
+
+  // Instantiate all our mesh objects
   libMesh::Mesh mesh(init.comm());
   libMesh::Mesh surface_mesh(init.comm());
   libMesh::Mesh boundary_mesh(init.comm());
-  mesh.read("../hive_coil.e");
 
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
-  // Read volume mesh
+  
+  // Skin mesh
   surfMeshGen.getSurface();
-  std::cout << "Bored" << std::endl;
-  // Add boundary
+  // Add boundary to skinned mesh
   boundMeshGen.addBoundary(4, 20, flags.triSettings);
+  // Write output mesh
+  boundary_mesh.write(flags.outfile.value())
 
   return 0;
 }
