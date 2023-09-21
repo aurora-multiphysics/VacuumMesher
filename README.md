@@ -23,7 +23,7 @@ This argument specifies to VacuumMesher where to look for libmesh libs and inclu
 
 # Included examples
 
-6 examples are included. These examples shoud provide the functionality needed by most users.
+6 examples are included, the code for which can be found in `./bin/`. These examples shoud provide the functionality needed by most users.
 
 ## skin
 Skins the input mesh, maintaining any existing sidesets on the boundary.
@@ -39,7 +39,7 @@ Generates the vacuum mesh around the input mesh. Firstly the mesh is skinned, an
 Then tetrahedra are generated in the defined region between the skinned mesh and the boundary. Finally the generated vacuum region is combined
 with the original input mesh.
 
-## coilVacuum 
+### coilVacuum 
 Provides the same functionality as vacuum but for a coil problem.
 
 # Flags
