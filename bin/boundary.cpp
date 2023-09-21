@@ -34,7 +34,7 @@ int main(int argc, const char **argv) {
   // Add boundary to skinned mesh
   boundMeshGen.addBoundary(4, 20, flags.triSettings);
   // Write output mesh
-  boundary_mesh.write(flags.outfile.value())
+  boundary_mesh.write(flags.outfile.value());
 
   return 0;
 }
