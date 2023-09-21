@@ -193,7 +193,6 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
   if (writeMesh) {
     surfaceMesh.write(output_filename);
   }
-  std::cout << "SurfaceMeshGenerated" << std::endl;
 }
 
 void SurfaceMeshGenerator::groupElems(

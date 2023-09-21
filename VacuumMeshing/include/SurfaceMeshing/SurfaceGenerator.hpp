@@ -83,6 +83,7 @@ public:
                         std::vector<std::vector<libMesh::dof_id_type>> &groups,
                         std::string componentFilename);
 
+  std::multimap<unsigned int, unsigned int> surface_face_map;
 protected:
   // Mesh references
   libMesh::Mesh &mesh, &surfaceMesh;
@@ -96,5 +97,5 @@ private:
   int num_elem_sides, num_face_nodes;
 
   //
-  std::multimap<unsigned int, unsigned int> surface_face_map;
+  
 };
