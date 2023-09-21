@@ -29,7 +29,7 @@ int main(int argc, const char **argv) {
   surfMeshGen.getSurface();
   std::cout << "Bored" << std::endl;
   // Add boundary
-  boundMeshGen.addBoundary(400, 20, flags.triSettings);
+  boundMeshGen.addBoundary(4, 20, flags.triSettings);
 
   return 0;
 }
