@@ -39,7 +39,7 @@ Generates the vacuum mesh around the input mesh. Firstly the mesh is skinned, an
 Then tetrahedra are generated in the defined region between the skinned mesh and the boundary. Finally the generated vacuum region is combined
 with the original input mesh.
 
-### coilVacuum 
+## coilVacuum 
 Provides the same functionality as vacuum but for a coil problem.
 
 # Flags
