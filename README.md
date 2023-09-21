@@ -10,17 +10,37 @@ To build the example binaries and the lib, a familiar cmake build procedure with
 
 - First create a build folder and `cd` into it
 
-`
+```
 mkdir build
 cd build
-
-`
-- Next run `cmake ..`, with one extra argument.
+```
+- Next run cmake, with one extra argument.
 
 ```
--DLIBMESH_DIR=/path/to/moose/libmesh/installed
+cmake -DLIBMESH_DIR=/path/to/moose/libmesh/installed ..
 ```
-This argument specifies to VacuumMesher where to look for libmesh libs and includes.
+This argument specifies to VacuumMesher where to look for libmesh libs and includes. The
+
+# Included examples
+
+6 examples are included. These examples shoud provide the functionality needed by most users.
+
+## skin
+Skins the input mesh, maintaining any existing sidesets on the boundary.
+
+## boundary
+Generates the skinned mesh with a cubic boundary surrounding it, but does not generate any tetrahedra / the vacuum region. 
+
+## coilBoundary
+Same as `boundary`, but for a coil problem. Specifically a coil problem where the coil input/ output sidesets need to be coplanar with the vacuum boundary.
+
+## vacuum
+Generates the vacuum mesh around the input mesh. Firstly the mesh is skinned, and then a cubic boundary is generated around the skinned mesh.
+Then tetrahedra are generated in the defined region between the skinned mesh and the boundary. Finally the generated vacuum region is combined
+with the original input mesh.
+
+## coilVacuum 
+Provides the same functionality as vacuum but for a coil problem.
 
 # Flags
 There are several flags you can pass to the example binaries. These influence the generation of the boundary
@@ -35,4 +55,7 @@ There are several flags you can pass to the example binaries. These influence th
 | --max_tri  | Prints a help message showing all of the options detailed here. |
 | --bound_subdiv | Defines the number of subdivisions along one edge of the cubic boundary. |
 | --bound_len | Defines the edge length of the cubic boundary of the vacuum region |
+
+
+
 
