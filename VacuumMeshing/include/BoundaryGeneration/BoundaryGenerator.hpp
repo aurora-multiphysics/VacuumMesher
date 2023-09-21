@@ -16,10 +16,6 @@
 
 class BoundaryGenerator {
 public:
-  /**
-   * Default constructor, don't use
-   */
-  BoundaryGenerator();
 
   /**
    * Default destructor
@@ -29,18 +25,14 @@ public:
   /**
    * Constructor
    */
-  BoundaryGenerator(libMesh::Mesh &meshRef, libMesh::Mesh &surfaceMeshRef,
-                    libMesh::Mesh &boundaryMeshRef);
+  BoundaryGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
+                    libMesh::Mesh &boundary_mesh, const double &merge_tolerance = 1e-08);
 
   /** Adds a boundary to the \c skinnedMesh. This new mesh with the boundary
  added is stored in the \c boundaryMesh. The \c length and number of mesh \c
  subdivisions are required inputs, as well as the \c triSettings that are input
  to the triangle lib calls */
-  void addBoundary(double length, int subdivisions, std::string triSettings);
-
-  //
-  void doubleCheck(Eigen::Matrix3d &basisMatrix, Eigen::Vector3d &origin,
-                   Eigen::Vector3d &point, Eigen::Vector3d &initialPoint);
+  virtual void addBoundary(double length, int subdivisions, std::string triSettings);
 
   /** Method generates a square boundary comprised of just edge elements.
    \c verts  will be populated with the vertex data, \c elems will be populated
@@ -57,24 +49,24 @@ public:
    elemsOne are the vertice and element data structures for the first mesh, and
    \p vertsOne and \p elemsTwo represent the second mesh. The meshes will be
    merged into the first mesh (V1, F1)*/
-  void combineIGLMeshes(Eigen::MatrixXd &vertsOne, Eigen::MatrixXi &elemsOne,
-                        Eigen::MatrixXd &vertsTwo, Eigen::MatrixXi &elemsTwo);
+  void combineIGLMeshes(Eigen::MatrixXd &vertices_one, Eigen::MatrixXi &elements_one,
+                        Eigen::MatrixXd &vertices_two, Eigen::MatrixXi &elements_two);
 
   // Generates a cubic boundary used to define a vacuum region for
   // tetrahedralisation
-  void genBoundary(Eigen::MatrixXd &triVerts, Eigen::MatrixXi &triElems,
-                   double length, int subdivisions, std::string triSettings,
-                   double tol);
+  void genBoundary(Eigen::MatrixXd &triangle_vertices, Eigen::MatrixXi &triangle_elements,
+                   double length, int subdivisions, std::string tri_flags);
 
   void translateMesh(Eigen::MatrixXd &verts, Eigen::Vector3d translationVector);
 
 protected:
   // Libmesh meshes to store the meshes we need
-  libMesh::Mesh &mesh, &surfaceMesh, &boundaryMesh;
+  libMesh::Mesh &mesh_, &surface_mesh_, &boundary_mesh_;
 
   // Eigen data structures to store mesh data for our boundaryz
   // Eigen::MatrixXd boundary_verts;
   // Eigen::MatrixXi boundary_elems;
-
+  double merge_tolerance_;
 private:
+  
 };

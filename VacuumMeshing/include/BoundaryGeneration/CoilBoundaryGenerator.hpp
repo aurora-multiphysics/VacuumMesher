@@ -5,9 +5,15 @@ public:
   // CoilBoundaryGenerator();
 
   CoilBoundaryGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
-                        libMesh::Mesh &boundary_mesh);
+                        libMesh::Mesh &boundary_mesh, const double &merge_tolerance = 1e-08);
 
   ~CoilBoundaryGenerator();
+
+  virtual void addBoundary(const double length,
+                   const int subdivisions,
+                   const std::string tri_flags) override;
+
+
   /** Method to generate the boundary for a coil. A method exists specifically
 for coils, as often the boundary needs to be coplanar with some coil "in"
 and "out" sidesets. This method will generate the correct boundary for a
@@ -93,7 +99,7 @@ tri mesh will be stored.*/
   /** Generates the 5 remaining faces of a cubic boundary*/
   void genRemainingFiveBoundaryFaces(Eigen::MatrixXd &triVerts,
                                      Eigen::MatrixXi &triElems, double length,
-                                     int subdivisions, std::string triSettings);
+                                     int subdivisions, std::string tri_flags);
 
   /** For our coil problem, to generate the part of the boundary that is
    coplanar with the coil sidesets correctly*/
@@ -101,11 +107,8 @@ tri mesh will be stored.*/
                              const std::string &sideset_one_name = "coil_in",
                              const std::string &sideset_two_name = "coil_out");
 
-  void setTolerance(const double tolerance);
-
 protected:
-  libMesh::Mesh &mesh_, &surface_mesh_, &boundary_mesh_;
 
 private:
-  double merge_tolerance_ = 1e-08;
+  
 };

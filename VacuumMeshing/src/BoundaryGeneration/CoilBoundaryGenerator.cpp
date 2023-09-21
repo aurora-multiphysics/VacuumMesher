@@ -6,10 +6,22 @@
 
 CoilBoundaryGenerator::CoilBoundaryGenerator(libMesh::Mesh &mesh,
                                              libMesh::Mesh &surface_mesh,
-                                             libMesh::Mesh &boundary_mesh)
-    : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh) {}
+                                             libMesh::Mesh &boundary_mesh,
+                                             const double &merge_tolerance)
+    : BoundaryGenerator(mesh, surface_mesh, boundary_mesh, merge_tolerance) {}
 
 CoilBoundaryGenerator::~CoilBoundaryGenerator() {}
+
+void CoilBoundaryGenerator::addBoundary(const double length,
+                                        const int subdivisions,
+                                        const std::string tri_flags){
+
+  // generate the boundary and store it in boundary_mesh_
+  generateCoilBoundary(length, subdivisions, tri_flags);
+  
+  // Combine the boundary mesh with the surface mesh to create a mesh ready for tetrahedralisation
+  combineMeshes(merge_tolerance_, boundary_mesh_, surface_mesh_);
+}
 
 void CoilBoundaryGenerator::generateCoilBoundary(const double length,
                                                  const int subdivisions,
@@ -23,11 +35,11 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
   genSidesetMesh(mesh_, sideset_mesh);
 
   // Use a SurfaceMeshGenerator to "skin" the mesh of the sidesets. This results
-  // in a mesh
-  //  of edge elements
+  // in a mesh of edge elements
   SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skinned);
   sidesetSkinner.getSurface();
 
+  sideset_mesh_skinned.write("sideset_mesh.e");
   // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that
   // will be used to define the plane that they sit on
   Eigen::Matrix3d plane_points;
@@ -56,9 +68,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
 
   // Convert the sideset mesh_ to
   libMeshToIGL(sideset_mesh_skinned, sideset_vertices, sideset_element_verts);
-  Eigen::MatrixXd normTest;
 
-  // igl::per_face_normals(verts, elems, normTest);
   changeMeshBasis(sideset_vertices, origin, basis_matrix);
 
   // Define seed points matrix
@@ -66,6 +76,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
 
   // Get the seed points of the coplanar coil boundaries
   getCoplanarSeedPoints(mesh_, seed_points);
+
 
   // Transform seed points into new coordinate system
   for (int i = 0; i < seed_points.rows(); i++) {
@@ -163,7 +174,7 @@ void CoilBoundaryGenerator::generateCoilFaceBound(
   igl::triangle::triangulate(verts, elems, holes, tri_args, newVerts, newElems);
   IGLToLibMesh(output_mesh, newVerts, newElems);
   //
-  combineMeshes(1e-05, output_mesh, remaining_boundary);
+  combineMeshes(merge_tolerance_, output_mesh, remaining_boundary);
 }
 
 void CoilBoundaryGenerator::genSidesetMesh(
@@ -370,7 +381,7 @@ void CoilBoundaryGenerator::getCoplanarSeedPoints(
   libMesh::Mesh sideset_one_mesh(mesh.comm());
   libMesh::Mesh sideset_two_mesh(mesh.comm());
   mesh.boundary_info->sync(sideset_one_id, sideset_one_mesh);
-  mesh.boundary_info->sync(sideset_one_id, sideset_two_mesh);
+  mesh.boundary_info->sync(sideset_two_id, sideset_two_mesh);
 
   // As soon as an element not on the boundary is found, use one of its nodes
   //  as a seeding point
@@ -393,8 +404,4 @@ void CoilBoundaryGenerator::getCoplanarSeedPoints(
       break;
     }
   }
-}
-
-void CoilBoundaryGenerator::setTolerance(const double tolerance) {
-  merge_tolerance_ = tolerance;
 }
