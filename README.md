@@ -47,14 +47,14 @@ There are several flags you can pass to the example binaries. These influence th
 
 | First Header  | Second Header |
 | ------------- | ------------- |
-| -h, --help  | Prints a help message showing all of the options detailed here  |
-| -v, --verbose  | Passes verbose flag onto tetgen/ triangle, hence printing out more information about element generation. |
-| -i, --input  | The input mesh used for mesh generation. |
-| -o, --output  | Optional output name for the generated mesh. Remember to include the file extension!. If not given a default name is given|
-| --max_tet  | Enforces a maximum tetrahedra volume on all the tets generated. |
-| --max_tri  | Prints a help message showing all of the options detailed here. |
-| --bound_subdiv | Defines the number of subdivisions along one edge of the cubic boundary. |
-| --bound_len | Defines the edge length of the cubic boundary of the vacuum region |
+| `-h`, `--help`  | Prints a help message showing all of the options detailed here  |
+| `-v`, `--verbose`  | Passes verbose flag onto tetgen/ triangle, hence printing out more information about element generation. |
+| `-i`, `--input`  | The input mesh used for mesh generation. |
+| `-o`, `--output`  | Optional output name for the generated mesh. Remember to include the file extension!. If not given a default name is given|
+| `--max_tet`  | Enforces a maximum tetrahedra volume on all the tets generated. |
+| `--max_tri`  | Prints a help message showing all of the options detailed here. |
+| `--bound_subdiv` | Defines the number of subdivisions along one edge of the cubic boundary. |
+| `--bound_len` | Defines the edge length of the cubic boundary of the vacuum region |
 
 
 
