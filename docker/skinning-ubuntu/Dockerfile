@@ -71,8 +71,11 @@ RUN cd /$WORKDIR && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
     make -j "$compile_cores" && \
-    cd /opt/VacuumMesher && \
-    ./build/test/runTests
+    cd /opt/VacuumMesher && 
+
+RUN cd /$WORKDIR && \
+    cd VacuumMesher/build && \
+    ./test/runTests 
 
 
 
