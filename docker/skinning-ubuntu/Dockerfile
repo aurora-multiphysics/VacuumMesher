@@ -63,14 +63,14 @@ RUN cd /$WORKDIR && \
 # Get libmesh-skinnin
 
 RUN cd /$WORKDIR && \
-    git clone https://github.com/aurora-multiphysics/VacuumMeshing.git && \
-    cd VacuumMeshing && \
+    git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
+    cd VacuumMesher && \
     git submodule update --init --recursive && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
     make -j "$compile_cores" && \
-    cd /opt/VacuumMeshing && \
+    cd /opt/VacuumMesher && \
     ./build/test/runTests
 
 
