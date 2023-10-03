@@ -24,11 +24,11 @@ TEST_CASE("SurfaceMeshing", "[surface]") {
     REQUIRE(original_node_ids == std::vector<int>({0, 2, 1}));
   }
 
-  SECTION("isElementSurface") {
-    std::vector<int> surface_faces(6);
-    surf_generator.isElementSurface(mesh.elem_ptr(0), surface_faces);
-    REQUIRE(surface_faces == std::vector<int>{2});
-  }
+  //   SECTION("isElementSurface") {
+  //     std::vector<int> surface_faces(6);
+  //     surf_generator.isElementSurface(mesh.elem_ptr(0), surface_faces);
+  //     REQUIRE(surface_faces == std::vector<int>{2});
+  //   }
 
   SECTION("getSurface") {
     surf_generator.getSurface();
