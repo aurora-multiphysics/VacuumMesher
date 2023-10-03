@@ -55,21 +55,22 @@ RUN cd /$WORKDIR && \
 
 
 # Get libIGL
-RUN cd /$WORKDIR && \
-    git clone https://github.com/libigl/libigl.git && \
-    cd libigl && \
-    git checkout main
+# RUN cd /$WORKDIR && \
+#     git clone https://github.com/libigl/libigl.git && \
+#     cd libigl && \
+#     git checkout main
 
 # Get libmesh-skinnin
 
 RUN cd /$WORKDIR && \
-    git clone https://github.com/aurora-multiphysics/libmeshSkinning.git && \
-    cd libmeshSkinning && \
+    git clone https://github.com/aurora-multiphysics/VacuumMeshing.git && \
+    cd VacuumMeshing && \
+    git submodule update --init --recursive && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
     make -j "$compile_cores" && \
-    cd /opt/libmeshSkinning && \
+    cd /opt/VacuumMeshing && \
     ./build/test/runTests
 
 
