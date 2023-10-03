@@ -66,6 +66,7 @@ RUN cd /$WORKDIR && \
     git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
     cd VacuumMesher && \
     git submodule update --init --recursive && \
+    git checkout Catch2 && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
