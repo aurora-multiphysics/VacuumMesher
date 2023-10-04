@@ -15,14 +15,13 @@ SurfaceMeshGenerator::SurfaceMeshGenerator(
               num_face_nodes);
 
   // Checks to see if user has requested only a subset of the elements to be
-  // skinned,
-  //  if they have, the element id's they have supplied are stored in a set.
-  //  Using a set instead of the supplied vector will remove any duplicate
-  //  element id's.
+  // skinned, if they have, the element id's they have supplied are stored in a
+  // set. Using a set instead of the supplied vector will remove any duplicate
+  // element id's.
 
-  //  If the user wants to skin the whole mesh, they don't have to provide
-  //  anything. A set containing all the element id's in the mesh is created for
-  //  them
+  // If the user wants to skin the whole mesh, they don't have to provide
+  // anything. A set containing all the element id's in the mesh is created for
+  // them
   if (!elements.empty()) {
     this->el_set = elements;
   } else {
@@ -72,13 +71,13 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
                                       std::string output_filename) {
 
   // Counter to store the number of surface elements
-  int surface_elem_counter = 0;
+  // int surface_elem_counter = 0;
 
   // Sideset info
   std::map<int, std::vector<libMesh::boundary_id_type>> boundary_data;
 
   // Map from old node ids to the new ones in the surface mesh
-  std::vector<int> current_node_ids;
+  std::vector<int> original_node_ids;
   std::map<int, int> surface_node_ids;
 
   // Connectivity of all the elements in the surface mesh
@@ -88,11 +87,10 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
   for (auto &&elem : el_set) {
 
     // Instantiate vector to store sides that belong to the surface.
-    //  Initialise all elements as -1, a value of -1 will be used to indicate
-    //   end of list. This seems a bit more efficient that changing the size of
-    //   the vector everytime a new surface face is found
+    //  Initialise all elements as -1. A value of -1 indicates end of list.
+    //  This seems a bit more efficient that changing the size of the vector
+    //  everytime a new surface face is found
     std::vector<int> surface_faces(num_elem_sides, -1);
-    // surface_faces.reserve(num_elem_faces);
 
     // Method to check whether the current element has faces that are on the
     // surface. If they exist, the face ID's are stored in the  in the
@@ -104,55 +102,35 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
     }
 
     // Loop over all of the sides found that belong to the boundary
-    for (int i = 0; (surface_faces[i] != -1) && (i < elem->n_sides()); i++) {
+    for (int &face_id : surface_faces) {
 
-      // Check whether this side is a member of a sideset(s). If so, get the id
-      // of that sideset.
-      std::vector<libMesh::boundary_id_type> boundary_ids;
-      mesh.get_boundary_info().boundary_ids(elem, surface_faces[i],
-                                            boundary_ids);
-
-      if (boundary_ids.size() > 0) {
-        boundary_data[surface_elem_counter] = boundary_ids;
+      if (face_id == -1) {
+        break;
       }
 
-      // Loop over all the nodes on side 'surface_faces[i]'.
-      // Add necessary information to containers for creating the mesh
-
-      for (auto &side_node :
-           elem->build_side_ptr(surface_faces[i])->node_ref_range()) {
-
-        int global_node_id = side_node.id();
-        // Keep connectivity data for constructing mesh later
-        connectivity.push_back(global_node_id);
-        current_node_ids.push_back(global_node_id);
-      }
-
-      surface_face_map.insert(std::make_pair(elem->id(), surface_faces[i]));
-
-      // Counter
-      surface_elem_counter++;
+      getFaceInfo(elem, face_id, original_node_ids, connectivity,
+                  boundary_data);
     }
   }
 
-  // Sorts the node ids in the current_node_ids in numerical order and removes
+  // Sorts the node ids in the original_node_ids in numerical order and removes
   // duplicates
-  std::sort(current_node_ids.begin(), current_node_ids.end());
+  std::sort(original_node_ids.begin(), original_node_ids.end());
   std::vector<int>::iterator new_end;
-  new_end = std::unique(current_node_ids.begin(), current_node_ids.end());
-  current_node_ids.resize(std::distance(current_node_ids.begin(), new_end));
+  new_end = std::unique(original_node_ids.begin(), original_node_ids.end());
+  original_node_ids.resize(std::distance(original_node_ids.begin(), new_end));
 
-  // Map from the current_node_ids to the new node ids in the surface mesh
-  for (int i = 0; i < (int)current_node_ids.size(); i++) {
-    surface_node_ids[current_node_ids[i]] = i;
+  // Map from the original_node_ids to the new node ids in the surface mesh
+  for (int i = 0; i < (int)original_node_ids.size(); i++) {
+    surface_node_ids[original_node_ids[i]] = i;
   }
 
   // Using the surface_node_ids map, set all the node data needed for the new
-  // mesh    libMesh::Mesh &mesh, &surfaceMesh;
-  surfaceMesh.reserve_nodes(current_node_ids.size());
+  // mesh
+  surfaceMesh.reserve_nodes(original_node_ids.size());
 
   // Create nodes for our shiny new surface mesh
-  for (auto node_id : current_node_ids) {
+  for (auto node_id : original_node_ids) {
     libMesh::Node *node = mesh.node_ptr(node_id);
     double pnt[3];
     for (u_int i = 0; i < 3; i++) {
@@ -332,4 +310,37 @@ void SurfaceMeshGenerator::saveGroupedElems(
 
     count++;
   }
+}
+
+void SurfaceMeshGenerator::getFaceInfo(
+    libMesh::Elem *elem, int &face_id, std::vector<int> &original_node_ids,
+    std::vector<int> &connectivity,
+    std::map<int, std::vector<libMesh::boundary_id_type>> &boundary_data) {
+  // Check whether this side is a member of a sideset(s).
+  // If yes, get the id of that sideset(s).
+  std::vector<libMesh::boundary_id_type> boundary_ids;
+  mesh.get_boundary_info().boundary_ids(elem, face_id, boundary_ids);
+
+  if (boundary_ids.size() > 0) {
+    boundary_data[surface_elem_counter] = boundary_ids;
+  }
+
+  // Loop over all the nodes on side 'surface_faces[i]'.
+  // Add necessary information to containers for creating the mesh.
+  for (auto &side_node : elem->build_side_ptr(face_id)->node_ref_range()) {
+
+    // Get the global node id of the node in the original mesh
+    int global_node_id = side_node.id();
+
+    // Keep connectivity and node numbering data for constructing mesh later
+    connectivity.push_back(global_node_id);
+    original_node_ids.push_back(global_node_id);
+  }
+
+  // Keep a map from element id's to the face id's on that element that are part
+  // of the surface mesh This will be helpful later
+  surface_face_map.insert(std::make_pair(elem->id(), face_id));
+
+  // Counter
+  surface_elem_counter++;
 }

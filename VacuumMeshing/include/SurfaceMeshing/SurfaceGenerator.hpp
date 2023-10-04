@@ -83,7 +83,19 @@ public:
                         std::vector<std::vector<libMesh::dof_id_type>> &groups,
                         std::string componentFilename);
 
+  /**
+   * Method that organises data about a face of an element. This data inc
+   */
+  void getFaceInfo(
+      libMesh::Elem *elem, int &face_id, std::vector<int> &original_node_ids,
+      std::vector<int> &connectivity,
+      std::map<int, std::vector<libMesh::boundary_id_type>> &boundary_data);
+
+  /**
+   *
+   */
   std::multimap<unsigned int, unsigned int> surface_face_map;
+
 protected:
   // Mesh references
   libMesh::Mesh &mesh, &surfaceMesh;
@@ -91,11 +103,12 @@ protected:
   //
   std::vector<libMesh::Elem *> el_set;
 
+  int surface_elem_counter = 0;
+
 private:
   // Data structures to store useful information about a mesh
   libMesh::ElemType elem_type, face_type;
   int num_elem_sides, num_face_nodes;
 
   //
-  
 };
