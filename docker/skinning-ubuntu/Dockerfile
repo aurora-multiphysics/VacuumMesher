@@ -41,27 +41,18 @@ RUN cd /$WORKDIR && \
     make install && \
     alias cmake='/$WORKDIR/CMake/bin/cmake'
 
-#install moose
-# RUN cd /$WORKDIR && \
-#     git clone https://github.com/idaholab/moose.git && \
-#     cd moose && \
-#     git checkout master && \
-#     MOOSE_JOBS="$compile_cores" && \
-#     ./scripts/update_and_rebuild_petsc.sh && \
-#     ./scripts/update_and_rebuild_libmesh.sh && \
-#     cd /$WORKDIR/moose/test && \
-#     make -j "$compile_cores"
+# Install Catch2
+RUN cd /$WORKDIR && \
+    git clone https://github.com/catchorg/Catch2.git && \
+    cd Catch2/ && \
+    echo $("git branch") && \
+    mkdir build && \
+    cd build && \
+    cmake ../ && \
+    make -j "$compile_cores" && \
+    cmake --install . 
 
-
-
-# Get libIGL
-# RUN cd /$WORKDIR && \
-#     git clone https://github.com/libigl/libigl.git && \
-#     cd libigl && \
-#     git checkout main
-
-# Get libmesh-skinnin
-
+# get VacuumMesher
 RUN cd /$WORKDIR && \
     git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
     cd VacuumMesher && \
@@ -70,8 +61,7 @@ RUN cd /$WORKDIR && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
-    make -j "$compile_cores" && \
-    cd /opt/VacuumMesher && 
+    make -j "$compile_cores" 
 
 RUN cd /$WORKDIR && \
     cd VacuumMesher/build && \
