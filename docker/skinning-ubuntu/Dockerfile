@@ -41,9 +41,8 @@ RUN cd /$WORKDIR && \
     make install && \
     alias cmake='/$WORKDIR/CMake/bin/cmake'
 
-# Install Catch2
-RUN cd /$WORKDIR && \
-    git clone https://github.com/catchorg/Catch2.git && \
+# Build Catch2
+RUN cd /$WORKDIR/submodules && \
     cd Catch2/ && \
     echo $("git branch") && \
     mkdir build && \
