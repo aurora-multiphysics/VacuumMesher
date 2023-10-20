@@ -41,21 +41,11 @@ RUN cd /$WORKDIR && \
     make install && \
     alias cmake='/$WORKDIR/CMake/bin/cmake'
 
-# Build Catch2
-RUN cd /$WORKDIR/submodules && \
-    cd Catch2/ && \
-    echo $("git branch") && \
-    mkdir build && \
-    cd build && \
-    cmake ../ && \
-    make -j "$compile_cores" 
-
 # get VacuumMesher
 RUN cd /$WORKDIR && \
     git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
     cd VacuumMesher && \
     git submodule update --init --recursive && \
-    git checkout Catch2 && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
