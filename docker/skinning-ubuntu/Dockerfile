@@ -48,8 +48,7 @@ RUN cd /$WORKDIR/submodules && \
     mkdir build && \
     cd build && \
     cmake ../ && \
-    make -j "$compile_cores" && \
-    cmake --install . 
+    make -j "$compile_cores" 
 
 # get VacuumMesher
 RUN cd /$WORKDIR && \
