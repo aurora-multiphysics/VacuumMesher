@@ -12,10 +12,9 @@ endif()
 set(libmesh_INCLUDE ${LIBMESH_DIR}/include)
 link_directories (${LIBMESH_DIR}/lib/)
 
-#Get gtest and MPI packages
-find_package(GTest REQUIRED)
+#Get MPI packages
 find_package(MPI REQUIRED)
-# find_package(libmesh REQUIRED)
+
 
 # Get libmesh includes and libs
 # execute_process(COMMAND ${LIBMESH_CONF_DIR}/libmesh-config --libs OUTPUT_VARIABLE libmesh_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -38,3 +37,4 @@ FILE(GLOB_RECURSE testSrc ./test/src/*)
 add_subdirectory(VacuumMeshing)
 add_subdirectory(./bin)
 add_subdirectory(./test)
+add_subdirectory(./submodules/Catch2)

@@ -1,7 +1,5 @@
-#include "BoundaryGeneration/boundaryGeneration.hpp"
 #include "MeshContainer.hpp"
-#include "SurfaceMeshing/surfaceMeshing.hpp"
-#include "Tetrahedralisation/removeDupeNodes.hpp"
+#include "SurfaceMeshing/SurfaceGenerator.hpp"
 #include "Utils/parseFlags.hpp"
 #include <chrono>
 
@@ -17,10 +15,19 @@ int main(int argc, const char **argv) {
 
   // Initialise libmesh functions and mpi
   libMesh::LibMeshInit init(libmeshArgv.size() - 1, libmeshArgv.data());
-  // Mesh container object, that has ownership of the mesh, surfaceMesh, Vacuum
-  MeshContainer meshes(init, flags.infile.value());
 
-  // Read volume mesh
-  getSurface(meshes.userMesh().libmeshMesh(), meshes.skinnedMesh().libmeshMesh(), &(meshes.surfaceFaceMap()), true);
+  // Instantiate all our mesh objects
+  libMesh::Mesh mesh(init.comm());
+  libMesh::Mesh surface_mesh(init.comm());
+
+  // Read mesh from user provided flags
+  mesh.read(flags.infile.value());
+
+  // Instantiate all mesh generators
+  SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
+  // Skin mesh
+  surfMeshGen.getSurface();
+  // Write output mesh
+  surface_mesh.write(flags.outfile.value());
   return 0;
 }

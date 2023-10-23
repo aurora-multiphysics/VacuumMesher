@@ -4,9 +4,8 @@ FROM idaholab/moose:latest
 # By default one core is used to compile
 ARG compile_cores=2
 
-# By default checkout mfem-moose branch
 ARG WORKDIR="opt"
-ARG build_git_sha="master"
+ARG BUILD_GIT_SHA
 
 RUN apt-get update -y && apt-get upgrade -y
 # Install apt dependencies
@@ -41,36 +40,20 @@ RUN cd /$WORKDIR && \
     make install && \
     alias cmake='/$WORKDIR/CMake/bin/cmake'
 
-#install moose
-# RUN cd /$WORKDIR && \
-#     git clone https://github.com/idaholab/moose.git && \
-#     cd moose && \
-#     git checkout master && \
-#     MOOSE_JOBS="$compile_cores" && \
-#     ./scripts/update_and_rebuild_petsc.sh && \
-#     ./scripts/update_and_rebuild_libmesh.sh && \
-#     cd /$WORKDIR/moose/test && \
-#     make -j "$compile_cores"
-
-
-
-# Get libIGL
+# get VacuumMesher
 RUN cd /$WORKDIR && \
-    git clone https://github.com/libigl/libigl.git && \
-    cd libigl && \
-    git checkout main
-
-# Get libmesh-skinnin
-
-RUN cd /$WORKDIR && \
-    git clone https://github.com/aurora-multiphysics/libmeshSkinning.git && \
-    cd libmeshSkinning && \
+    git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
+    cd VacuumMesher && \
+    git checkout ${BUILD_GIT_SHA} &&\
+    git submodule update --init --recursive && \
     mkdir build && \
     cd build && \
     cmake -DLIBMESH_DIR=/usr/local/lib ../ && \
-    make -j "$compile_cores" && \
-    cd /opt/libmeshSkinning && \
-    ./build/test/runTests
+    make -j "$compile_cores" 
+
+RUN cd /$WORKDIR && \
+    cd VacuumMesher/build && \
+    ./test/runTests 
 
 
 
