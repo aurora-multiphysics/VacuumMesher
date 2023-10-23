@@ -1,30 +1,22 @@
 #pragma once
 
+#include "Utils/libmeshConversions.hpp"
 #include "libmesh/mesh.h"
+#include <filesystem>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
-#include <igl/embree/reorient_facets_raycast.h>
-#include <igl/hsv_to_rgb.h>
-#include <igl/orientable_patches.h>
-#include <igl/randperm.h>
-#include <igl/read_triangle_mesh.h>
+#include <igl/per_face_normals.h>
 #include <igl/slice.h>
 #include <iostream>
-// #include <igl/opengl/glfw/Viewer.h>
-#include "Utils/libmeshConversions.hpp"
-#include <filesystem>
-#include <igl/decimate.h>
-#include <igl/writeMESH.h>
-#include <igl/writeOFF.h>
 #include <unistd.h>
 
 class VacuumGenerator {
 public:
-  VacuumGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
-                  libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
-                  std::multimap<unsigned int, unsigned int> *surface_face_map = nullptr);
+  VacuumGenerator(
+      libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
+      libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
+      std::multimap<unsigned int, unsigned int> *surface_face_map = nullptr);
 
   ~VacuumGenerator();
-
 
   void generateVacuumMesh(const std::string tet_settings);
   /** Method used to generate the tetrehedra between the boundary mesh and the
@@ -46,7 +38,8 @@ public:
     surfaces you do NOT want tetrahedra to be generated in, and tetSettings is a
     string that gets passed to tetgen, the underlying library used for tet
     generation.*/
-  void tetrahedraliseVacuumRegion(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+  void tetrahedraliseVacuumRegion(const Eigen::MatrixXd &V,
+                                  const Eigen::MatrixXi &F,
                                   const Eigen::MatrixXd &seed_points,
                                   const std::string tet_settings);
 
@@ -64,8 +57,7 @@ public:
   Eigen::MatrixXd getSeeds(libMesh::Mesh mesh) const;
 
 protected:
-
-// References to mesh objects passed in via constructor
+  // References to mesh objects passed in via constructor
   libMesh::Mesh &mesh_, &boundary_mesh_, &surface_mesh_, &vacuum_mesh_;
 
   // Tolerance value used for rTree merging
@@ -73,6 +65,6 @@ protected:
   double seeding_tolerance_ = 1e-06;
 
   std::unique_ptr<std::multimap<unsigned int, unsigned int>> surface_face_map_;
+
 private:
-  
 };
