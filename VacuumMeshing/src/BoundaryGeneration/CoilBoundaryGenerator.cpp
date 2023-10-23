@@ -14,12 +14,13 @@ CoilBoundaryGenerator::~CoilBoundaryGenerator() {}
 
 void CoilBoundaryGenerator::addBoundary(const double length,
                                         const int subdivisions,
-                                        const std::string tri_flags){
+                                        const std::string tri_flags) {
 
   // generate the boundary and store it in boundary_mesh_
   generateCoilBoundary(length, subdivisions, tri_flags);
-  
-  // Combine the boundary mesh with the surface mesh to create a mesh ready for tetrahedralisation
+
+  // Combine the boundary mesh with the surface mesh to create a mesh ready for
+  // tetrahedralisation
   combineMeshes(merge_tolerance_, boundary_mesh_, surface_mesh_);
 }
 
@@ -39,7 +40,6 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
   SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skinned);
   sidesetSkinner.getSurface();
 
-  sideset_mesh_skinned.write("sideset_mesh.e");
   // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that
   // will be used to define the plane that they sit on
   Eigen::Matrix3d plane_points;
@@ -59,7 +59,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
   // central
   Eigen::Vector3d origin = plane_points.row(0);
 
-  // Generate basis matrix based on 3 points that define a plane
+  // Generate basis matrix from 3 points that define a plane
   getBasisMatrix(basis_matrix, plane_points);
 
   // Eigen objects to store
@@ -69,6 +69,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
   // Convert the sideset mesh_ to
   libMeshToIGL(sideset_mesh_skinned, sideset_vertices, sideset_element_verts);
 
+  // Do a change of basis on the mesh
   changeMeshBasis(sideset_vertices, origin, basis_matrix);
 
   // Define seed points matrix
@@ -76,7 +77,6 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
 
   // Get the seed points of the coplanar coil boundaries
   getCoplanarSeedPoints(mesh_, seed_points);
-
 
   // Transform seed points into new coordinate system
   for (int i = 0; i < seed_points.rows(); i++) {
@@ -104,6 +104,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
 
 bool CoilBoundaryGenerator::getBasisMatrix(
     Eigen::Matrix3d &basis_matrix, const Eigen::Matrix3d &plane_points) {
+
   // Basis vectors X Y and Z
   Eigen::Vector3d X, Y, Z;
 
