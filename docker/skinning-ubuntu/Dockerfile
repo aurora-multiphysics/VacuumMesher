@@ -4,9 +4,8 @@ FROM idaholab/moose:latest
 # By default one core is used to compile
 ARG compile_cores=2
 
-# By default checkout mfem-moose branch
 ARG WORKDIR="opt"
-ARG build_git_sha="master"
+ARG BUILD_GIT_SHA
 
 RUN apt-get update -y && apt-get upgrade -y
 # Install apt dependencies
@@ -45,6 +44,7 @@ RUN cd /$WORKDIR && \
 RUN cd /$WORKDIR && \
     git clone https://github.com/aurora-multiphysics/VacuumMesher.git && \
     cd VacuumMesher && \
+    git checkout ${BUILD_GIT_SHA} &&\
     git submodule update --init --recursive && \
     mkdir build && \
     cd build && \
