@@ -68,7 +68,6 @@ void combineMeshes(const double &tol, libMesh::Mesh &mesh_one,
   libMesh::subdomain_id_type vac_id = 2;
   if (!sub_ids.empty()) {
     vac_id = 1 + (*(sub_ids.rbegin()));
-    std::cout << "vac Id will be " << vac_id << std::endl;
   }
 
   // Instantiate an rTree. Using a rTree data structure significantly reduces
