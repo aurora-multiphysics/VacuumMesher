@@ -8,18 +8,27 @@ There are two parts to this repo. Firstly, there is the VacuumMesher library its
 # Building
 To build the example binaries and the lib, a familiar cmake build procedure with a couple of extra arguments should be used. Also important to mention is that this tool has been made to accomodate for a pre-existing moose install, as I imagine most of the people using it will have one and hence probably have an existing libmesh install that can be used. I have only tested this will a "from source" MOOSE build. If you used conda to install MOOSE, seek help and/or a hug. 
 
-- First create a build folder and `cd` into it
+- Firstly clone the repo.
+``` git clone https://github.com/aurora-multiphysics/VacuumMesher.git```
+
+- Secondly, enter the repo and update the git submodules to get Catch2 and libIGL
+``` 
+cd VacuumMesher
+git submodule update --init --recursive
+```
+
+- Now create a build folder and `cd` into it
 
 ```
 mkdir build
 cd build
 ```
-- Next run cmake, with one extra argument.
+- Next run cmake, with an extra argument `-DLIBMESH_DIR`.
 
 ```
 cmake -DLIBMESH_DIR=/path/to/moose/libmesh/installed ..
 ```
-This argument specifies to VacuumMesher where to look for libmesh libs and includes. The
+This argument specifies to VacuumMesher where to look for libmesh libs and includes.
 
 # Included examples
 
