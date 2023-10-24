@@ -28,11 +28,12 @@ int main(int argc, const char **argv) {
   // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
-  
+
   // Skin mesh
   surfMeshGen.getSurface();
   // Add boundary to skinned mesh
-  boundMeshGen.addBoundary(4, 20, flags.triSettings);
+  boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
+                           flags.triSettings);
   // Write output mesh
   boundary_mesh.write(flags.outfile.value());
 

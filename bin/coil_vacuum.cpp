@@ -1,8 +1,8 @@
 #include "BoundaryGeneration/CoilBoundaryGenerator.hpp"
 #include "MeshContainer.hpp"
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
-#include "VacuumGeneration/VacuumGenerator.hpp"
 #include "Utils/parseFlags.hpp"
+#include "VacuumGeneration/VacuumGenerator.hpp"
 #include <chrono>
 
 // using namespace libMesh;
@@ -30,12 +30,14 @@ int main(int argc, const char **argv) {
   // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   CoilBoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
-  VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh, &(surfMeshGen.surface_face_map));
+  VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh,
+                            &(surfMeshGen.surface_face_map));
 
   // Skin mesh
   surfMeshGen.getSurface();
   // Add boundary to skinned mesh
-  boundMeshGen.addBoundary(0.2, 20, flags.triSettings);
+  boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
+                           flags.triSettings);
   // Generate vacuum region
   vacGenner.generateVacuumMesh(flags.tetSettings);
   // Write output mesh
