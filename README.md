@@ -51,7 +51,7 @@ Same as `boundary`, but for a coil problem. Specifically a coil problem where th
 Generates the vacuum mesh around the input mesh. Firstly the mesh is skinned, and then a cubic boundary is generated around the skinned mesh.
 Then tetrahedra are generated in the defined region between the skinned mesh and the boundary. Finally the generated vacuum region is combined
 with the original input mesh.
-`./build/bin/vacuum -i ./Examples/example_mesh.e -o example_skinned.e --bound_len 2`
+`./build/bin/vacuum -i ./Examples/example_mesh.e -o example_vac.e --bound_len 2`
 
 ## coilVacuum 
 Provides the same functionality as vacuum but for a coil problem.
