@@ -45,7 +45,15 @@ const std::unordered_map<std::string, OneArgHandle> OneArgs{
      [](inputFlags &s, const std::string &arg) {
        s.boundLen = std::stod(arg);
      }},
-};
+
+    {"--sideset_one_id",
+     [](inputFlags &s, const std::string &arg) {
+       s.coil_sideset_one_id = std::stoi(arg);
+     }},
+
+    {"--sideset_two_id", [](inputFlags &s, const std::string &arg) {
+       s.coil_sideset_two_id = std::stoi(arg);
+     }}};
 
 inputFlags parse_settings(int argc, const char *argv[]) {
 
