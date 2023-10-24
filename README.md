@@ -36,26 +36,34 @@ This argument specifies to VacuumMesher where to look for libmesh libs and inclu
 
 ## skin
 Skins the input mesh, maintaining any existing sidesets on the boundary.
+
 An example run from the command line would look something like:
 `./build/bin/skin -i Examples/example_cube.e -o example_skinned.e`
 
 ## boundary
 Generates the skinned mesh with a cubic boundary surrounding it, but does not generate any tetrahedra / the vacuum region. 
+
+An example run from the command line would look something like:
 `./build/bin/boundary -i Examples/example_cube.e -o example_boundary.e --bound_len 2`
 
 ## coilBoundary
 Same as `boundary`, but for a coil problem. Specifically a coil problem where the coil input/ output sidesets need to be coplanar with the vacuum boundary.
+
+An example run from the command line would look something like:
 `./build/bin/coilBoundary -i ./Examples/example_coil.e -o example_coil_boundary.e --bound_len 100 --sideset_one_id 1 --sideset_two_id 2`
 
 ## vacuum
 Generates the vacuum mesh around the input mesh. Firstly the mesh is skinned, and then a cubic boundary is generated around the skinned mesh.
 Then tetrahedra are generated in the defined region between the skinned mesh and the boundary. Finally the generated vacuum region is combined
 with the original input mesh.
+
+An example run from the command line would look something like:
 `./build/bin/vacuum -i ./Examples/example_mesh.e -o example_vac.e --bound_len 2`
 
 ## coilVacuum 
 Provides the same functionality as vacuum but for a coil problem.
-An example
+
+An example run from the command line would look something like:
 `./build/bin/coilVacuum -i ./Examples/example_coil.e -o example_coil_vac.e --bound_len 100 --sideset_one_id 1 --sideset_two_id 2`
 
 # Flags
