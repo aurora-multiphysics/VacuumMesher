@@ -24,14 +24,18 @@ struct inputFlags {
   std::optional<double> maxTriArea;
   // Maximum volume of tet elements generated
   std::optional<double> maxTetVol;
-
   // Command line switches used by the triangle library
   std::string triSettings = "qYa";
   // Command line switches used by the tetgen library
   std::string tetSettings = "pqCYY";
 
-  // Small method to
+  // Sideset ID's for coil boundary generation
+  int coil_sideset_one_id = 1;
+
+  int coil_sideset_two_id = 2;
+
   void setSwitches();
+  // Method to print help message
   void helpMessage();
 };
 

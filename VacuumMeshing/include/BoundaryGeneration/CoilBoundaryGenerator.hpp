@@ -5,14 +5,15 @@ public:
   // CoilBoundaryGenerator();
 
   CoilBoundaryGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
-                        libMesh::Mesh &boundary_mesh, const double &merge_tolerance = 1e-08);
+                        libMesh::Mesh &boundary_mesh,
+                        const int sideset_one_id = 1,
+                        const int sideset_two_id = 2,
+                        const double &merge_tolerance = 1e-08);
 
   ~CoilBoundaryGenerator();
 
-  virtual void addBoundary(const double length,
-                   const int subdivisions,
-                   const std::string tri_flags) override;
-
+  virtual void addBoundary(const double length, const int subdivisions,
+                           const std::string tri_flags) override;
 
   /** Method to generate the boundary for a coil. A method exists specifically
 for coils, as often the boundary needs to be coplanar with some coil "in"
@@ -70,9 +71,7 @@ tri mesh will be stored.*/
                              libMesh::Mesh &boundary_without_coilside_face,
                              Eigen::MatrixXd &holes, std::string &tri_args);
   /***/
-  void genSidesetMesh(libMesh::Mesh &mesh, libMesh::Mesh &sideset_mesh,
-                      std::vector<std::string> sideset_names = {"coil_in",
-                                                                "coil_out"});
+  void genSidesetMesh(libMesh::Mesh &mesh, libMesh::Mesh &sideset_mesh);
   /***/
   void genSidesetBounds(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems,
                         const double length, const int subdivisions);
@@ -103,12 +102,10 @@ tri mesh will be stored.*/
 
   /** For our coil problem, to generate the part of the boundary that is
    coplanar with the coil sidesets correctly*/
-  void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seed_points,
-                             const std::string &sideset_one_name = "coil_in",
-                             const std::string &sideset_two_name = "coil_out");
+  void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seed_points);
 
 protected:
-
 private:
-  
+  const int coil_sideset_one_id;
+  const int coil_sideset_two_id;
 };
