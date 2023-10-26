@@ -137,8 +137,10 @@ void combineMeshes(const double &tol, libMesh::Mesh &mesh_one,
     mesh_one.get_boundary_info().add_side(boundSide->first, boundSide->second,
                                           5);
   }
+
   mesh_one.boundary_info->set_sideset_name_map()[5] = "part_boundary";
   mesh_one.subdomain_name(vac_id) = "vacuum_region";
+
   // Prepare the mesh for use. This libmesh method does some id renumbering etc,
   // generally a good idea to call it after constructing a mesh
   mesh_one.prepare_for_use();

@@ -11,10 +11,9 @@
 
 class VacuumGenerator {
 public:
-  VacuumGenerator(
-      libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
-      libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
-      std::multimap<unsigned int, unsigned int> *surface_face_map = nullptr);
+  VacuumGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
+                  libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
+                  std::multimap<unsigned int, unsigned int> &surface_face_map);
 
   ~VacuumGenerator();
 
@@ -61,10 +60,10 @@ protected:
   libMesh::Mesh &mesh_, &boundary_mesh_, &surface_mesh_, &vacuum_mesh_;
 
   // Tolerance value used for rTree merging
-  double merge_tolerance_ = 1e-08;
-  double seeding_tolerance_ = 1e-06;
+  double merge_tolerance_ = 1e-07;
+  double seeding_tolerance_ = 1e-07;
 
-  std::unique_ptr<std::multimap<unsigned int, unsigned int>> surface_face_map_;
+  std::shared_ptr<std::multimap<unsigned int, unsigned int>> surface_face_map_;
 
 private:
 };

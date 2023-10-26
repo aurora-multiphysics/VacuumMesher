@@ -70,9 +70,6 @@ void SurfaceMeshGenerator::isElementSurface(
 void SurfaceMeshGenerator::getSurface(bool writeMesh,
                                       std::string output_filename) {
 
-  // Counter to store the number of surface elements
-  // int surface_elem_counter = 0;
-
   // Sideset info
   std::map<int, std::vector<libMesh::boundary_id_type>> boundary_data;
 

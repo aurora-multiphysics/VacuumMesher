@@ -31,7 +31,7 @@ int main(int argc, const char **argv) {
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh,
-                            &(surfMeshGen.surface_face_map));
+                            surfMeshGen.surface_face_map);
 
   // Skin mesh
   surfMeshGen.getSurface();
