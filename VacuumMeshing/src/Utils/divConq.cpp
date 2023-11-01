@@ -4,7 +4,6 @@ namespace VacuumMesher {
 
 ClosestPairFinder::ClosestPairFinder(libMesh::Mesh &mesh_) {
   mesh = std::make_shared<libMesh::Mesh>(mesh_);
-  std::cout << "NUM MESH NODES " << mesh->n_nodes() << std::endl;
   initialiseArrays();
 }
 

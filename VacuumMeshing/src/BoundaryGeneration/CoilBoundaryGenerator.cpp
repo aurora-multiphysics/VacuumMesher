@@ -25,7 +25,8 @@ void CoilBoundaryGenerator::addBoundary(const double length,
 
   if (mesh_merge_tolerance_ == 0) {
     setMergeToleranceAuto();
-    std::cout << mesh_merge_tolerance_ << std::endl;
+    std::cout << "Mesh merge tolerance used: " << mesh_merge_tolerance_
+              << std::endl;
   }
   // Combine the boundary mesh with the surface mesh to create a mesh ready for
   // tetrahedralisation
