@@ -48,11 +48,12 @@ double ClosestPairFinder::closestPair2D(std::vector<libMesh::Node *> &X) {
       S.push_back(node);
     }
   }
-  // std::cout << "Made Y" << std::endl;
-  for (auto &node : S) {
-    for (int i = 1; i <= 7; i++) {
-      (eucDist(node, node + i) < delta) ? delta = eucDist(node, node + i)
-                                        : delta = delta;
+
+  for (int node_num = 0; node_num < S.size(); node_num++) {
+    for (int i = 0; i < 7 && (S[node_num + i] != S.back()); i++) {
+      eucDist(S[node_num], S[node_num + (i + 1)]) < delta
+          ? delta = eucDist(S[node_num], S[node_num + (i + 1)])
+          : delta = delta;
     }
   }
   return delta;
@@ -87,6 +88,8 @@ double ClosestPairFinder::closestPair3D(std::vector<libMesh::Node *> &X) {
   std::vector<libMesh::Node *> xSideOne(X.begin(), X.begin() + n / 2);
   std::vector<libMesh::Node *> xSideTwo(X.begin() + n / 2, X.end());
 
+  // Have to dereference twice, once for the iterator and once for the node
+  // pointer
   double midX = (**(X.begin() + n / 2))(0);
 
   // Recursion
@@ -95,7 +98,6 @@ double ClosestPairFinder::closestPair3D(std::vector<libMesh::Node *> &X) {
 
   double delta = std::min(minDistOne, minDistTwo);
 
-  // std::cout << "Recursion done" << std::endl;
   std::vector<libMesh::Node *> slabSet;
 
   for (auto &node : Y) {
@@ -109,8 +111,10 @@ double ClosestPairFinder::closestPair3D(std::vector<libMesh::Node *> &X) {
     return delta;
   }
 
+  // Create vector containing pairs of nodes
   std::vector<nodePair> pairs;
-  enumeratePotentialPairs(slabSet, delta, pairs, AXIS::Z_AXIS);
+
+  getPotentialPairs(slabSet, delta, pairs);
 
   // For potential pairs, test to see if they are closer than delta
   for (auto &pair : pairs) {
@@ -118,19 +122,17 @@ double ClosestPairFinder::closestPair3D(std::vector<libMesh::Node *> &X) {
         ? delta = eucDist(pair.first, pair.second)
         : delta = delta;
   }
-
   return delta;
 }
 
-void ClosestPairFinder::enumeratePotentialPairs(std::vector<libMesh::Node *> &X,
-                                                double delta,
-                                                std::vector<nodePair> &pairs,
-                                                AXIS compAxis) {
+void ClosestPairFinder::getPotentialPairs(std::vector<libMesh::Node *> &X,
+                                          double delta,
+                                          std::vector<nodePair> &pairs) {
   // Create a copy of X called Y
   std::vector<libMesh::Node *> Y = X;
 
   // Sort Y by the y coordinate
-  sortByIthCoord(compAxis, Y);
+  sortByIthCoord(AXIS::Y_AXIS, Y);
 
   int numNodes = X.size();
   // Base cases
@@ -162,12 +164,10 @@ void ClosestPairFinder::enumeratePotentialPairs(std::vector<libMesh::Node *> &X,
   std::vector<libMesh::Node *> xS1(X.begin(), X.begin() + numNodes / 2);
   std::vector<libMesh::Node *> xS2(X.begin() + numNodes / 2, X.end());
 
-  // Does not like this??
-
   double midX = (**(X.begin() + numNodes / 2))(0);
   // Recursion
-  enumeratePotentialPairs(xS1, delta, pairs, compAxis);
-  enumeratePotentialPairs(xS2, delta, pairs, compAxis);
+  getPotentialPairs(xS1, delta, pairs);
+  getPotentialPairs(xS2, delta, pairs);
 
   std::vector<libMesh::Node *> S;
   for (auto &node : Y) {
@@ -175,11 +175,13 @@ void ClosestPairFinder::enumeratePotentialPairs(std::vector<libMesh::Node *> &X,
       S.push_back(node);
     }
   }
-  // std::cout << "Made Y" << std::endl;
-  for (auto &node : S) {
-    for (int i = 1; i <= 7; i++) {
-      if (eucDist(node, node + i) <= delta) {
-        pairs.push_back(nodePair(X[1], X[2]));
+
+  int max_node_comparisons = std::max(7, (int)S.size() - 1);
+
+  for (int node_num = 0; node_num < S.size(); node_num++) {
+    for (int i = 0; i < 7 && (S[node_num + i] != S.back()); i++) {
+      if (eucDist(S[node_num], S[node_num + (i + 1)]) <= delta) {
+        pairs.push_back(nodePair(S[node_num], S[node_num + (i + 1)]));
       }
     }
   }
@@ -193,7 +195,6 @@ void ClosestPairFinder::sortByIthCoord(AXIS axis,
   //     std::cerr << "Must call sortByIthCoord with either X Y or Z as axis
   //     arg!" << std::endl; std::__throw_bad_function_call();
   // }
-
   std::sort(vec.begin(), vec.end(),
             [axis](libMesh::Node *lhs, libMesh::Node *rhs) {
               return (*lhs)(axis) < (*rhs)(axis);

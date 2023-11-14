@@ -40,6 +40,10 @@ public:
   // Return the euclidian distance between the two closest points
   double closestPairMagnitude(int dim = 3);
 
+protected:
+  // Type def to prevent headache
+  typedef std::pair<libMesh::Node *, libMesh::Node *> nodePair;
+
   //
   double closestPair2D(std::vector<libMesh::Node *> &X);
 
@@ -63,15 +67,10 @@ public:
    */
   double closestPair3D(std::vector<libMesh::Node *> &X);
 
-protected:
-  // Type def to prevent headache
-  typedef std::pair<libMesh::Node *, libMesh::Node *> nodePair;
-
   /** Method to return list of pairs of nodes that need their distance checking
    * in the 3D method.*/
-  void enumeratePotentialPairs(std::vector<libMesh::Node *> &X, double delta,
-                               std::vector<nodePair> &pairs,
-                               AXIS compAxis = AXIS::Y_AXIS);
+  void getPotentialPairs(std::vector<libMesh::Node *> &X, double delta,
+                         std::vector<nodePair> &pairs);
 
   /** Method to find the euclidian distance between \p n1 and \p n2 */
   double eucDist(libMesh::Node *n1, libMesh::Node *n2);
