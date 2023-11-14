@@ -19,6 +19,11 @@
 class SurfaceMeshGenerator {
 public:
   /**
+   * Enum to define what type of neighbor matching the user wants to use.
+   * */
+  enum NEIGHBOURTYPE { FACE, EDGE, VERTEX };
+
+  /**
    * Default constructor
    */
   SurfaceMeshGenerator();
@@ -74,7 +79,8 @@ public:
   /** Method for grouping a discontinuous mesh into its continuous chunks.
    */
   void groupElems(libMesh::Mesh mesh,
-                  std::vector<std::vector<libMesh::dof_id_type>> &groups);
+                  std::vector<std::vector<libMesh::dof_id_type>> &groups,
+                  NEIGHBOURTYPE neighbour_type = NEIGHBOURTYPE::FACE);
 
   /** Method for checking whether an element has sides which should be in the
    * skin.
