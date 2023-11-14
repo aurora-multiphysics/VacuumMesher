@@ -6,9 +6,9 @@
 BoundaryGenerator::BoundaryGenerator(libMesh::Mesh &mesh,
                                      libMesh::Mesh &surface_mesh,
                                      libMesh::Mesh &boundary_mesh,
-                                     const double &merge_tolerance)
+                                     double mesh_merge_tolerance)
     : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh),
-      merge_tolerance_(merge_tolerance) {}
+      mesh_merge_tolerance_(mesh_merge_tolerance) {}
 
 BoundaryGenerator::~BoundaryGenerator() {}
 
@@ -28,8 +28,14 @@ void BoundaryGenerator::addBoundary(double length, int subdivisions,
 
   // Turn IGL mesh into libmesh Mesh
   IGLToLibMesh(boundary_mesh_, boundary_verts, boundary_elems);
+
+  // If unspecified, get merge tolerance
+  if (mesh_merge_tolerance_ == 0) {
+    setMergeToleranceAuto();
+  }
+
   // Combine IGL mesh with boundary
-  combineMeshes(1e-06, boundary_mesh_, surface_mesh_);
+  combineMeshes(mesh_merge_tolerance_, boundary_mesh_, surface_mesh_);
 }
 
 void BoundaryGenerator::genBoundary(Eigen::MatrixXd &tri_vertices,
@@ -97,8 +103,8 @@ void BoundaryGenerator::genBoundary(Eigen::MatrixXd &tri_vertices,
   // Combine the 6 square meshes to create the cubic boundary, using the rTree
   //  to avoid having any duplicate nodes
   for (int i = 0; i < 6; i++) {
-    combineMeshes(merge_tolerance_, tri_vertices, tri_elements, new_faces[i],
-                  square_elems_2);
+    combineMeshes(boundary_face_merge_tolerance_, tri_vertices, tri_elements,
+                  new_faces[i], square_elems_2);
   }
 }
 
@@ -203,4 +209,13 @@ void BoundaryGenerator::checkBoundary(const double &length) const {
         "The cubic boundary will overlap with the mesh. Please provide a "
         "larger boundary length.");
   }
+}
+
+void BoundaryGenerator::setMergeToleranceAuto() {
+  VacuumMesher::ClosestPairFinder closestPairBoundary(boundary_mesh_);
+  VacuumMesher::ClosestPairFinder closestPairSkin(surface_mesh_);
+
+  mesh_merge_tolerance_ = std::min(closestPairSkin.closestPairMagnitude(),
+                                   closestPairBoundary.closestPairMagnitude());
+  mesh_merge_tolerance_ /= 10;
 }

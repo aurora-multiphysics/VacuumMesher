@@ -9,7 +9,7 @@ CoilBoundaryGenerator::CoilBoundaryGenerator(libMesh::Mesh &mesh,
                                              libMesh::Mesh &boundary_mesh,
                                              const int sideset_one_id,
                                              const int sideset_two_id,
-                                             const double &merge_tolerance)
+                                             double merge_tolerance)
     : BoundaryGenerator(mesh, surface_mesh, boundary_mesh, merge_tolerance),
       coil_sideset_one_id(sideset_one_id), coil_sideset_two_id(sideset_two_id) {
 }
@@ -23,9 +23,14 @@ void CoilBoundaryGenerator::addBoundary(const double length,
   // generate the boundary and store it in boundary_mesh_
   generateCoilBoundary(length, subdivisions, tri_flags);
 
+  if (mesh_merge_tolerance_ == 0) {
+    setMergeToleranceAuto();
+    std::cout << "Mesh merge tolerance used: " << mesh_merge_tolerance_
+              << std::endl;
+  }
   // Combine the boundary mesh with the surface mesh to create a mesh ready for
   // tetrahedralisation
-  combineMeshes(merge_tolerance_, boundary_mesh_, surface_mesh_);
+  combineMeshes(mesh_merge_tolerance_, boundary_mesh_, surface_mesh_);
 }
 
 void CoilBoundaryGenerator::generateCoilBoundary(const double length,
@@ -179,7 +184,8 @@ void CoilBoundaryGenerator::generateCoilFaceBound(
   igl::triangle::triangulate(verts, elems, holes, tri_args, newVerts, newElems);
   IGLToLibMesh(output_mesh, newVerts, newElems);
   //
-  combineMeshes(merge_tolerance_, output_mesh, remaining_boundary);
+  combineMeshes(boundary_face_merge_tolerance_, output_mesh,
+                remaining_boundary);
 }
 
 void CoilBoundaryGenerator::genSidesetMesh(libMesh::Mesh &mesh,
@@ -365,8 +371,8 @@ void CoilBoundaryGenerator::genRemainingFiveBoundaryFaces(
   translateMesh(new_faces[4], {0, 0, length});
 
   for (int i = 0; i < 5; i++) {
-    combineMeshes(merge_tolerance_, tri_vertices, tri_elems, new_faces[i],
-                  square_elems);
+    combineMeshes(boundary_face_merge_tolerance_, tri_vertices, tri_elems,
+                  new_faces[i], square_elems);
   }
 }
 

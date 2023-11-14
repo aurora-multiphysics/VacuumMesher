@@ -4,7 +4,7 @@
 VacuumGenerator::VacuumGenerator(
     libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
     libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
-    std::multimap<unsigned int, unsigned int> &surface_face_map)
+    const std::multimap<unsigned int, unsigned int> &surface_face_map)
     : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh),
       vacuum_mesh_(vacuum_mesh) {
 

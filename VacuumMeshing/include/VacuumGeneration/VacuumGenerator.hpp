@@ -11,9 +11,10 @@
 
 class VacuumGenerator {
 public:
-  VacuumGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
-                  libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
-                  std::multimap<unsigned int, unsigned int> &surface_face_map);
+  VacuumGenerator(
+      libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
+      libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
+      const std::multimap<unsigned int, unsigned int> &surface_face_map);
 
   ~VacuumGenerator();
 

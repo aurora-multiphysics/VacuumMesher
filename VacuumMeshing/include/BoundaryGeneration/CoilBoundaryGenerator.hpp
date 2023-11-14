@@ -8,7 +8,7 @@ public:
                         libMesh::Mesh &boundary_mesh,
                         const int sideset_one_id = 1,
                         const int sideset_two_id = 2,
-                        const double &merge_tolerance = 1e-06);
+                        double merge_tolerance = 0);
 
   ~CoilBoundaryGenerator();
 

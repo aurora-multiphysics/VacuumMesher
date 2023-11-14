@@ -148,7 +148,6 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
   for (int i = 0; i < surface_elem_counter; i++) {
     libMesh::Elem *elem = libMesh::Elem::build(face_type).release();
     for (int j = 0; j < num_face_nodes; j++) {
-      // std::cout << j << std::endl;
       elem->set_node(j) = surfaceMesh.node_ptr(
           surface_node_ids[connectivity[(i * num_face_nodes) + j]]);
     }
@@ -171,21 +170,27 @@ void SurfaceMeshGenerator::getSurface(bool writeMesh,
 }
 
 void SurfaceMeshGenerator::groupElems(
-    libMesh::Mesh mesh,
-    std::vector<std::vector<libMesh::dof_id_type>> &groups) {
+    libMesh::Mesh mesh, std::vector<std::vector<libMesh::dof_id_type>> &groups,
+    NEIGHBOURTYPE neighbour_type) {
+
   std::set<int> elems;
+  // Add all the element id's in the mesh to the "elems" set
   for (auto elem : mesh.element_ptr_range()) {
     elems.insert(elem->id());
   }
 
+  // As long as there are element id's in the "elems" set, keep looping
   while (!elems.empty()) {
+
     auto it = elems.begin();
-    libMesh::dof_id_type next = *(it);
+    libMesh::dof_id_type first_elem = *(it);
     elems.erase(it);
     std::set<libMesh::dof_id_type> neighbors;
 
-    // Adding first element to nesighbors
-    neighbors.insert(next);
+    // Add the first element id to neighbors
+    neighbors.insert(first_elem);
+
+    // A vector to store element ID's that make up a group
     std::vector<libMesh::dof_id_type> groupElems(0);
 
     // While elements exist in neighbors
@@ -193,38 +198,63 @@ void SurfaceMeshGenerator::groupElems(
 
       std::set<libMesh::dof_id_type> new_neighbors;
 
-      for (auto &next : neighbors) {
-        // Add current elems to groupElems vector
-        groupElems.push_back(next);
+      // For all entries in neighbors
+      for (auto &next_elem : neighbors) {
 
-        // Get the libMesh element
-        libMesh::Elem &elem = mesh.elem_ref(next);
+        // Add element ID in neighbors to groupElems vector
+        groupElems.push_back(next_elem);
 
-        // How many nearest neighbors (general element)?
-        unsigned int NN = elem.n_neighbors();
+        // Get the libmesh element that corresponds to the current ID
+        libMesh::Elem &elem = mesh.elem_ref(next_elem);
 
-        // Loop over neighbors
-        for (unsigned int i = 0; i < NN; i++) {
+        std::set<const libMesh::Elem *> neighbors;
 
-          const libMesh::Elem *nnptr = elem.neighbor_ptr(i);
-          // If on boundary, some may be null ptrs
+        // Are we looking for face neighbours (most common), vertex neighbors or
+        // edge neighbors?
+        switch (neighbour_type) {
+        case (FACE):
+          neighbors =
+              std::set<const libMesh::Elem *>(elem.neighbor_ptr_range().begin(),
+                                              elem.neighbor_ptr_range().end());
+          break;
+
+        case (VERTEX):
+
+          elem.find_point_neighbors(neighbors);
+          break;
+
+        case (EDGE):
+          elem.find_edge_neighbors(neighbors);
+          break;
+        }
+
+        // Loop over neighbours
+        for (auto &nnptr : neighbors) {
+
+          // Pointer to next neighbour
+          // const libMesh::Elem *nnptr = elem.neighbor_ptr(i);
+
+          // If on boundary, a neighbour will be a nullptr
           if (nnptr == nullptr) {
-            // std::cout << "null\n";
             continue;
           }
+          // Store id of the neighbor we just got
           libMesh::dof_id_type idnn = nnptr->id();
 
-          // Select only those that exist within elems set
+          // if the element id "idnn" still exists within elems
           if (elems.find(idnn) != elems.end()) {
-            // Add these neighbor ids to new_neighbors
+
+            // Add idnn's neighbour ids to new_neighbors
             new_neighbors.insert(idnn);
-            // Remove these neighbor ids from elems
+
+            // Remove element idnn from elems
             elems.erase(idnn);
           }
         }
       }
       // End loop over previous neighbors
-      // Found all the new neighbors, done with current set.
+
+      // Found all the new neighbours, done with current set.
       neighbors = new_neighbors;
     }
     groups.push_back(groupElems);
