@@ -64,7 +64,7 @@ protected:
   double merge_tolerance_ = 1e-07;
   double seeding_tolerance_ = 1e-07;
 
-  std::shared_ptr<std::multimap<unsigned int, unsigned int>> surface_face_map_;
+  std::multimap<unsigned int, unsigned int>* surface_face_map_;
 
 private:
 };
