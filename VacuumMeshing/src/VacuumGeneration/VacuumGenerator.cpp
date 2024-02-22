@@ -6,11 +6,11 @@ VacuumGenerator::VacuumGenerator(
     libMesh::Mesh &boundary_mesh, libMesh::Mesh &vacuum_mesh,
     std::multimap<unsigned int, unsigned int> &surface_face_map)
     : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh),
-      vacuum_mesh_(vacuum_mesh) {
+      vacuum_mesh_(vacuum_mesh), surface_face_map_(&surface_face_map){
 
-  surface_face_map_ =
-      std::make_shared<std::multimap<unsigned int, unsigned int>>(
-          surface_face_map);
+  // surface_face_map_ =
+      // std::make_shared<std::multimap<unsigned int, unsigned int>>(
+          // surface_face_map);
 }
 
 VacuumGenerator::~VacuumGenerator(){};
