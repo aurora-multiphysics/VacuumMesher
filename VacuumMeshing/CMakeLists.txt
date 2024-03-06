@@ -22,8 +22,17 @@ add_subdirectory(libigl)
 
 FILE(GLOB_RECURSE libSrc  ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
 
-add_library(VacuumMeshing SHARED 
-            ${libSrc})
+#Build release library
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_library(vmesh_opt SHARED ${libSrc})
+    target_link_libraries(vmesh_opt PRIVATE MPI::MPI_CXX mesh_opt PUBLIC timpi_opt igl::embree igl_copyleft::tetgen igl_restricted::triangle)
+    target_include_directories(vmesh_opt PRIVATE ${libmesh_INCLUDE} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+endif()
 
-target_link_libraries(VacuumMeshing PRIVATE MPI::MPI_CXX mesh_opt PUBLIC timpi_opt igl::embree igl_copyleft::tetgen igl_restricted::triangle)
-target_include_directories(VacuumMeshing PRIVATE ${libmesh_INCLUDE} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#Build debug library
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_library(vmesh_dbg SHARED ${libSrc})
+    target_link_libraries(vmesh_dbg PRIVATE MPI::MPI_CXX mesh_dbg PUBLIC timpi_opt igl::embree igl_copyleft::tetgen igl_restricted::triangle)
+    target_include_directories(vmesh_dbg PRIVATE ${libmesh_INCLUDE} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+endif()
+
