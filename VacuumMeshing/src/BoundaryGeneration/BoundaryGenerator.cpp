@@ -8,19 +8,19 @@ BoundaryGenerator::BoundaryGenerator(libMesh::Mesh &mesh,
                                      libMesh::Mesh &boundary_mesh,
                                      double mesh_merge_tolerance)
     : mesh_(mesh), surface_mesh_(surface_mesh), boundary_mesh_(boundary_mesh),
-      mesh_merge_tolerance_(mesh_merge_tolerance) {}
+      mesh_merge_tolerance_(mesh_merge_tolerance), centroid_(3) {}
 
 BoundaryGenerator::~BoundaryGenerator() {}
 
 void BoundaryGenerator::addBoundary(double length, int subdivisions,
                                     std::string tri_flags) {
 
-  Eigen::MatrixXd boundary_verts;
-  Eigen::MatrixXi boundary_elems;
+  Eigen::MatrixXd boundary_vertices;
+  Eigen::MatrixXi boundary_elements;
 
   // Generate boundary mesh
   try {
-    genBoundary(boundary_verts, boundary_elems, length, subdivisions,
+    genBoundary(boundary_vertices, boundary_elements, length, subdivisions,
                 tri_flags);
   } catch (const std::invalid_argument &ex) {
     std::terminate();
@@ -38,29 +38,28 @@ void BoundaryGenerator::addBoundary(double length, int subdivisions,
   combineMeshes(mesh_merge_tolerance_, boundary_mesh_, surface_mesh_);
 }
 
-void BoundaryGenerator::genBoundary(Eigen::MatrixXd &tri_vertices,
-                                    Eigen::MatrixXi &tri_elements,
+void BoundaryGenerator::genBoundary(Eigen::MatrixXd &boundary_vertices,
+                                    Eigen::MatrixXi &boundary_elements,
                                     double length, int subdivisions,
                                     std::string tri_flags) {
 
+  // Check that the boundary is big enough to not overlap with the mesh
   checkBoundary(length);
 
-  // Initialise matrices to be of correct size
-  // Eigen::MatrixXd verts(4 * subdivisions, 2);
-  // Eigen::MatrixXi elems(4 * subdivisions, 2);
-  Eigen::MatrixXd verts;
-  Eigen::MatrixXi elems;
+  // Eigen matrices to store vertices and elements for the boundary of a square (2D edge elements)
+  Eigen::MatrixXd square_boundary_verts;
+  Eigen::MatrixXi square_boundary_elems;
 
-  // Matrices initialised for triangulated square
+  // Eigen matrices to store vertices and elements for triangulated square
   Eigen::MatrixXd square_verts;
   Eigen::MatrixXi square_elems;
   Eigen::MatrixXd seeds;
 
   // Create a square from 1st order edge elements
-  genSquare(verts, elems, length, subdivisions);
+  genSquare(square_boundary_verts, square_boundary_elems, length, subdivisions);
 
   // Triangulate the square that we just created
-  igl::triangle::triangulate(verts, elems, seeds, tri_flags, square_verts,
+  igl::triangle::triangulate(square_boundary_verts, square_boundary_elems, seeds, tri_flags, square_verts,
                              square_elems);
 
   // Rotation matrices to rotate elements
@@ -75,15 +74,17 @@ void BoundaryGenerator::genBoundary(Eigen::MatrixXd &tri_vertices,
   square_verts.col(square_verts.cols() - 1) =
       Eigen::VectorXd::Zero(square_verts.rows());
 
-  // Vector to hold our rotation matrices, this will make it easier to loop over
+  // Create vector to hold our rotation matrices, this will make it easier to loop over
   // them later
   std::vector<Eigen::Matrix3d> rot_matrices = {x_rot_base, y_rot_base};
 
-  // Vector to hold faces of cubic boundary
+
+
+  // Vector to store faces of cubic boundary
   std::vector<Eigen::MatrixXd> new_faces(6, square_verts);
 
-  // Loop over 4 of the 6 squares and rotate them. The reason for only looping
-  // over 4 is that 2 of them are already orientated correctly for our cubic
+  // Loop over 4 of the 6 squares and rotate them. We only loop
+  // over 4 because 2 of them are already orientated correctly for our cubic
   // boundary
   for (int i = 0; i < 4; i++) {
     new_faces[i] *= rot_matrices[(i % 2)];
@@ -98,13 +99,18 @@ void BoundaryGenerator::genBoundary(Eigen::MatrixXd &tri_vertices,
   translateMesh(new_faces[4], {0, 0, length / 2});
   translateMesh(new_faces[5], {0, 0, -length / 2});
 
-  Eigen::MatrixXi square_elems_2 = square_elems;
+  for(auto &face: new_faces)
+  {
+    // Translate vertices so that the centre of the boundary is the centre of the mesh bounding box
+    translateMesh(face, centroid_);
+  }
+  // Eigen::MatrixXi square_elems_2 = square_elems;
 
   // Combine the 6 square meshes to create the cubic boundary, using the rTree
   //  to avoid having any duplicate nodes
   for (int i = 0; i < 6; i++) {
-    combineMeshes(boundary_face_merge_tolerance_, tri_vertices, tri_elements,
-                  new_faces[i], square_elems_2);
+    combineMeshes(boundary_face_merge_tolerance_, boundary_vertices, boundary_elements,
+                  new_faces[i], square_elems);
   }
 }
 
@@ -141,8 +147,8 @@ void BoundaryGenerator::genSquare(Eigen::MatrixXd &verts,
     node_id++;
   }
 
-  // Last loop has to start at 1 and end at (subdivisions - 1), to avoid the
-  // starting node
+  // Last loop has to start at 1 and end at (subdivisions - 1), 
+  // to avoid duplicating the starting node
   for (int i = 1; i <= subdivisions - 1; i++) {
     verts.row(node_id) << -offset, offset - (i * increment);
     node_id++;
@@ -189,21 +195,37 @@ void BoundaryGenerator::combineIGLMeshes(Eigen::MatrixXd &vertices_one,
 }
 
 void BoundaryGenerator::translateMesh(Eigen::MatrixXd &verts,
+                                      std::vector<double> &translationVector) {
+  for (int i = 0; i < verts.rows(); i++) {
+    for(int j = 0; j < verts.cols(); j++)
+    verts.row(i)(j) += translationVector[j];
+  }
+}
+
+void BoundaryGenerator::translateMesh(Eigen::MatrixXd &verts,
                                       Eigen::Vector3d translationVector) {
   for (int i = 0; i < verts.rows(); i++) {
     verts.row(i) += translationVector;
   }
 }
 
-void BoundaryGenerator::checkBoundary(const double &length) const {
+void BoundaryGenerator::checkBoundary(const double &length) {
   libMesh::BoundingBox bbox =
       libMesh::MeshTools::create_nodal_bounding_box(mesh_);
   libMesh::Point point = (bbox.max() - bbox.min());
+
+  // Get centroid of bounding box
+  libMesh::Point libmesh_centroid = bbox.min() + (point/2);
+  centroid_[0] = libmesh_centroid(0);
+  centroid_[1] = libmesh_centroid(1);
+  centroid_[2] = libmesh_centroid(2); 
+
   // Find maximum edge length of bounding box
   double mesh_len = point(0);
   mesh_len < point(1) ? mesh_len : point(1);
   mesh_len < point(2) ? mesh_len : point(2);
 
+  // If maximum edge length of bounding box is larger than the length of the boundary, we probably have a problem
   if (mesh_len > length) {
     throw std::invalid_argument(
         "The cubic boundary will overlap with the mesh. Please provide a "
