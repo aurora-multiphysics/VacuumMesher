@@ -205,7 +205,7 @@ void BoundaryGenerator::translateMesh(Eigen::MatrixXd &verts,
 
 void BoundaryGenerator::checkBoundary(const double &length) {
   libMesh::BoundingBox bbox =
-      libMesh::MeshTools::create_nodal_bounding_box(mesh_);
+      libMesh::MeshTools::create_nodal_bounding_box(surface_mesh_);
   libMesh::Point point = (bbox.max() - bbox.min());
 
   // Get centroid of bounding box

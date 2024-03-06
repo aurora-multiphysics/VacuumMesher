@@ -20,6 +20,11 @@ add_executable(vacuum vacuum.cpp ${projectSrc})
 target_include_directories(vacuum PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(vacuum PUBLIC MPI::MPI_CXX vmesh_opt mesh_opt) 
 
+#Vacuum Mesh Generation
+add_executable(vacuum_only vacuum_only.cpp ${projectSrc})
+target_include_directories(vacuum_only PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(vacuum_only PUBLIC MPI::MPI_CXX vmesh_opt mesh_opt) 
+
 #Coil Vacuum Mesh Generation
 add_executable(coilVacuum coil_vacuum.cpp ${projectSrc})
 target_include_directories(coilVacuum PUBLIC ${libmesh_INCLUDE} ${CMAKE_SOURCE_DIR}/include)
