@@ -57,14 +57,17 @@ public:
 
   // Generates a cubic boundary used to define a vacuum region for
   // tetrahedralisation
-  void genBoundary(Eigen::MatrixXd &triangle_vertices,
-                   Eigen::MatrixXi &triangle_elements, double length,
+  void genBoundary(Eigen::MatrixXd &boundary_vertices,
+                   Eigen::MatrixXi &boundary_elements, double length,
                    int subdivisions, std::string tri_flags);
 
   void translateMesh(Eigen::MatrixXd &verts, Eigen::Vector3d translationVector);
 
+  void translateMesh(Eigen::MatrixXd &verts, std::vector<double> &translationVector);
+  
+
   /**Checks to see if the boundary will overlap with component mesh.*/
-  void checkBoundary(const double &length) const;
+  void checkBoundary(const double &length);
 
 protected:
   // Libmesh meshes to store the meshes we need
@@ -74,6 +77,8 @@ protected:
   // Eigen::MatrixXd boundary_verts;
   // Eigen::MatrixXi boundary_elems;
   double merge_tolerance_;
+
+  std::vector<double> centroid_;
 
 private:
 };
