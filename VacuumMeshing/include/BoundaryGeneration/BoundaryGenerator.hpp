@@ -4,7 +4,7 @@
  * to doing exactly that.
  */
 #pragma once
-#include "Utils/libmeshConversions.hpp"
+#include "Utils/utils.hpp"
 #include "igl/triangle/triangulate.h"
 #include "libmesh/boundary_info.h"
 #include "libmesh/elem.h"
@@ -26,7 +26,7 @@ public:
    */
   BoundaryGenerator(libMesh::Mesh &mesh, libMesh::Mesh &surface_mesh,
                     libMesh::Mesh &boundary_mesh,
-                    const double &merge_tolerance = 1e-08);
+                    double mesh_merge_tolerance = 0);
 
   /** Adds a boundary to the \c skinnedMesh. This new mesh with the boundary
  added is stored in the \c boundaryMesh. The \c length and number of mesh \c
@@ -67,13 +67,17 @@ public:
   void checkBoundary(const double &length) const;
 
 protected:
+  // Method used to get tolerances automatically
+  void setMergeToleranceAuto();
+
   // Libmesh meshes to store the meshes we need
   libMesh::Mesh &mesh_, &surface_mesh_, &boundary_mesh_;
 
   // Eigen data structures to store mesh data for our boundaryz
   // Eigen::MatrixXd boundary_verts;
   // Eigen::MatrixXi boundary_elems;
-  double merge_tolerance_;
+  double mesh_merge_tolerance_;
+  double boundary_face_merge_tolerance_ = 1e-06;
 
 private:
 };

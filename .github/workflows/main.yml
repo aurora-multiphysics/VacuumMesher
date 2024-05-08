@@ -14,7 +14,7 @@ jobs:
     steps:
       # First check out the repository to get the docker file
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
       # Now build in a container with all deps
       - name:  DockerBuildTestPush
         run: docker build --build-arg BUILD_GIT_SHA=$GITHUB_HEAD_REF -t ci-vacmesh-ubuntu docker/skinning-ubuntu/ 

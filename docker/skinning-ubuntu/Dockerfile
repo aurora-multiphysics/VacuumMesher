@@ -6,10 +6,10 @@ ARG compile_cores=2
 
 ARG WORKDIR="opt"
 ARG BUILD_GIT_SHA
-
-RUN apt-get update -y && apt-get upgrade -y
+RUN echo ${BUILD_GIT_SHA}
+RUN apt update -y && apt upgrade -y
 # Install apt dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y \
+RUN apt update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y \
     curl \
     libboost-all-dev \
     # openmpi-bin \

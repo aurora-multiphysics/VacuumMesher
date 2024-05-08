@@ -19,6 +19,11 @@
 class SurfaceMeshGenerator {
 public:
   /**
+   * Enum to define what type of neighbor matching the user wants to use.
+   * */
+  enum NEIGHBOURTYPE { FACE, EDGE, VERTEX };
+
+  /**
    * Default constructor
    */
   SurfaceMeshGenerator();
@@ -49,6 +54,22 @@ public:
   void getSurface(bool writeMesh = false,
                   std::string outputFilename = "surface_mesh.e");
 
+  /**
+   * Return const reference to the surface face map
+   */
+  const std::multimap<unsigned int, unsigned int> &getSurfaceMap() const {
+    return surface_face_map;
+  }
+
+  /**
+   * Method that organises data about a face of an element. This data inc
+   */
+  void getFaceInfo(
+      libMesh::Elem *elem, int &face_id, std::vector<int> &original_node_ids,
+      std::vector<int> &connectivity,
+      std::map<int, std::vector<libMesh::boundary_id_type>> &boundary_data);
+
+protected:
   /** Method for checking whether an element has sides which should be in the
    * skin. Looks at the sides (faces or edges, depends if 2D or 3D element) of
    * \p element, and checks whether they are null. If they are, this side of \p
@@ -74,7 +95,8 @@ public:
   /** Method for grouping a discontinuous mesh into its continuous chunks.
    */
   void groupElems(libMesh::Mesh mesh,
-                  std::vector<std::vector<libMesh::dof_id_type>> &groups);
+                  std::vector<std::vector<libMesh::dof_id_type>> &groups,
+                  NEIGHBOURTYPE neighbour_type = NEIGHBOURTYPE::FACE);
 
   /** Method for checking whether an element has sides which should be in the
    * skin.
@@ -84,19 +106,9 @@ public:
                         std::string componentFilename);
 
   /**
-   * Method that organises data about a face of an element. This data inc
-   */
-  void getFaceInfo(
-      libMesh::Elem *elem, int &face_id, std::vector<int> &original_node_ids,
-      std::vector<int> &connectivity,
-      std::map<int, std::vector<libMesh::boundary_id_type>> &boundary_data);
-
-  /**
    *
    */
   std::multimap<unsigned int, unsigned int> surface_face_map;
-
-protected:
   // Mesh references
   libMesh::Mesh &mesh, &surfaceMesh;
 

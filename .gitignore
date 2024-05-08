@@ -14,7 +14,6 @@ build/
 /test/build/
 CMakeFiles/
 Meshes/
-test/testingMeshes/
 *.face
 *.node
 *.step
