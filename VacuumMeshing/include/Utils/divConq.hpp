@@ -22,10 +22,7 @@
 #include "string"
 
 namespace VacuumMesher {
-/** Class used to find the closest pair of nodes. Currently the rest of the
-library is more functional than oop, but I think I will change this in future so
-that it is all consistent. Because of this I made this a class, as I think
-everything else will go that way eventually.*/
+/** Class used to find the closest pair of nodes.*/
 
 enum AXIS { X_AXIS, Y_AXIS, Z_AXIS };
 
@@ -49,21 +46,11 @@ protected:
 
   /** Method to find the closest distance between any pair of points in a 3D
    * mesh. Uses divide and conquer to perform the operation in O(nlog(n)) time
-   * (almost). A quick explanation can be given here, although I'm probably not
-   * the best person to give it. The problem space, which can be thought of as a
-   * points cloud, is split in
-   * 2. The splitting point might not be the geometric middle, but there are an
-   * approximately equal number of points on both sides. This is done
-   * recursively for each subspace until the base cases are reached. These base
-   * cases occur when n(number of points) = 2 or 3, at which point the distance
-   * of these points is compared. When you find you have to combine two space,
-   * algorithmic voodoo takes place to do this in not much time. This probably
-   * isn't the place to learn or understand this, so follow the link to the
-   * paper I put which does a much better job than I ever could.
+   * (almost). 
    *
-   * The only argument this function takes once arg, a vector of libMesh node
-   * pointers, \p X. This vector should be pre sorted based on the x coords of
-   * the nodes, from low to high.
+   * The only argument this function takes is a vector of libMesh node
+   * pointers, \p X. This vector should be pre-sorted based on the x coordinate of
+   * the nodes.
    */
   double closestPair3D(std::vector<libMesh::Node *> &X);
 
