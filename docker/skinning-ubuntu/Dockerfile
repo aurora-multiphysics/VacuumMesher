@@ -6,7 +6,7 @@ ARG compile_cores=2
 
 ARG WORKDIR="opt"
 ARG BUILD_GIT_SHA
-
+RUN echo ${BUILD_GIT_SHA}
 RUN apt update -y && apt upgrade -y
 # Install apt dependencies
 RUN apt update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y \
