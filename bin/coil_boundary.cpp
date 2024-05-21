@@ -34,9 +34,24 @@ int main(int argc, const char **argv) {
 
   // Skin mesh
   surfMeshGen.getSurface();
+
   // Add boundary to skinned mesh
-  boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
-                           flags.triSettings);
+  switch (flags.bound_type)
+  {
+  case inputFlags::BoundaryType::CUBE:
+    boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
+                             flags.triSettings);
+    break;
+    
+  case inputFlags::BoundaryType::BOUNDING_BOX:
+    boundMeshGen.addCoilBoundingBoxBoundary(flags.scale_factor_x, flags.scale_factor_y, flags.scale_factor_z, flags.boundSubd.value(),
+                                            flags.triSettings);
+    break;
+  
+  default:
+    break;
+  }
+
   // Write output mesh
   boundary_mesh.write(flags.outfile.value());
 

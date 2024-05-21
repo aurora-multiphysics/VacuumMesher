@@ -29,17 +29,33 @@ int main(int argc, const char **argv) {
 
   // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
-  CoilBoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
+  CoilBoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh, flags.coil_sideset_one_id, flags.coil_sideset_two_id);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh,
-                            surfMeshGen.surface_face_map);
+                            surfMeshGen.getSurfaceMap());
 
   // Skin mesh
   surfMeshGen.getSurface();
+
   // Add boundary to skinned mesh
-  boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
-                           flags.triSettings);
+  switch (flags.bound_type)
+  {
+  case inputFlags::BoundaryType::CUBE:
+    boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
+                             flags.triSettings);
+    break;
+    
+  case inputFlags::BoundaryType::BOUNDING_BOX:
+    boundMeshGen.addCoilBoundingBoxBoundary(flags.scale_factor_x, flags.scale_factor_y, flags.scale_factor_z, flags.boundSubd.value(),
+                                            flags.triSettings);
+    break;
+  
+  default:
+    break;
+  }
+
   // Generate vacuum region
   vacGenner.generateVacuumMesh(flags.tetSettings);
+  
   // Write output mesh
   vacuum_mesh.write(flags.outfile.value());
 
