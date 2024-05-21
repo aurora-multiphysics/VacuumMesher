@@ -79,6 +79,8 @@ There are several flags you can pass to the example binaries. These influence th
 | `--max_tri`  | Prints a help message showing all of the options detailed here. |
 | `--bound_subdiv` | Defines the number of subdivisions along one edge of the cubic boundary. |
 | `--bound_len` | Defines the edge length of the cubic boundary of the vacuum region |
+| `--bound_type` | Defines the type of boundary generated. Set to either "Cube" or "Bbox" |
+| `--scale_[x,y,z]` | If using the "Bbox" boundary type, use these options to specify the scaling factor used for each dimension. |
 | `--sideset_one_id` | For a coil problem, this option defines the ID of your first coil sideset that you want to be coplanar with the boundary. |
 | `--sideset_two_id` | For a coil problem, this option defines the ID of your second coil sideset that you want to be coplanar with the boundary. |
 
