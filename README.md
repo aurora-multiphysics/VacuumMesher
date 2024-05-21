@@ -80,7 +80,7 @@ There are several flags you can pass to the example binaries. These influence th
 | `--bound_subdiv` | Defines the number of subdivisions along one edge of the cubic boundary. |
 | `--bound_len` | Defines the edge length of the cubic boundary of the vacuum region |
 | `--bound_type` | Defines the type of boundary generated. Set to either ``Cube`` or ``Bbox`` |
-| `--scale_[x,y,z]` | If using the `Bbox` boundary type, use these options to specify the scaling factor used for each dimension. By default each dimension is given a scale factor of 1.2, or 120% |
+| `--scale_[x,y,z]` | If using the `Bbox` boundary type, use these options to specify the scaling factor used for each dimension. By default each dimension is given a scale factor of 1.2 (i.e. 120%) |
 | `--sideset_one_id` | For a coil problem, this option defines the ID of your first coil sideset that you want to be coplanar with the boundary. |
 | `--sideset_two_id` | For a coil problem, this option defines the ID of your second coil sideset that you want to be coplanar with the boundary. |
 
