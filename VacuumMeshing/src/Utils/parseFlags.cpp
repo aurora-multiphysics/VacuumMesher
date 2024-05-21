@@ -41,6 +41,11 @@ const std::unordered_map<std::string, OneArgHandle> OneArgs{
        s.boundSubd = std::stoi(arg);
      }},
 
+    {"--boundary_type",
+     [](inputFlags &s, const std::string &arg) {
+       s.bound_type = s.boundMap[arg];
+     }},
+
     {"--bound_len",
      [](inputFlags &s, const std::string &arg) {
        s.boundLen = std::stod(arg);
@@ -53,14 +58,27 @@ const std::unordered_map<std::string, OneArgHandle> OneArgs{
 
     {"--sideset_two_id", [](inputFlags &s, const std::string &arg) {
        s.coil_sideset_two_id = std::stoi(arg);
-     }}};
+     }},
+
+    {"--scale_x", [](inputFlags &s, const std::string &arg) {
+       s.scale_factor_x = std::stod(arg);
+     }},
+     
+    {"--scale_y", [](inputFlags &s, const std::string &arg) {
+       s.scale_factor_y = std::stod(arg);
+     }},     
+
+    {"--scale_z", [](inputFlags &s, const std::string &arg) {
+       s.scale_factor_z = std::stod(arg);
+     }}
+};
 
 inputFlags parse_settings(int argc, const char *argv[]) {
 
   // inputFlags object we will return
   inputFlags settings;
 
-  // Start at 1 because arg 0 is the exe name
+  // Start loop at 1 because arg 0 is the exe name
   for (int i = 1; i < argc; i++) {
     std::string opt = argv[i];
     // Check if this is a noArg
@@ -76,6 +94,15 @@ inputFlags parse_settings(int argc, const char *argv[]) {
         // If we enter this conditional then the arg was not given a parameter,
         //  so throw an error
         throw std::runtime_error{"missing param after " + opt};
+      }
+
+      if(opt == "--boundary_type")
+      {
+        if((argv[i] != std::string("Cube")) && (argv[i] != std::string("BBox")))
+        {
+          std::cout << argv[i] << std::endl;
+          throw std::runtime_error{"Please input a compatible boundary type, \"Cube\" or \"BBox\""};
+        }
       }
 
       // An argument was recieved, use it in settings
@@ -146,5 +173,9 @@ void inputFlags::helpMessage() {
          "boundary"
       << std::endl
       << "--bound_len        Set the length of one edge of the boundary\n"
+      << std::endl
+      << "--boundary_type        Set the scaling factor for each dimension when using bounding box boundaries\n"
+      << std::endl
+      << "--scale_[x,y,z]        Set the scaling factor for each dimension when using bounding box boundaries\n"
       << std::endl;
 }

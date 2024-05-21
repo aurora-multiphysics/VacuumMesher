@@ -34,9 +34,23 @@ struct inputFlags {
 
   int coil_sideset_two_id = 2;
 
+  // Scaling factors for bounding box generation, default is 120% scaling on all axes
+  double scale_factor_x = 1.2;
+  double scale_factor_y = 1.2;
+  double scale_factor_z = 1.2;
+
   void setSwitches();
   // Method to print help message
   void helpMessage();
+
+  enum BoundaryType{
+    CUBE,
+    BOUNDING_BOX
+  };
+
+  BoundaryType bound_type = CUBE;
+
+  std::unordered_map<std::string, BoundaryType> boundMap{{"Cube", CUBE}, {"BBox", BOUNDING_BOX}};
 };
 
 // Function that will return an inputFlags struct from which we can access CLI
