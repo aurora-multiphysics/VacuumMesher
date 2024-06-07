@@ -27,7 +27,7 @@ void BoundaryGenerator::addBoundary(double length, int subdivisions,
   }
 
   // Turn IGL mesh into libmesh Mesh
-  IGLToLibMesh(boundary_mesh_, boundary_verts, boundary_elems);
+  IGLToLibMesh(boundary_mesh_, boundary_vertices, boundary_elements);
 
   // If unspecified, get merge tolerance
   if (mesh_merge_tolerance_ == 0) {
