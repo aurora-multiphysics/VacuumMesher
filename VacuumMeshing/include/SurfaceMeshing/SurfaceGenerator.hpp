@@ -110,7 +110,6 @@ protected:
   /**
    *
    */
-  // std::multimap<unsigned int, unsigned int> surface_face_map;
   // Mesh references
   libMesh::Mesh &mesh, &surfaceMesh;
 
