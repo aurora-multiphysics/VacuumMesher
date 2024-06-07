@@ -69,6 +69,8 @@ public:
       std::vector<int> &connectivity,
       std::map<int, std::vector<libMesh::boundary_id_type>> &boundary_data);
 
+  std::multimap<unsigned int, unsigned int> surface_face_map;
+
 protected:
   /** Method for checking whether an element has sides which should be in the
    * skin. Looks at the sides (faces or edges, depends if 2D or 3D element) of
@@ -108,7 +110,7 @@ protected:
   /**
    *
    */
-  std::multimap<unsigned int, unsigned int> surface_face_map;
+  // std::multimap<unsigned int, unsigned int> surface_face_map;
   // Mesh references
   libMesh::Mesh &mesh, &surfaceMesh;
 
