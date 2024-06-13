@@ -31,7 +31,7 @@ int main(int argc, const char **argv) {
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh,
-                            surfMeshGen.surface_face_map);
+                            surfMeshGen.getSurfaceMap());
 
   // Skin mesh
   surfMeshGen.getSurface();
@@ -45,7 +45,7 @@ int main(int argc, const char **argv) {
     break;
     
   case inputFlags::BoundaryType::BOUNDING_BOX:
-    boundMeshGen.addCoilBoundingBoxBoundary(flags.scale_factor_x, flags.scale_factor_y, flags.scale_factor_z, flags.boundSubd.value(),
+    boundMeshGen.addBoundingBoxBoundary(flags.scale_factor_x, flags.scale_factor_y, flags.scale_factor_z, flags.boundSubd.value(),
                                             flags.triSettings);
     break;
   
