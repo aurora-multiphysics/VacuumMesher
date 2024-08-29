@@ -1,4 +1,4 @@
-#include "BoundaryGeneration/BoundaryGenerator.hpp"
+#include "MeshContainer.hpp"
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
 #include "Utils/parseFlags.hpp"
 #include <chrono>
@@ -19,22 +19,15 @@ int main(int argc, const char **argv) {
   // Instantiate all our mesh objects
   libMesh::Mesh mesh(init.comm());
   libMesh::Mesh surface_mesh(init.comm());
-  libMesh::Mesh boundary_mesh(init.comm());
 
   // Read mesh from user provided flags
   mesh.read(flags.infile.value());
 
   // Instantiate all mesh generators
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
-  BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
-
   // Skin mesh
   surfMeshGen.getSurface();
-  // Add boundary to skinned mesh
-  boundMeshGen.addBoundary(flags.boundLen.value(), flags.boundSubd.value(),
-                           flags.triSettings);
   // Write output mesh
-  boundary_mesh.write(flags.outfile.value());
-
+  surface_mesh.write(flags.outfile.value());
   return 0;
 }

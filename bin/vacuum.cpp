@@ -1,5 +1,4 @@
 #include "BoundaryGeneration/CoilBoundaryGenerator.hpp"
-#include "MeshContainer.hpp"
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
 #include "Utils/parseFlags.hpp"
 #include "VacuumGeneration/VacuumGenerator.hpp"
@@ -31,7 +30,7 @@ int main(int argc, const char **argv) {
   SurfaceMeshGenerator surfMeshGen(mesh, surface_mesh);
   BoundaryGenerator boundMeshGen(mesh, surface_mesh, boundary_mesh);
   VacuumGenerator vacGenner(mesh, surface_mesh, boundary_mesh, vacuum_mesh,
-                            surfMeshGen.surface_face_map);
+                            surfMeshGen.getSurfaceMap());
 
   // Skin mesh
   surfMeshGen.getSurface();
