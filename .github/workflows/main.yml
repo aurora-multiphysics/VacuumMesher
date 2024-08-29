@@ -17,4 +17,4 @@ jobs:
         uses: actions/checkout@master
       # Now build in a container with all deps
       - name:  DockerBuildTestPush
-        run: docker build --build-arg BUILD_GIT_SHA=$GITHUB_HEAD_REF -t ci-vacmesh-ubuntu docker/skinning-ubuntu/ 
+        run: docker build --build-arg BUILD_GIT_SHA=$GITHUB_HEAD_REF -t ci-vmesh-ubuntu docker/vmesh-ubuntu/ 
