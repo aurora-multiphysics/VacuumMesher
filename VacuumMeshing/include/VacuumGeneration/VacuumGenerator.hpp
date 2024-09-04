@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/libmeshConversions.hpp"
+#include "Utils/utils.hpp"
 #include "libmesh/mesh.h"
 #include <filesystem>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
@@ -56,12 +56,15 @@ public:
   // Get seeds
   Eigen::MatrixXd getSeeds(libMesh::Mesh mesh) const;
 
+  // Get tolerance for mesh merging
+  void setMergeToleranceAuto();
+
 protected:
   // References to mesh objects passed in via constructor
   libMesh::Mesh &mesh_, &boundary_mesh_, &surface_mesh_, &vacuum_mesh_;
 
   // Tolerance value used for rTree merging
-  double merge_tolerance_ = 1e-07;
+  double mesh_merge_tolerance_;
   double seeding_tolerance_ = 1e-07;
 
   const std::multimap<unsigned int, unsigned int>* surface_face_map_;

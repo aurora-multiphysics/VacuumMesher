@@ -33,20 +33,40 @@ void CoilBoundaryGenerator::addBoundary(const double length,
   combineMeshes(mesh_merge_tolerance_, boundary_mesh_, surface_mesh_);
 }
 
+void CoilBoundaryGenerator::addCoilBoundingBoxBoundary(const double scaling_x,
+                                                       const double scaling_y,
+                                                       const double scaling_z,
+                                                       const int subdivisions,
+                                                       const std::string tri_flags) {
+
+  // generate the boundary and store it in boundary_mesh_
+  generateCoilBoundingBoxBoundary(scaling_x, scaling_y, scaling_z, subdivisions, tri_flags);
+
+  if (mesh_merge_tolerance_ == 0) {
+    setMergeToleranceAuto();
+    std::cout << "Mesh merge tolerance used: " << mesh_merge_tolerance_
+              << std::endl;
+  }
+  // Combine the boundary mesh with the surface mesh to create a mesh ready for
+  // tetrahedralisation
+  combineMeshes(mesh_merge_tolerance_, boundary_mesh_, surface_mesh_);
+}
+
+
 void CoilBoundaryGenerator::generateCoilBoundary(const double length,
                                                  const int subdivisions,
                                                  const std::string tri_flags) {
 
   // Libmesh mesh_ that stores only sideset data
   libMesh::Mesh sideset_mesh(mesh_.comm());
-  libMesh::Mesh sideset_mesh_skinned(mesh_.comm());
+  libMesh::Mesh sideset_mesh_skin(mesh_.comm());
 
-  // Generate sideset mesh_ (uses default argument for sideset names)
+  // Generate sideset_mesh_ (uses default argument for sideset names)
   genSidesetMesh(mesh_, sideset_mesh);
 
   // Use a SurfaceMeshGenerator to "skin" the mesh of the sidesets. This results
   // in a mesh of edge elements
-  SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skinned);
+  SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skin);
   sidesetSkinner.getSurface();
 
   // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that
@@ -76,7 +96,7 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
   Eigen::MatrixXi sideset_element_verts, cube_element_verts;
 
   // Convert the sideset mesh_ to
-  libMeshToIGL(sideset_mesh_skinned, sideset_vertices, sideset_element_verts);
+  libMeshToIGL(sideset_mesh_skin, sideset_vertices, sideset_element_verts);
 
   // Do a change of basis on the mesh
   changeMeshBasis(sideset_vertices, origin, basis_matrix);
@@ -109,6 +129,118 @@ void CoilBoundaryGenerator::generateCoilBoundary(const double length,
 
   // Convert our IGL mesh back to libMesh
   IGLToLibMesh(boundary_mesh_, cube_vertices, cube_element_verts);
+}
+
+void CoilBoundaryGenerator::generateCoilBoundingBoxBoundary(const double scaling_x,
+                                                            const double scaling_y,
+                                                            const double scaling_z,
+                                                            const int subdivisions,
+                                                            const std::string tri_flags) {
+
+
+
+  // Libmesh mesh_ that stores only sideset data
+  libMesh::Mesh sideset_mesh(mesh_.comm());
+  libMesh::Mesh sideset_mesh_skin(mesh_.comm());
+
+  // Generate sideset_mesh_ (uses default argument for sideset names)
+  genSidesetMesh(mesh_, sideset_mesh);
+
+  // Use a SurfaceMeshGenerator to "skin" the mesh of the sidesets. This results
+  // in a mesh of edge elements
+  SurfaceMeshGenerator sidesetSkinner(sideset_mesh, sideset_mesh_skin);
+  sidesetSkinner.getSurface();
+
+  // Create Eigen 3x3 matrix to store 3 points from the co-planar sidesets, that
+  // will be used to define the plane that they sit on
+  Eigen::Matrix3d plane_points;
+
+  // Populate plane points matrix with the nodes belonging to an element on
+  // the sidesets
+  for (int row_id = 0; row_id < 3; row_id++) {
+    auto &node = sideset_mesh.elem_ref(0).node_ref(row_id);
+    plane_points.row(row_id) << node(0), node(1), node(2);
+  }
+
+  // Eigen 3x3 Matrix that will store the basis vectors of our transformed
+  // cartesian system
+  Eigen::Matrix3d basis_matrix;
+
+  // Keep same origin
+  Eigen::Vector3d origin = Eigen::Vector3d::Zero();
+
+  // Generate basis matrix from 3 points that define a plane
+  getBasisMatrix(basis_matrix, plane_points);
+
+  // Eigen objects to store
+  Eigen::MatrixXd sideset_skin_vertices, cube_vertices;
+  Eigen::MatrixXi sideset_skin_elements, cube_elements;
+
+  // Convert the sideset mesh_ to eigen representation
+  libMeshToIGL(sideset_mesh_skin, sideset_skin_vertices, sideset_skin_elements);
+
+
+  // Define seed points matrix
+  Eigen::MatrixXd seed_points(2, 3);
+
+  // Get the seed points of the coplanar coil boundaries
+  getCoplanarSeedPoints(mesh_, seed_points);
+
+  // Perform temporary change of basis on libmesh representation of mesh_, to get bounding box dimensions
+  changeMeshBasis(mesh_, origin, basis_matrix);
+
+  // Get dimensions for the boundary based off of a scaled version of the mesh_ bounding box
+  getBoundaryDimensions(scaling_x, scaling_y, scaling_z);
+
+  // Change mesh_ back to original basis
+  changeMeshBasis(mesh_, origin, Eigen::Matrix3d::Identity(), origin, basis_matrix);
+
+  Eigen::Vector3d centroid_eigen = {centroid_[0], centroid_[1], centroid_[2]};
+  Eigen::Vector3d centroid_eigen_no_z = {centroid_[0], centroid_[1], 0};
+
+  // Perform change of basis on eigen representation of the sideset_skin_mesh
+  changeMeshBasis(sideset_skin_vertices, origin, basis_matrix);
+  translateMesh(sideset_skin_vertices, -centroid_eigen_no_z);
+
+  // 
+  coil_sideset_elevation_ = sideset_skin_vertices(0, 2);
+
+  // Get number of elements along each axis
+  double x_subdiv, y_subdiv, z_subdiv;
+  x_subdiv = subdivisions;
+  y_subdiv = (bb_y_dim/bb_x_dim) * x_subdiv;
+  z_subdiv = (bb_z_dim/bb_x_dim) * x_subdiv;
+
+
+
+  std::vector<double> centroid_no_z = {centroid_[0], centroid_[1], 0};
+  std::cout << seed_points << std::endl;
+
+  // Transform seed points into new coordinate system
+  for (int i = 0; i < seed_points.rows(); i++) {
+    Eigen::Vector3d point(seed_points.row(i));
+    seed_points.row(i) = calculateLocalCoords(point, origin, basis_matrix);
+  }
+
+  translateMesh(seed_points, -centroid_eigen);
+  std::cout << seed_points << std::endl;
+
+  // Generates the face of the boundary that is coplanar with the coil sidesets
+  // (the special boundary face)
+  std::cout << bb_x_dim << std::endl;
+  generateCoilFaceBound(sideset_skin_vertices, sideset_skin_elements, seed_points,
+                        cube_vertices, cube_elements, bb_x_dim, bb_y_dim, x_subdiv, y_subdiv,
+                        tri_flags);
+
+  // Generates the 5 other faces of the cubic boundary
+  genRemainingFiveBoundaryFaces(cube_vertices, cube_elements, bb_x_dim, bb_y_dim, bb_z_dim, x_subdiv, y_subdiv, z_subdiv, tri_flags);
+
+  // Change back to original basis  
+  changeMeshBasis(cube_vertices, {0, 0, 0}, Eigen::Matrix3d::Identity(), origin,
+                  basis_matrix);
+
+  // Convert our IGL mesh back to libMesh
+  IGLToLibMesh(boundary_mesh_, cube_vertices, cube_elements);
 }
 
 bool CoilBoundaryGenerator::getBasisMatrix(
@@ -169,6 +301,32 @@ void CoilBoundaryGenerator::generateCoilFaceBound(
 }
 
 void CoilBoundaryGenerator::generateCoilFaceBound(
+    const Eigen::MatrixXd &verts, const Eigen::MatrixXi &elems,
+    const Eigen::MatrixXd &holes, Eigen::MatrixXd &tri_vertices,
+    Eigen::MatrixXi &tri_elems, double x_dim, double y_dim, int x_subdiv, int y_subdiv,
+    std::string tri_flags) {
+  
+  //
+  Eigen::MatrixXd holes2D = holes.block(0, 0, 2, 2);
+  Eigen::MatrixXd verts2D = verts.block(0, 0, verts.rows(), 2);
+  Eigen::MatrixXi elems2D = elems;
+
+  // Generate a border around the skinned sideset, which is then used to define
+  // space for triangulation
+  genSidesetBounds(verts2D, elems2D, x_dim, y_dim, x_subdiv, y_subdiv);
+
+  // Perform Delauny triangulation
+  igl::triangle::triangulate(verts2D, elems2D, holes2D, tri_flags, tri_vertices,
+                             tri_elems);
+
+  // Resize triangle vertices matrix to have 3 cols instead of 2 (2D -> 3D), set
+  // all z coords to 0
+  tri_vertices.conservativeResize(tri_vertices.rows(), tri_vertices.cols() + 1);
+  tri_vertices.col(tri_vertices.cols() - 1) =
+      Eigen::VectorXd::Zero(tri_vertices.rows());
+}
+
+void CoilBoundaryGenerator::generateCoilFaceBound(
     libMesh::Mesh &mesh, libMesh::Mesh &output_mesh,
     libMesh::Mesh &remaining_boundary, Eigen::MatrixXd &holes,
     std::string &tri_args) {
@@ -211,6 +369,20 @@ void CoilBoundaryGenerator::genSidesetBounds(Eigen::MatrixXd &verts,
   genSquare(square_verts, square_elems, length, subdivisions);
 
   combineIGLMeshes(verts, elems, square_verts, square_elems);
+}
+
+void CoilBoundaryGenerator::genSidesetBounds(Eigen::MatrixXd &verts,
+                                             Eigen::MatrixXi &elems,
+                                             const double x_dim,
+                                             const double y_dim,
+                                             const int x_subdiv,
+                                             const int y_subdiv) {
+  Eigen::MatrixXd edge_verts;
+  Eigen::MatrixXi edge_elems;
+
+  genRect(edge_verts, edge_elems, x_dim, y_dim, x_subdiv, y_subdiv);
+
+  combineIGLMeshes(verts, elems, edge_verts, edge_elems);
 }
 
 void CoilBoundaryGenerator::genSidesetBounds(
@@ -262,10 +434,9 @@ void CoilBoundaryGenerator::changeMeshBasis(libMesh::Mesh &input_mesh,
                                             const Eigen::Matrix3d &new_basis,
                                             const Eigen::Vector3d &old_origin,
                                             const Eigen::Matrix3d &old_basis) {
-  libMesh::Mesh mesh_copy(input_mesh);
-  input_mesh.clear();
 
-  for (auto &node : mesh_copy.node_ptr_range()) {
+  // Change node positions to new basis                                            
+  for (auto &node : input_mesh.node_ptr_range()) {
     // Eigen::Vector to store node coords
     Eigen::Vector3d point, new_point;
 
@@ -285,15 +456,7 @@ void CoilBoundaryGenerator::changeMeshBasis(libMesh::Mesh &input_mesh,
 
     libMesh::Point xyz(pnt[0], pnt[1], pnt[2]);
     // std::cout << pnt[0] << " " << pnt[1] << " " << pnt[2] << std::endl;
-    input_mesh.add_point(xyz, node->id());
-  }
-
-  for (auto &elem : mesh_copy.element_ptr_range()) {
-    libMesh::Elem *new_elem = libMesh::Elem::build(elem->type()).release();
-    for (int j = 0; j < elem->n_nodes(); j++) {
-      new_elem->set_node(j) = input_mesh.node_ptr(elem->node_ref(j).id());
-    }
-    input_mesh.add_elem(new_elem);
+    *node = xyz;
   }
   input_mesh.prepare_for_use();
 }
@@ -316,6 +479,79 @@ void CoilBoundaryGenerator::changeMeshBasis(Eigen::MatrixXd &vertices,
         new_basis_inverse *
         (old_origin - new_origin + (old_basis * vertices.row(i).transpose()));
   }
+}
+
+void CoilBoundaryGenerator::genRemainingFiveBoundaryFaces(Eigen::MatrixXd &tri_vertices, Eigen::MatrixXi &tri_elems,
+                                                          double x_dim, double y_dim, double z_dim,
+                                                          int x_subdiv, int y_subdiv, int z_subdiv, std::string tri_flags) {
+  
+  Eigen::MatrixXd xy_verts;
+  Eigen::MatrixXd xz_verts;
+  Eigen::MatrixXd yz_verts;
+
+  Eigen::MatrixXi xy_elems;
+  Eigen::MatrixXi xz_elems;
+  Eigen::MatrixXi yz_elems;
+
+  // tri_vertices(4 * subdivisions, 2);
+  // tri_elems(4 * subdivisions, 3);
+
+  Eigen::MatrixXd seeds;
+
+  genTriangulatedRect(xy_verts, xy_elems, x_dim, y_dim, x_subdiv, y_subdiv, tri_flags);
+  genTriangulatedRect(xz_verts, xz_elems, x_dim, z_dim, x_subdiv, z_subdiv, tri_flags);
+  genTriangulatedRect(yz_verts, yz_elems, z_dim, y_dim, z_subdiv, y_subdiv, tri_flags);
+
+  // Rotational matrices to rotate elements
+  Eigen::Matrix3d x_rot_base;
+  x_rot_base << 1, 0, 0, 0, 0, -1, 0, 1, 0;
+
+  Eigen::Matrix3d y_rot_base;
+  y_rot_base << 0, 0, -1, 0, 1, 0, 1, 0, 0;
+
+
+  // Add a column of zeroes as our "z" coord to make this square exist in 3D
+  xy_verts.conservativeResize(xy_verts.rows(), xy_verts.cols() + 1);
+  xy_verts.col(xy_verts.cols() - 1) =
+      Eigen::VectorXd::Zero(xy_verts.rows());
+
+  xz_verts.conservativeResize(xz_verts.rows(), xz_verts.cols() + 1);
+  xz_verts.col(xz_verts.cols() - 1) =
+      Eigen::VectorXd::Zero(xz_verts.rows());
+
+  yz_verts.conservativeResize(yz_verts.rows(), yz_verts.cols() + 1);
+  yz_verts.col(yz_verts.cols() - 1) =
+      Eigen::VectorXd::Zero(yz_verts.rows());       
+
+  // Define our rotation matrices
+  std::vector<Eigen::MatrixXd> new_faces = {xy_verts, xz_verts, yz_verts, xz_verts, yz_verts};
+  std::vector<Eigen::MatrixXi> elements = {xy_elems, xz_elems, yz_elems, xz_elems, yz_elems};
+  
+  new_faces[1] *= x_rot_base;
+  new_faces[2] *= y_rot_base;
+  new_faces[3] *= x_rot_base;
+  new_faces[4] *= y_rot_base;
+
+  translateMesh(new_faces[0], {0, 0, z_dim / 2});
+  translateMesh(new_faces[1], {0, y_dim / 2, 0});
+  translateMesh(new_faces[2], {x_dim / 2, 0, 0});
+  translateMesh(new_faces[3], {0, -y_dim / 2, 0});
+  translateMesh(new_faces[4], {-x_dim / 2, 0, 0});
+
+  std::vector<double> centroid_no_z = {centroid_[0], centroid_[1], 0};
+
+  translateMesh(new_faces[0], {0, 0, z_dim / 2});
+  translateMesh(new_faces[1], {0, 0, z_dim / 2});
+  translateMesh(new_faces[2], {0, 0, z_dim / 2});
+  translateMesh(new_faces[3], {0, 0, z_dim / 2});
+  translateMesh(new_faces[4], {0, 0, z_dim / 2});
+
+  for (int i = 0; i < 5; i++) {
+    combineMeshes(boundary_face_merge_tolerance_, tri_vertices, tri_elems,
+                  new_faces[i], elements[i]);
+  }
+  translateMesh(tri_vertices, centroid_no_z);
+  translateMesh(tri_vertices, {0, 0, coil_sideset_elevation_});
 }
 
 void CoilBoundaryGenerator::genRemainingFiveBoundaryFaces(

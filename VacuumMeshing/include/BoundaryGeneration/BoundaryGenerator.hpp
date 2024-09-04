@@ -35,12 +35,31 @@ public:
   virtual void addBoundary(double length, int subdivisions,
                            std::string tri_flags);
 
+
+  /** Method generates a rectangular mesh comprised of tri elements.
+   \c verts  will be populated with the vertex data, \c elems will be populated
+   with the element connectivity data. \c x_dim and \c y_dim will allow the
+   user to change the length of the edges of the square. \c x_subdiv and \c y_subdiv will allow
+   you to set how many elements there should be per edge*/
+  void genTriangulatedRect(Eigen::MatrixXd &rect_verts,
+               Eigen::MatrixXi &rect_elems, double x_dim, double y_dim,
+               int x_subdiv, int y_subdiv, std::string tri_flags);
+
+  /** Method generates a rectangular boundary comprised of just edge elements, i.e. the perimeter of the rectangle.
+ \c verts  will be populated with the vertex data, \c elems will be populated
+  with the element connectivity data. \c x_dim and \c y_dim will allow the
+   user to change the length of the edges of the square. \c x_subdiv and \c y_subdiv will allow
+   you to set how many elements there should be per edge*/
+  void genRect(Eigen::MatrixXd &edge_verts,
+               Eigen::MatrixXi &edge_elems, double x_dim, double y_dim,
+               int x_subdiv, int y_subdiv);
+
   /** Method generates a square boundary comprised of just edge elements.
    \c verts  will be populated with the vertex data, \c elems will be populated
    with the element connectivity data. \c length and \c subdivisions allow the
    user to change the length of the edges of the square, as well as how many
    elements there should be per edge*/
-  void genSquare(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems, double length,
+  void genSquare(Eigen::MatrixXd &edge_verts, Eigen::MatrixXi &edge_elems, double length,
                  int subdivisions);
 
   /** Method for combining two libigl meshes that you are SURE do NOT intersect
@@ -61,10 +80,30 @@ public:
                    Eigen::MatrixXi &boundary_elements, double length,
                    int subdivisions, std::string tri_flags);
 
+  /** Generates a cuboid boundary based off of the bounding box dimensions of the input mesh */
+  void genBoundingBoxBoundary(Eigen::MatrixXd &boundary_vertices,
+                              Eigen::MatrixXi &boundary_elements,
+                              double scaling_x, double scaling_y, 
+                              double scaling_z, int subdivisions,
+                              std::string tri_flags);
+
+
+  /** Function overload that accepts one scaling factor for all dimensions */
+  void genBoundingBoxBoundary(Eigen::MatrixXd &boundary_vertices,
+                              Eigen::MatrixXi &boundary_elements,
+                              double scaling_factor, int subdivisions,
+                              std::string tri_flags);
+
+  void addBoundingBoxBoundary(double scaling_x, double scaling_y, double scaling_z,
+                              int subdivisions, std::string tri_flags);
+
   void translateMesh(Eigen::MatrixXd &verts, Eigen::Vector3d translationVector);
 
   void translateMesh(Eigen::MatrixXd &verts, std::vector<double> &translationVector);
   
+  void getBoundaryDimensions(double scaling_factor);
+
+  void getBoundaryDimensions(double scaling_x, double scaling_y, double scaling_z);
 
   /**Checks to see if the boundary will overlap with component mesh.*/
   void checkBoundary(const double &length);
@@ -83,6 +122,8 @@ protected:
   double boundary_face_merge_tolerance_ = 1e-06;
 
   std::vector<double> centroid_;
+
+  double bb_x_dim, bb_y_dim, bb_z_dim;
 
 private:
 };

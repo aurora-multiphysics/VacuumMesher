@@ -11,6 +11,7 @@ VacuumGenerator::VacuumGenerator(
   // surface_face_map_ =
       // std::make_shared<std::multimap<unsigned int, unsigned int>>(
           // surface_face_map);
+
 }
 
 VacuumGenerator::~VacuumGenerator(){};
@@ -20,17 +21,16 @@ void VacuumGenerator::generateVacuumMesh(const std::string tet_settings) {
   //  They are needed so that the tetrahedralisation methods know where to not
   //  generate tets
   Eigen::MatrixXd seed_points(getSeeds(surface_mesh_));
-  // Eigen::MatrixXd seed_points;
-  // std::cout << seed_points << std::endl;
 
   // Create the mesh of the vacuumRegion
   tetrahedraliseVacuumRegion(seed_points, tet_settings);
 
+  setMergeToleranceAuto();
   // Temporary mesh, so that we don't have to edit the original
   libMesh::Mesh temp(mesh_);
   // combine
 
-  combineMeshes(merge_tolerance_, temp, vacuum_mesh_, *surface_face_map_);
+  combineMeshes(mesh_merge_tolerance_, temp, vacuum_mesh_, *surface_face_map_);
   vacuum_mesh_.clear();
   vacuum_mesh_ = libMesh::Mesh(temp);
 }
@@ -42,7 +42,6 @@ void VacuumGenerator::tetrahedraliseVacuumRegion(
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   libMeshToIGL(boundary_mesh_, V, F);
-  boundary_mesh_.write("boundary_test.e");
 
   // Eigen data structures needed for tetrahedralize method to be run
   Eigen::MatrixXd R;
@@ -58,7 +57,6 @@ void VacuumGenerator::tetrahedraliseVacuumRegion(
                                         TT, TF, TR, TN, PT, FT, num_regions);
 
   IGLToLibMesh(vacuum_mesh_, TV, TT);
-  vacuum_mesh_.write("vacuum_test.e");
 }
 
 void VacuumGenerator::tetrahedraliseVacuumRegion(
@@ -138,4 +136,15 @@ Eigen::MatrixXd VacuumGenerator::getSeeds(const libMesh::Mesh mesh) const {
   }
 
   return seed_points;
+}
+
+void VacuumGenerator::setMergeToleranceAuto()
+{
+  VacuumMesher::ClosestPairFinder closestPairMesh(mesh_);
+  VacuumMesher::ClosestPairFinder closestPairVac(vacuum_mesh_);
+
+  mesh_merge_tolerance_ = std::min(closestPairVac.closestPairMagnitude(),
+                                   closestPairMesh.closestPairMagnitude());
+  mesh_merge_tolerance_ /= 10;
+  std::cout << "Merge tolerance set for vacuum mesh merging: Tolerance = " << mesh_merge_tolerance_ << std::endl;
 }

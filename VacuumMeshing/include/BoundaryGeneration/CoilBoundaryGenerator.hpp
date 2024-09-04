@@ -15,6 +15,12 @@ public:
   virtual void addBoundary(const double length, const int subdivisions,
                            const std::string tri_flags) override;
 
+  void addCoilBoundingBoxBoundary(const double scaling_x,
+                                                       const double scaling_y,
+                                                       const double scaling_z,
+                                                       const int subdivisions,
+                                                       const std::string tri_flags);                        
+
   /** Method to generate the boundary for a coil. A method exists specifically
 for coils, as often the boundary needs to be coplanar with some coil "in"
 and "out" sidesets. This method will generate the correct boundary for a
@@ -23,6 +29,14 @@ objects \c boundVerts and \c boundElems that represent the output boundary
 vertices and faces (vertice connectivity data)*/
   void generateCoilBoundary(const double length, const int subdivisions,
                             const std::string tri_flags);
+
+
+
+  void generateCoilBoundingBoxBoundary(const double scaling_x,
+                                      const double scaling_y,
+                                      const double scaling_z,
+                                      const int subdivisions,
+                                      const std::string tri_flags);
 
   /** Method takes in an Eigen::Matrix "basis_matrix" by reference. This matrix
 will be populated with the basis vectors for a cartesian coordinate system.
@@ -60,6 +74,13 @@ tri mesh will be stored.*/
                              Eigen::MatrixXi &tri_elems, double length,
                              int subdivisions, std::string tri_flags);
 
+
+  void generateCoilFaceBound(
+    const Eigen::MatrixXd &verts, const Eigen::MatrixXi &elems,
+    const Eigen::MatrixXd &holes, Eigen::MatrixXd &tri_vertices,
+    Eigen::MatrixXi &tri_elems, double x_dim, double y_dim, int x_subdiv, int y_subdiv,
+    std::string tri_flags);
+
   /** Method for generating the face of the cubic boundary that is coplanar with
      the coil sidesets. Here V and F are the vertices and faces(connectivity
      data) for the input mesh, which is probably composed of 2D edge elements.
@@ -75,6 +96,13 @@ tri mesh will be stored.*/
   /***/
   void genSidesetBounds(Eigen::MatrixXd &verts, Eigen::MatrixXi &elems,
                         const double length, const int subdivisions);
+
+  void genSidesetBounds(Eigen::MatrixXd &verts,
+                                               Eigen::MatrixXi &elems,
+                                               const double x_dim,
+                                               const double y_dim,
+                                               const int x_subdiv,
+                                               const int y_subdiv);
 
   void genSidesetBounds(libMesh::Mesh &sideset_mesh,
                         libMesh::Mesh &remaining_boundary);
@@ -100,6 +128,10 @@ tri mesh will be stored.*/
                                      Eigen::MatrixXi &triElems, double length,
                                      int subdivisions, std::string tri_flags);
 
+  void genRemainingFiveBoundaryFaces(Eigen::MatrixXd &tri_vertices, Eigen::MatrixXi &tri_elems,
+                                                          double x_dim, double y_dim, double z_dim,
+                                                          int x_subdiv, int y_subdiv, int z_subdiv, std::string tri_flags);
+
   /** For our coil problem, to generate the part of the boundary that is
    coplanar with the coil sidesets correctly*/
   void getCoplanarSeedPoints(libMesh::Mesh &mesh, Eigen::MatrixXd &seed_points);
@@ -108,4 +140,6 @@ protected:
 private:
   const int coil_sideset_one_id;
   const int coil_sideset_two_id;
+
+  double coil_sideset_elevation_;
 };
