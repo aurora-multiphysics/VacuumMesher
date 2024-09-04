@@ -25,6 +25,6 @@ RUN cd /usr/local/lib/ && ldd libmesh_opt.so
 FROM billellis/base-ubuntu:$base_image_tag
 
 # Copy our dependencies and profiles across
-COPY --from=vmesh-base /usr/local /usr/local
+COPY --from=base-ubuntu /usr/local /usr/local
 
 RUN cd /usr/local/lib/ && ldd libmesh_opt.so
