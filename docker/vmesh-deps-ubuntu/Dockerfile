@@ -2,10 +2,10 @@ ARG base_image_tag=latest
 ARG libmesh_image_tag=latest
 
 # Get base image
-FROM billellis/vmesh-base-ubuntu:$base_image_tag  AS vmesh-base
+FROM billellis/base-ubuntu:$base_image_tag  AS base-ubuntu
 
 # Copy files across
-COPY ./scripts/build-libmesh.sh /home/scripts/build-libmesh.sh
+COPY ./scripts/build-libmesh.sh /home/scripts/
 
 # By default 4 cores are used to compile
 ARG compile_cores=4
@@ -22,7 +22,7 @@ RUN cd /home/scripts  && \
 RUN cd /usr/local/lib/ && ldd libmesh_opt.so
     
 # Now move to base ubuntu build image
-FROM billellis/vmesh-base-ubuntu:$base_image_tag
+FROM billellis/base-ubuntu:$base_image_tag
 
 # Copy our dependencies and profiles across
 COPY --from=vmesh-base /usr/local /usr/local
