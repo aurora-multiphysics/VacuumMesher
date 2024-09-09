@@ -1,4 +1,4 @@
-#include "Utils/divConq.hpp"
+#include "Utils/ClosestPairFinder.hpp"
 
 namespace VacuumMesher {
 

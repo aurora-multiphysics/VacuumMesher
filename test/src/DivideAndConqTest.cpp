@@ -1,4 +1,4 @@
-#include "Utils/divConq.hpp"
+#include "Utils/ClosestPairFinder.hpp"
 #include "catch2/catch_all.hpp"
 #include "catch2/catch_test_macros.hpp"
 #include "libmesh_test_init.hpp"
