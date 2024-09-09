@@ -1,5 +1,4 @@
 #include "BoundaryGeneration/BoundaryGenerator.hpp"
-#include "MeshContainer.hpp"
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
 #include "Utils/parseFlags.hpp"
 #include <chrono>

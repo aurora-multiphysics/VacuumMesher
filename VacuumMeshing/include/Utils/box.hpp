@@ -1,7 +1,8 @@
 #pragma once
 
 #include "SurfaceMeshing/SurfaceGenerator.hpp"
-
+// Need include for eigen defs 
+#include "igl/any.h"
 // Box struct that is inserted into the rTree. Each node gets it's own Box
 // struct which is then
 //  inserted.
