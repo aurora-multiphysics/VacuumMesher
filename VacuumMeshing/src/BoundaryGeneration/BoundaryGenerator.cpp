@@ -151,11 +151,21 @@ void BoundaryGenerator::genBoundingBoxBoundary(Eigen::MatrixXd &boundary_vertice
   Eigen::MatrixXi xy_elems, xz_elems, yz_elems;
   Eigen::MatrixXd seeds;
 
-  // Get number of elements along each axis
+  // Get the number of elements along each axis, and store this info
   int x_subdiv, y_subdiv, z_subdiv;
   x_subdiv = subdivisions;
   y_subdiv = (bb_y_dim/bb_x_dim) * x_subdiv;
   z_subdiv = (bb_z_dim/bb_x_dim) * x_subdiv;
+
+  /**
+   * For a structure which is very thin in one dimension, the number of subdivisions
+   * in this dimension may be evaluated as 0. This is not a valid number of subdivions, so
+   * a lower limit of 2 is set. 
+   */
+  // 
+  x_subdiv == 0 ? x_subdiv += 2 : ;
+  y_subdiv == 0 ? x_subdiv += 2 : ;
+  z_subdiv == 0 ? x_subdiv += 2 : ;
 
   // Create a square from 1st order edge elements
   genTriangulatedRect(xy_verts, xy_elems, bb_x_dim, bb_y_dim, x_subdiv, y_subdiv, tri_flags);
