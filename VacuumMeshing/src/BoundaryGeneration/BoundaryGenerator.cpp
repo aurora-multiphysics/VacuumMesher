@@ -152,7 +152,7 @@ void BoundaryGenerator::genBoundingBoxBoundary(Eigen::MatrixXd &boundary_vertice
   Eigen::MatrixXd seeds;
 
   // Get number of elements along each axis
-  double x_subdiv, y_subdiv, z_subdiv;
+  int x_subdiv, y_subdiv, z_subdiv;
   x_subdiv = subdivisions;
   y_subdiv = (bb_y_dim/bb_x_dim) * x_subdiv;
   z_subdiv = (bb_z_dim/bb_x_dim) * x_subdiv;
