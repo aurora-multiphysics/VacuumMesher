@@ -62,6 +62,15 @@ public:
   void genSquare(Eigen::MatrixXd &edge_verts, Eigen::MatrixXi &edge_elems, double length,
                  int subdivisions);
 
+    /** Method generates a square boundary comprised of just edge elements.
+   \c verts  will be populated with the vertex data, \c elems will be populated
+   with the element connectivity data. \c length and \c subdivisions allow the
+   user to change the length of the edges of the square, as well as how many
+   elements there should be per edge*/
+  void genTriangulatedSquare(Eigen::MatrixXd &edge_verts, Eigen::MatrixXi &edge_elems, double length,
+                 int subdivisions, std::string tri_flags);
+
+
   /** Method for combining two libigl meshes that you are SURE do NOT intersect
    and DO NOT have duplicate nodes. There is a combine meshes method in
    removeDupeNodes.cpp that can combine meshes with duplicate nodes using an

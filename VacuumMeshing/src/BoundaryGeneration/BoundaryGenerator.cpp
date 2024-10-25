@@ -29,6 +29,8 @@ void BoundaryGenerator::addBoundary(double length, int subdivisions,
   // Turn IGL mesh into libmesh Mesh
   IGLToLibMesh(boundary_mesh_, boundary_vertices, boundary_elements);
 
+  boundary_mesh_.write("BadBoundary.e");
+
   // If unspecified, get merge tolerance
   if (mesh_merge_tolerance_ == 0) {
     setMergeToleranceAuto();
@@ -81,11 +83,11 @@ void BoundaryGenerator::genBoundary(Eigen::MatrixXd &boundary_vertices,
   Eigen::MatrixXd seeds;
 
   // Create a square from 1st order edge elements
-  genSquare(square_verts, square_elems, length, subdivisions);
+  genTriangulatedSquare(square_verts, square_elems, length, subdivisions, tri_flags);
 
   // Triangulate the square that we just created
   // igl::triangle::triangulate(square_boundary_verts, square_boundary_elems, seeds, tri_flags, square_verts,
-                            //  square_elems);
+  //                            square_elems);
 
   // Rotation matrices to rotate elements
   Eigen::Matrix3d x_rot_base;
@@ -163,9 +165,9 @@ void BoundaryGenerator::genBoundingBoxBoundary(Eigen::MatrixXd &boundary_vertice
    * a lower limit of 2 is set. 
    */
   // 
-  x_subdiv == 0 ? x_subdiv += 2 : ;
-  y_subdiv == 0 ? x_subdiv += 2 : ;
-  z_subdiv == 0 ? x_subdiv += 2 : ;
+  x_subdiv == 0 ? x_subdiv += 2 : x_subdiv;
+  y_subdiv == 0 ? y_subdiv += 2 : y_subdiv;
+  z_subdiv == 0 ? z_subdiv += 2 : z_subdiv;
 
   // Create a square from 1st order edge elements
   genTriangulatedRect(xy_verts, xy_elems, bb_x_dim, bb_y_dim, x_subdiv, y_subdiv, tri_flags);
@@ -302,8 +304,8 @@ void BoundaryGenerator::genRect(Eigen::MatrixXd &boundary_verts,
   boundary_elems((total_nodes - 1), 1) = total_nodes - 1;
 }
 
-void BoundaryGenerator::genTriangulatedRect(Eigen::MatrixXd &square_verts,
-                                            Eigen::MatrixXi &square_elems, double x_dim, double y_dim,
+void BoundaryGenerator::genTriangulatedRect(Eigen::MatrixXd &rect_verts,
+                                            Eigen::MatrixXi &rect_elems, double x_dim, double y_dim,
                                             int x_subdiv, int y_subdiv, std::string tri_flags) {
 
   // Calculate the number of subdivisions for the longer side of the rectangle
@@ -314,59 +316,68 @@ void BoundaryGenerator::genTriangulatedRect(Eigen::MatrixXd &square_verts,
   Eigen::MatrixXi boundary_elems(total_nodes, 2);
 
   genRect(boundary_verts, boundary_elems, x_dim, y_dim, x_subdiv, y_subdiv);
-  // //
-  // double increment_x = (double)(x_dim / x_subdiv);
-  // double increment_y = (double)(y_dim / y_subdiv);
+ 
+  Eigen::MatrixXd seeds;
+  igl::triangle::triangulate(boundary_verts, boundary_elems, seeds, 
+                             tri_flags, rect_verts, rect_elems);
+}
+
+void BoundaryGenerator::genSquare(Eigen::MatrixXd &square_verts,
+                                  Eigen::MatrixXi &square_elems, double length,
+                                  int subdivisions) {
+
+  genRect(square_verts, square_elems, length, length, subdivisions, subdivisions);
+  // Resize eigen matrices to correct size
+  // verts = Eigen::MatrixXd(4 * subdivisions, 2);
+  // elems = Eigen::MatrixXi(4 * subdivisions, 2);
+
+  //
+  // double increment = (double)(length / subdivisions);
 
   // // Use offset so that the square mesh is symmetric about the x and y axes
-  // double offset_x = x_dim / 2;
-  // double offset_y = y_dim / 2;
+  // double offset = length / 2;
 
   // // Place all the nodes
   // long int node_id = 0;
-  // for (int i = 0; i <= x_subdiv; i++) {
-  //   boundary_verts.row(node_id) << -offset_x + (i * increment_x), -offset_y;
+  // for (int i = 0; i <= subdivisions; i++) {
+  //   verts.row(node_id) << -offset + (i * increment), -offset;
   //   node_id++;
   // }
 
   // // All the other for loops start at 1 and not 0, this prevents creating a
   // // duplicate node
-  // for (int i = 1; i <= y_subdiv; i++) {
-  //   boundary_verts.row(node_id) << offset_x, (i * increment_y) - offset_y;
+  // for (int i = 1; i <= subdivisions; i++) {
+  //   verts.row(node_id) << offset, (i * increment) - offset;
   //   node_id++;
   // }
 
-  // for (int i = 1; i <= x_subdiv; i++) {
-  //   boundary_verts.row(node_id) << offset_x - (i * increment_x), offset_y;
+  // for (int i = 1; i <= subdivisions; i++) {
+  //   verts.row(node_id) << offset - (i * increment), offset;
   //   node_id++;
   // }
 
-  // // Last loop has to start at 1 and end at (x_subdiv - 1), 
+  // // Last loop has to start at 1 and end at (subdivisions - 1), 
   // // to avoid duplicating the starting node
-  // for (int i = 1; i <= y_subdiv - 1; i++) {
-  //   boundary_verts.row(node_id) << -offset_x, offset_y - (i * increment_y);
+  // for (int i = 1; i <= subdivisions - 1; i++) {
+  //   verts.row(node_id) << -offset, offset - (i * increment);
   //   node_id++;
   // }
 
   // // Loop over all elements, and assign them the correct nodes
-  // for (int elem_id = 0; elem_id < total_nodes - 1; elem_id++) {
-  //   boundary_elems(elem_id, 0) = elem_id;
-  //   boundary_elems(elem_id, 1) = elem_id + 1;
+  // for (int elem_id = 0; elem_id < (4 * subdivisions) - 1; elem_id++) {
+  //   elems(elem_id, 0) = elem_id;
+  //   elems(elem_id, 1) = elem_id + 1;
   // }
 
-  // boundary_elems((total_nodes - 1), 0) = 0;
-  // boundary_elems((total_nodes - 1), 1) = total_nodes - 1;
-
-  Eigen::MatrixXd seeds;
-  igl::triangle::triangulate(boundary_verts, boundary_elems, seeds, 
-                             tri_flags, square_verts, square_elems);
+  // elems(((4 * subdivisions) - 1), 0) = 0;
+  // elems(((4 * subdivisions) - 1), 1) = (4 * subdivisions) - 1;
 }
 
-void BoundaryGenerator::genSquare(Eigen::MatrixXd &edge_verts,
-                                  Eigen::MatrixXi &edge_elems, double length,
-                                  int subdivisions) {
+void BoundaryGenerator::genTriangulatedSquare(Eigen::MatrixXd &square_verts,
+                                  Eigen::MatrixXi &square_elems, double length,
+                                  int subdivisions, std::string tri_flags) {
 
-  genRect(edge_verts, edge_elems, length, length, subdivisions, subdivisions);
+  genTriangulatedRect(square_verts, square_elems, length, length, subdivisions, subdivisions, tri_flags);
   // Resize eigen matrices to correct size
   // verts = Eigen::MatrixXd(4 * subdivisions, 2);
   // elems = Eigen::MatrixXi(4 * subdivisions, 2);
