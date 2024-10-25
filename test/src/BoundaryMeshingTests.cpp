@@ -14,26 +14,6 @@ TEST_CASE("BoundaryGenerator", "[cube]") {
   mesh.read(std::string(USER_DIR) +
             "/test/testingMeshes/unit_cube/unit_cube.e");
 
-  SECTION("genSquare") {
-
-    // Boundary Parameters
-    double length = 10;
-    int subdivisions = 10;
-
-    //
-    BoundaryGenerator bound_generator(mesh, surface_mesh, boundary_mesh);
-    Eigen::MatrixXd square_vertices;
-    Eigen::MatrixXi square_elems;
-
-    // Generate square made of edge elements
-    bound_generator.genSquare(square_vertices, square_elems, length,
-                              subdivisions);
-
-    REQUIRE(std::abs(square_vertices.row(0).minCoeff()) == (length / 2));
-    REQUIRE(std::abs(square_vertices.row(0).maxCoeff()) == (length / 2));
-    REQUIRE(square_vertices.rows() == (subdivisions * 4));
-  }
-
   SECTION("checkBoundary") {
 
     // Boundary Parameters
@@ -136,6 +116,26 @@ TEST_CASE("BoundaryGenerator", "[cube]") {
     REQUIRE(boundary_elems == correct_boundary_elems);
   }
 
+    SECTION("genSquare") {
+
+    // Boundary Parameters
+    double length = 10;
+    int subdivisions = 10;
+
+    //
+    BoundaryGenerator bound_generator(mesh, surface_mesh, boundary_mesh);
+    Eigen::MatrixXd square_vertices;
+    Eigen::MatrixXi square_elems;
+
+    // Generate square made of edge elements
+    bound_generator.genSquare(square_vertices, square_elems, length,
+                              subdivisions);
+
+    REQUIRE(std::abs(square_vertices.row(0).minCoeff()) == (length / 2));
+    REQUIRE(std::abs(square_vertices.row(0).maxCoeff()) == (length / 2));
+    REQUIRE(square_vertices.rows() == (subdivisions * 4));
+  }
+
   // SECTION("genTriangulatedRect") {
 
   //   // Boundary Parameters
@@ -151,7 +151,5 @@ TEST_CASE("BoundaryGenerator", "[cube]") {
   //   // Generate square made of edge elements
   //   REQUIRE_THROWS_AS(bound_generator.checkBoundary(length),
   //                     std::invalid_argument);
-  // }
-
-  
+  // }  
 }
